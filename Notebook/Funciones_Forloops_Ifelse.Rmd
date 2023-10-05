@@ -1,0 +1,65 @@
+---
+title: "Funciones, For loops, If else"
+output: html_notebook
+---
+
+## Funciones
+
+Set de argumentos que se organizan juntos para realizar una tarea especifica.
+
+En relidad todos los comandos que hemos usado son las funciones que ya vienen incluidas en R pero Rstudio tambien nos da la posibilidad de crear nuestras propias funciones
+
+### Componentes de una funcion
+
+* __Nombre de la funcion:__ Nosotros se lo damos
+* __Argumentos:__ Los elementos necesarios para llevar a cabo la funcion. _input_
+* __Cuerpo de la funcion:__ Define lo que va a hacer la funcion
+* __Respuesta:__ El valor o resultado de la tarea asignada a una funcion _output_
+
+```{r}
+
+nombre_funcion <- function(argumentos) { #lo que necesitas para calcular la funcion
+  respuesta <- haz_algo(argumentos) # calculos o modificaciones que haras con los argumentos
+  return(respuesta) # lo que se va a imprimir
+  } # todo lo que esta entre corchetes es la funcion
+```
+Piensen en las funciones como una accion por lo que por lo general el nombre empieza con un verbo:
+
+```{r}
+calc_vol_foliar <- function(longit, ancho, altura) {
+  area <- longit * ancho
+  volumen <- area * altura
+  return(volumen)
+}
+
+# Ahora usemos la funcion
+
+calc_vol_foliar(longit = 1, ancho = 2.5, altura = 2)
+
+arbusto1 <- calc_vol_foliar(1, 2.5, 2) # se puede usar sin agregar los nombres de que son los numeros pero se deben poner en el mismo orden.Al agregar el objeto de "arbusto1" ya se guarda el objeto como un valor en el environment.
+
+
+# Ahora usemos datos desde un dataframe
+
+### Creen un set de datos artificiales ###
+
+Arbustos <- data.frame(Longit = c(13, 2.6), 
+                       Ancho = c(1.8, 22), 
+                       Altura = c(3.9, 3.5))
+
+# Usemos la funcion
+
+calc_vol_foliar(Arbustos$Longit[1], #en estos corchetes no hay coma porque es una sola columna en una dimension
+                Arbustos$Ancho[1],
+                Arbustos$Altura[1])
+
+### sin la funcion debemos anotar lo siguiente.
+
+Arbustos$Longit[1]*Arbustos$Ancho[1]*Arbustos$Altura[1]
+
+
+```
+
+ ### Ejercicio
+ 
+ Van a crear una funcion que calcule el area foliar de una especie de arboles unica en el mundo que tiene hojas triangulares: $A = bh/2$
