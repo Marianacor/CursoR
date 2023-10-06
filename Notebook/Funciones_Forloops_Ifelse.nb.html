@@ -1752,11 +1752,22 @@ display: none;
 
 
 <!-- rnb-text-begin -->
+<div id="para-cambiar-rmarkdown-a-pdf-usar" class="section level3">
+<h3>Para cambiar Rmarkdown a pdf usar:</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5zdGFsbC5wYWNrYWdlcyhcInRpbnl0ZXhcIilcblxuYGBgIn0= -->
+<pre class="r"><code>install.packages(&quot;tinytex&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
 <div id="funciones" class="section level2">
 <h2>Funciones</h2>
 <p>Set de argumentos que se organizan juntos para realizar una tarea
 especifica.</p>
-<p>En relidad todos los comandos que hemos usado son las funciones que
+<p>En realidad todos los comandos que hemos usado son las funciones que
 ya vienen incluidas en R pero Rstudio tambien nos da la posibilidad de
 crear nuestras propias funciones</p>
 <div id="componentes-de-una-funcion" class="section level3">
@@ -1785,23 +1796,234 @@ nombre_funcion &lt;- function(argumentos) { #lo que necesitas para calcular la f
 nombre empieza con un verbo:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQXJidXN0b3MkTG9uZ2l0WzFdKkFyYnVzdG9zJEFuY2hvWzFdKkFyYnVzdG9zJEFsdHVyYVsxXVxuXG5gYGAifQ== -->
-<pre class="r"><code>Arbustos$Longit[1]*Arbustos$Ancho[1]*Arbustos$Altura[1]
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY192b2xfZm9saWFyIDwtIGZ1bmN0aW9uKGxvbmdpdCwgYW5jaG8sIGFsdHVyYSkge1xuICBhcmVhIDwtIGxvbmdpdCAqIGFuY2hvXG4gIHZvbHVtZW4gPC0gYXJlYSAqIGFsdHVyYVxuICByZXR1cm4odm9sdW1lbilcbn1cblxuIyBBaG9yYSB1c2Vtb3MgbGEgZnVuY2lvblxuXG5jYWxjX3ZvbF9mb2xpYXIobG9uZ2l0ID0gMSwgYW5jaG8gPSAyLjUsIGFsdHVyYSA9IDIpXG5cbmFyYnVzdG8xIDwtIGNhbGNfdm9sX2ZvbGlhcigxLCAyLjUsIDIpICMgc2UgcHVlZGUgdXNhciBzaW4gYWdyZWdhciBsb3Mgbm9tYnJlcyBkZSBxdWUgc29uIGxvcyBudW1lcm9zIHBlcm8gc2UgZGViZW4gcG9uZXIgZW4gZWwgbWlzbW8gb3JkZW4uQWwgYWdyZWdhciBlbCBvYmpldG8gZGUgXCJhcmJ1c3RvMVwiIHlhIHNlIGd1YXJkYSBlbCBvYmpldG8gY29tbyB1biB2YWxvciBlbiBlbCBlbnZpcm9ubWVudC5cblxuXG4jIEFob3JhIHVzZW1vcyBkYXRvcyBkZXNkZSB1biBkYXRhZnJhbWVcblxuIyMjIENyZWVuIHVuIHNldCBkZSBkYXRvcyBhcnRpZmljaWFsZXMgIyMjXG5cbkFyYnVzdG9zIDwtIGRhdGEuZnJhbWUoTG9uZ2l0ID0gYygxMywgMi42KSwgXG4gICAgICAgICAgICAgICAgICAgICAgIEFuY2hvID0gYygxLjgsIDIyKSwgXG4gICAgICAgICAgICAgICAgICAgICAgIEFsdHVyYSA9IGMoMy45LCAzLjUpKVxuXG4jIFVzZW1vcyBsYSBmdW5jaW9uXG5cbmNhbGNfdm9sX2ZvbGlhcihBcmJ1c3RvcyRMb25naXRbMV0sICNlbiBlc3RvcyBjb3JjaGV0ZXMgbm8gaGF5IGNvbWEgcG9ycXVlIGVzIHVuYSBzb2xhIGNvbHVtbmEgZW4gdW5hIGRpbWVuc2lvblxuICAgICAgICAgICAgICAgIEFyYnVzdG9zJEFuY2hvWzFdLFxuICAgICAgICAgICAgICAgIEFyYnVzdG9zJEFsdHVyYVsxXSlcblxuIyMjIHNpbiBsYSBmdW5jaW9uIGRlYmVtb3MgYW5vdGFyIGxvIHNpZ3VpZW50ZS5cblxuQXJidXN0b3MkTG9uZ2l0WzFdKkFyYnVzdG9zJEFuY2hvWzFdKkFyYnVzdG9zJEFsdHVyYVsxXVxuXG4jIyBhcmd1bWVudG9zIGRlZmF1bHRcblxuY2FsY192b2xfZm9saWFyIDwtIGZ1bmN0aW9uKExvbmdpdCwgQW5jaG8sIEFsdHVyYSA9IDEpIHtcbiAgYXJlYSA8LSBMb25naXQgKkFuY2hvXG4gIHZvbHVtZW4gPC0gYXJlYSAqIEFsdHVyYVxuICByZXR1cm4odm9sdW1lbilcbn1cblxuYGBgIn0= -->
+<pre class="r"><code>calc_vol_foliar &lt;- function(longit, ancho, altura) {
+  area &lt;- longit * ancho
+  volumen &lt;- area * altura
+  return(volumen)
+}
+
+# Ahora usemos la funcion
+
+calc_vol_foliar(longit = 1, ancho = 2.5, altura = 2)
+
+arbusto1 &lt;- calc_vol_foliar(1, 2.5, 2) # se puede usar sin agregar los nombres de que son los numeros pero se deben poner en el mismo orden.Al agregar el objeto de &quot;arbusto1&quot; ya se guarda el objeto como un valor en el environment.
+
+
+# Ahora usemos datos desde un dataframe
+
+### Creen un set de datos artificiales ###
+
+Arbustos &lt;- data.frame(Longit = c(13, 2.6), 
+                       Ancho = c(1.8, 22), 
+                       Altura = c(3.9, 3.5))
+
+# Usemos la funcion
+
+calc_vol_foliar(Arbustos$Longit[1], #en estos corchetes no hay coma porque es una sola columna en una dimension
+                Arbustos$Ancho[1],
+                Arbustos$Altura[1])
+
+### sin la funcion debemos anotar lo siguiente.
+
+Arbustos$Longit[1]*Arbustos$Ancho[1]*Arbustos$Altura[1]
+
+## argumentos default
+
+calc_vol_foliar &lt;- function(Longit, Ancho, Altura = 1) {
+  area &lt;- Longit *Ancho
+  volumen &lt;- area * Altura
+  return(volumen)
+}
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDkxLjI2XG4ifQ== -->
-<pre><code>[1] 91.26</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>### Ejercicio</p>
 <p>Van a crear una funcion que calcule el area foliar de una especie de
 arboles unica en el mundo que tiene hojas triangulares: <span class="math inline">\(A = bh/2\)</span></p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2FsY19hcmVhX2ZvbGlhciA8LSBmdW5jdGlvbihiYXNlLCBhbHR1cmEpIHtcbiAgYXJlYSA8LSAoYmFzZSAqIGFsdHVyYSkgLyAyXG4gIHJldHVybihhcmVhKVxufVxuXG5jYWxjX2FyZWFfZm9saWFyKDguMywgMTMpXG5cbmBgYCJ9 -->
+<pre class="r"><code>calc_area_foliar &lt;- function(base, altura) {
+  area &lt;- (base * altura) / 2
+  return(area)
+}
+
+calc_area_foliar(8.3, 13)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="combinando-funciones" class="section level3">
+<h3>Combinando funciones</h3>
+<p>Se ha descubierto que en esta especie de arboles se puede estimar los
+dís de crecimiento de la hoja usando el area de las mismas con la
+siguiente formula: Cr = A ^1.73</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZXN0X2NyZWNpbSgyLjUpXG5cbmBgYCJ9 -->
+<pre class="r"><code>est_crecim(2.5)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQuODgwMTg0XG4ifQ== -->
+<pre><code>[1] 4.880184</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="for-loops" class="section level2">
+<h2>For loops</h2>
+<p>Los <em>for loops</em> se usan cuando hay un pedazo de codigo que
+necesitas repetir varias veces.</p>
+<div id="estuctura-básica" class="section level3">
+<h3>Estuctura básica</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5mb3IgKG51bWVyb19kZV9jb3NhIGluIGxpc3RhX2RlX2Nvc2FzKSB7XG4gIGFjY2lvbihjb3NhKVxufVxuYGBgIn0= -->
+<pre class="r"><code>
+for (numero_de_cosa in lista_de_cosas) {
+  accion(cosa)
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="ejemplo-simple-usando-un-vector" class="section level3">
+<h3>Ejemplo simple usando un vector</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm9yICh4IGluIGxvbmdpdHMpIHtcbiAgbWFzYSA8LSAyLjY1ICogeCBeIDAuOVxuICBtYXNhX2xiIDwtIG1hc2EgKiAyLjJcbiAgcHJpbnQobWFzYV9sYilcbn1cblxuYGBgIn0= -->
+<pre class="r"><code>for (x in longits) {
+  masa &lt;- 2.65 * x ^ 0.9
+  masa_lb &lt;- masa * 2.2
+  print(masa_lb)
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDguODk5NzI0XG5bMV0gMTUuNjcwMzFcblsxXSAzNy44ODM0NVxuIn0= -->
+<pre><code>[1] 8.899724
+[1] 15.67031
+[1] 37.88345</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="ejercicio" class="section level4">
+<h4>Ejercicio</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm9yIChjbSBpbiBjZW50aW0pIHtcbiAgcHVsZyA8LSBjbSAvIDIuNTRcbiAgcHJpbnQocHVsZylcbn1cblxuYGBgIn0= -->
+<pre class="r"><code>for (cm in centim) {
+  pulg &lt;- cm / 2.54
+  print(pulg)
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDUzLjE0OTYxXG5bMV0gMTcuNzE2NTRcblsxXSA5LjA1NTExOFxuWzFdIDY1Ljc0ODAzXG5bMV0gMTEuODExMDJcblsxXSAyMS4yNTk4NFxuWzFdIDExLjQxNzMyXG4ifQ== -->
+<pre><code>[1] 53.14961
+[1] 17.71654
+[1] 9.055118
+[1] 65.74803
+[1] 11.81102
+[1] 21.25984
+[1] 11.41732</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="como-se-aplica-un-for-loop-a-un-dataframe" class="section level3">
+<h3>Como se aplica un for loop a un dataframe</h3>
+<p>Para poder seleccionar una de las columnas o filas se elige un index
+o posicon para que se vaya repitiendo</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Si bien asi pudimos transformar toda la altura a pies, en realidad la
+tabla sigue sin haberse cambiado y esos resultados <strong>¿Como podemos
+guardarlo?</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWx0X3BpZXMgPC0gdmVjdG9yKG1vZGUgPSBcIm51bWVyaWNcIixcbiAgICAgICAgICAgICAgICAgICBsZW5ndGggPSBucm93KE1lZGlkYXNfY2xhc2UpKVxuIyBQcmltZXIgbG9vcFxuXG5mb3IgKGkgaW4gMTogbnJvdyhNZWRpZGFzX2NsYXNlKSkge1xuICBhbHR1cmFfZnQgPC0gTWVkaWRhc19jbGFzZSRIZWlnaHQuY21baV0vMzAuNDhcbiAgcHJpbnQoYWx0dXJhX2Z0KVxufVxuXG4jIGxvb3AgcXVlIGd1YXJkYSBsb3MgZGF0b3NcblxuZm9yIChpIGluIDE6IG5yb3coTWVkaWRhc19jbGFzZSkpIHtcbiAgYWx0dXJhX2Z0IDwtIE1lZGlkYXNfY2xhc2UkSGVpZ2h0LmNtW2ldLzMwLjQ4XG4gIGFsdF9waWVzW2ldIDwtIGFsdHVyYV9mdCAjY2FtYmlhbW9zIHByaW50IHBhcmEgcXVlIGxvIGd1YXJkZSBlbiBlbCB2ZWN0b3Jcbn1cblxuYWx0X3BpZXNcblxuYGBgIn0= -->
+<pre class="r"><code>alt_pies &lt;- vector(mode = &quot;numeric&quot;,
+                   length = nrow(Medidas_clase))
+# Primer loop
+
+for (i in 1: nrow(Medidas_clase)) {
+  altura_ft &lt;- Medidas_clase$Height.cm[i]/30.48
+  print(altura_ft)
+}
+
+# loop que guarda los datos
+
+for (i in 1: nrow(Medidas_clase)) {
+  altura_ft &lt;- Medidas_clase$Height.cm[i]/30.48
+  alt_pies[i] &lt;- altura_ft #cambiamos print para que lo guarde en el vector
+}
+
+alt_pies
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="ejercicio-1" class="section level3">
+<h3>Ejercicio</h3>
+<p>Ahora quiero que repitan el proceso de guardar los datos de un for
+loop dentro de un vector modificando el for loop que usamos para
+modificar cm a pulgadas.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHVsZ2FkIDwtIHZlY3RvciAobW9kZSA9IFwibnVtZXJpY1wiLFxuICAgICAgICAgICAgICAgICAgbGVuZ3RoID0gY2VudGltKVxuXG5gYGAifQ== -->
+<pre class="r"><code>pulgad &lt;- vector (mode = &quot;numeric&quot;,
+                  length = centim)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gdmVjdG9yKG1vZGUgPSBcIm51bWVyaWNcIiwgbGVuZ3RoID0gY2VudGltKSA6IFxuICBhcmd1bWVudG8gJ2xlbmd0aCcgaW52w6FsaWRvXG4ifQ== -->
+<pre><code>Error in vector(mode = &quot;numeric&quot;, length = centim) : 
+  argumento &#39;length&#39; inválido</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="integrar-datos-de-un-for-loop-en-un-data-frame" class="section level3">
+<h3>Integrar datos de un for loop en un data frame</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm9yIChpIGluIDI6IG5jb2woQWNpZG9zKSkge1xuICBQcm9tZWRpb3MgPC0gbWVhbihBY2lkb3NbLGldLCBuYS5ybSA9IFRSVUUpXG4gIGFjX3Byb21baV0gPC0gYyhQcm9tZWRpb3MpXG59XG5cbmBgYCJ9 -->
+<pre class="r"><code>for (i in 2: ncol(Acidos)) {
+  Promedios &lt;- mean(Acidos[,i], na.rm = TRUE)
+  ac_prom[i] &lt;- c(Promedios)
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IG9iamV0byAnYWNfcHJvbScgbm8gZW5jb250cmFkb1xuIn0= -->
+<pre><code>Error: objeto &#39;ac_prom&#39; no encontrado</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="ejercicios" class="section level4">
+<h4>Ejercicios</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIHJtKGRzKVxuXG5gYGAifQ== -->
+<pre class="r"><code> rm(ds)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogb2JqZXRvICdkcycgbm8gZW5jb250cmFkb1xuIn0= -->
+<pre><code>Warning: objeto &#39;ds&#39; no encontrado</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+</div>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkZ1bmNpb25lcywgRm9yIGxvb3BzLCBJZiBlbHNlIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCg0KIyMgRnVuY2lvbmVzDQoNClNldCBkZSBhcmd1bWVudG9zIHF1ZSBzZSBvcmdhbml6YW4ganVudG9zIHBhcmEgcmVhbGl6YXIgdW5hIHRhcmVhIGVzcGVjaWZpY2EuDQoNCkVuIHJlbGlkYWQgdG9kb3MgbG9zIGNvbWFuZG9zIHF1ZSBoZW1vcyB1c2FkbyBzb24gbGFzIGZ1bmNpb25lcyBxdWUgeWEgdmllbmVuIGluY2x1aWRhcyBlbiBSIHBlcm8gUnN0dWRpbyB0YW1iaWVuIG5vcyBkYSBsYSBwb3NpYmlsaWRhZCBkZSBjcmVhciBudWVzdHJhcyBwcm9waWFzIGZ1bmNpb25lcw0KDQojIyMgQ29tcG9uZW50ZXMgZGUgdW5hIGZ1bmNpb24NCg0KKiBfX05vbWJyZSBkZSBsYSBmdW5jaW9uOl9fIE5vc290cm9zIHNlIGxvIGRhbW9zDQoqIF9fQXJndW1lbnRvczpfXyBMb3MgZWxlbWVudG9zIG5lY2VzYXJpb3MgcGFyYSBsbGV2YXIgYSBjYWJvIGxhIGZ1bmNpb24uIF9pbnB1dF8NCiogX19DdWVycG8gZGUgbGEgZnVuY2lvbjpfXyBEZWZpbmUgbG8gcXVlIHZhIGEgaGFjZXIgbGEgZnVuY2lvbg0KKiBfX1Jlc3B1ZXN0YTpfXyBFbCB2YWxvciBvIHJlc3VsdGFkbyBkZSBsYSB0YXJlYSBhc2lnbmFkYSBhIHVuYSBmdW5jaW9uIF9vdXRwdXRfDQoNCmBgYHtyfQ0KDQpub21icmVfZnVuY2lvbiA8LSBmdW5jdGlvbihhcmd1bWVudG9zKSB7ICNsbyBxdWUgbmVjZXNpdGFzIHBhcmEgY2FsY3VsYXIgbGEgZnVuY2lvbg0KICByZXNwdWVzdGEgPC0gaGF6X2FsZ28oYXJndW1lbnRvcykgIyBjYWxjdWxvcyBvIG1vZGlmaWNhY2lvbmVzIHF1ZSBoYXJhcyBjb24gbG9zIGFyZ3VtZW50b3MNCiAgcmV0dXJuKHJlc3B1ZXN0YSkgIyBsbyBxdWUgc2UgdmEgYSBpbXByaW1pcg0KICB9ICMgdG9kbyBsbyBxdWUgZXN0YSBlbnRyZSBjb3JjaGV0ZXMgZXMgbGEgZnVuY2lvbg0KYGBgDQpQaWVuc2VuIGVuIGxhcyBmdW5jaW9uZXMgY29tbyB1bmEgYWNjaW9uIHBvciBsbyBxdWUgcG9yIGxvIGdlbmVyYWwgZWwgbm9tYnJlIGVtcGllemEgY29uIHVuIHZlcmJvOg0KDQpgYGB7cn0NCmNhbGNfdm9sX2ZvbGlhciA8LSBmdW5jdGlvbihsb25naXQsIGFuY2hvLCBhbHR1cmEpIHsNCiAgYXJlYSA8LSBsb25naXQgKiBhbmNobw0KICB2b2x1bWVuIDwtIGFyZWEgKiBhbHR1cmENCiAgcmV0dXJuKHZvbHVtZW4pDQp9DQoNCiMgQWhvcmEgdXNlbW9zIGxhIGZ1bmNpb24NCg0KY2FsY192b2xfZm9saWFyKGxvbmdpdCA9IDEsIGFuY2hvID0gMi41LCBhbHR1cmEgPSAyKQ0KDQphcmJ1c3RvMSA8LSBjYWxjX3ZvbF9mb2xpYXIoMSwgMi41LCAyKSAjIHNlIHB1ZWRlIHVzYXIgc2luIGFncmVnYXIgbG9zIG5vbWJyZXMgZGUgcXVlIHNvbiBsb3MgbnVtZXJvcyBwZXJvIHNlIGRlYmVuIHBvbmVyIGVuIGVsIG1pc21vIG9yZGVuLkFsIGFncmVnYXIgZWwgb2JqZXRvIGRlICJhcmJ1c3RvMSIgeWEgc2UgZ3VhcmRhIGVsIG9iamV0byBjb21vIHVuIHZhbG9yIGVuIGVsIGVudmlyb25tZW50Lg0KDQoNCiMgQWhvcmEgdXNlbW9zIGRhdG9zIGRlc2RlIHVuIGRhdGFmcmFtZQ0KDQojIyMgQ3JlZW4gdW4gc2V0IGRlIGRhdG9zIGFydGlmaWNpYWxlcyAjIyMNCg0KQXJidXN0b3MgPC0gZGF0YS5mcmFtZShMb25naXQgPSBjKDEzLCAyLjYpLCANCiAgICAgICAgICAgICAgICAgICAgICAgQW5jaG8gPSBjKDEuOCwgMjIpLCANCiAgICAgICAgICAgICAgICAgICAgICAgQWx0dXJhID0gYygzLjksIDMuNSkpDQoNCiMgVXNlbW9zIGxhIGZ1bmNpb24NCg0KY2FsY192b2xfZm9saWFyKEFyYnVzdG9zJExvbmdpdFsxXSwgI2VuIGVzdG9zIGNvcmNoZXRlcyBubyBoYXkgY29tYSBwb3JxdWUgZXMgdW5hIHNvbGEgY29sdW1uYSBlbiB1bmEgZGltZW5zaW9uDQogICAgICAgICAgICAgICAgQXJidXN0b3MkQW5jaG9bMV0sDQogICAgICAgICAgICAgICAgQXJidXN0b3MkQWx0dXJhWzFdKQ0KDQojIyMgc2luIGxhIGZ1bmNpb24gZGViZW1vcyBhbm90YXIgbG8gc2lndWllbnRlLg0KDQpBcmJ1c3RvcyRMb25naXRbMV0qQXJidXN0b3MkQW5jaG9bMV0qQXJidXN0b3MkQWx0dXJhWzFdDQoNCg0KYGBgDQoNCiAjIyMgRWplcmNpY2lvDQogDQogVmFuIGEgY3JlYXIgdW5hIGZ1bmNpb24gcXVlIGNhbGN1bGUgZWwgYXJlYSBmb2xpYXIgZGUgdW5hIGVzcGVjaWUgZGUgYXJib2xlcyB1bmljYSBlbiBlbCBtdW5kbyBxdWUgdGllbmUgaG9qYXMgdHJpYW5ndWxhcmVzOiAkQSA9IGJoLzIkDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkZ1bmNpb25lcywgRm9yIGxvb3BzLCBJZiBlbHNlIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCiMjIyBQYXJhIGNhbWJpYXIgUm1hcmtkb3duIGEgcGRmIHVzYXI6DQoNCmBgYHtyfQ0KaW5zdGFsbC5wYWNrYWdlcygidGlueXRleCIpDQoNCmBgYA0KDQojIyBGdW5jaW9uZXMNCg0KU2V0IGRlIGFyZ3VtZW50b3MgcXVlIHNlIG9yZ2FuaXphbiBqdW50b3MgcGFyYSByZWFsaXphciB1bmEgdGFyZWEgZXNwZWNpZmljYS4NCg0KRW4gcmVhbGlkYWQgdG9kb3MgbG9zIGNvbWFuZG9zIHF1ZSBoZW1vcyB1c2FkbyBzb24gbGFzIGZ1bmNpb25lcyBxdWUgeWEgdmllbmVuIGluY2x1aWRhcyBlbiBSIHBlcm8gUnN0dWRpbyB0YW1iaWVuIG5vcyBkYSBsYSBwb3NpYmlsaWRhZCBkZSBjcmVhciBudWVzdHJhcyBwcm9waWFzIGZ1bmNpb25lcw0KDQojIyMgQ29tcG9uZW50ZXMgZGUgdW5hIGZ1bmNpb24NCg0KKiBfX05vbWJyZSBkZSBsYSBmdW5jaW9uOl9fIE5vc290cm9zIHNlIGxvIGRhbW9zDQoqIF9fQXJndW1lbnRvczpfXyBMb3MgZWxlbWVudG9zIG5lY2VzYXJpb3MgcGFyYSBsbGV2YXIgYSBjYWJvIGxhIGZ1bmNpb24uIF9pbnB1dF8NCiogX19DdWVycG8gZGUgbGEgZnVuY2lvbjpfXyBEZWZpbmUgbG8gcXVlIHZhIGEgaGFjZXIgbGEgZnVuY2lvbg0KKiBfX1Jlc3B1ZXN0YTpfXyBFbCB2YWxvciBvIHJlc3VsdGFkbyBkZSBsYSB0YXJlYSBhc2lnbmFkYSBhIHVuYSBmdW5jaW9uIF9vdXRwdXRfDQoNCmBgYHtyfQ0KDQpub21icmVfZnVuY2lvbiA8LSBmdW5jdGlvbihhcmd1bWVudG9zKSB7ICNsbyBxdWUgbmVjZXNpdGFzIHBhcmEgY2FsY3VsYXIgbGEgZnVuY2lvbg0KICByZXNwdWVzdGEgPC0gaGF6X2FsZ28oYXJndW1lbnRvcykgIyBjYWxjdWxvcyBvIG1vZGlmaWNhY2lvbmVzIHF1ZSBoYXJhcyBjb24gbG9zIGFyZ3VtZW50b3MNCiAgcmV0dXJuKHJlc3B1ZXN0YSkgIyBsbyBxdWUgc2UgdmEgYSBpbXByaW1pcg0KICB9ICMgdG9kbyBsbyBxdWUgZXN0YSBlbnRyZSBjb3JjaGV0ZXMgZXMgbGEgZnVuY2lvbg0KYGBgDQpQaWVuc2VuIGVuIGxhcyBmdW5jaW9uZXMgY29tbyB1bmEgYWNjaW9uIHBvciBsbyBxdWUgcG9yIGxvIGdlbmVyYWwgZWwgbm9tYnJlIGVtcGllemEgY29uIHVuIHZlcmJvOg0KDQpgYGB7cn0NCmNhbGNfdm9sX2ZvbGlhciA8LSBmdW5jdGlvbihsb25naXQsIGFuY2hvLCBhbHR1cmEpIHsNCiAgYXJlYSA8LSBsb25naXQgKiBhbmNobw0KICB2b2x1bWVuIDwtIGFyZWEgKiBhbHR1cmENCiAgcmV0dXJuKHZvbHVtZW4pDQp9DQoNCiMgQWhvcmEgdXNlbW9zIGxhIGZ1bmNpb24NCg0KY2FsY192b2xfZm9saWFyKGxvbmdpdCA9IDEsIGFuY2hvID0gMi41LCBhbHR1cmEgPSAyKQ0KDQphcmJ1c3RvMSA8LSBjYWxjX3ZvbF9mb2xpYXIoMSwgMi41LCAyKSAjIHNlIHB1ZWRlIHVzYXIgc2luIGFncmVnYXIgbG9zIG5vbWJyZXMgZGUgcXVlIHNvbiBsb3MgbnVtZXJvcyBwZXJvIHNlIGRlYmVuIHBvbmVyIGVuIGVsIG1pc21vIG9yZGVuLkFsIGFncmVnYXIgZWwgb2JqZXRvIGRlICJhcmJ1c3RvMSIgeWEgc2UgZ3VhcmRhIGVsIG9iamV0byBjb21vIHVuIHZhbG9yIGVuIGVsIGVudmlyb25tZW50Lg0KDQoNCiMgQWhvcmEgdXNlbW9zIGRhdG9zIGRlc2RlIHVuIGRhdGFmcmFtZQ0KDQojIyMgQ3JlZW4gdW4gc2V0IGRlIGRhdG9zIGFydGlmaWNpYWxlcyAjIyMNCg0KQXJidXN0b3MgPC0gZGF0YS5mcmFtZShMb25naXQgPSBjKDEzLCAyLjYpLCANCiAgICAgICAgICAgICAgICAgICAgICAgQW5jaG8gPSBjKDEuOCwgMjIpLCANCiAgICAgICAgICAgICAgICAgICAgICAgQWx0dXJhID0gYygzLjksIDMuNSkpDQoNCiMgVXNlbW9zIGxhIGZ1bmNpb24NCg0KY2FsY192b2xfZm9saWFyKEFyYnVzdG9zJExvbmdpdFsxXSwgI2VuIGVzdG9zIGNvcmNoZXRlcyBubyBoYXkgY29tYSBwb3JxdWUgZXMgdW5hIHNvbGEgY29sdW1uYSBlbiB1bmEgZGltZW5zaW9uDQogICAgICAgICAgICAgICAgQXJidXN0b3MkQW5jaG9bMV0sDQogICAgICAgICAgICAgICAgQXJidXN0b3MkQWx0dXJhWzFdKQ0KDQojIyMgc2luIGxhIGZ1bmNpb24gZGViZW1vcyBhbm90YXIgbG8gc2lndWllbnRlLg0KDQpBcmJ1c3RvcyRMb25naXRbMV0qQXJidXN0b3MkQW5jaG9bMV0qQXJidXN0b3MkQWx0dXJhWzFdDQoNCiMjIGFyZ3VtZW50b3MgZGVmYXVsdA0KDQpjYWxjX3ZvbF9mb2xpYXIgPC0gZnVuY3Rpb24oTG9uZ2l0LCBBbmNobywgQWx0dXJhID0gMSkgew0KICBhcmVhIDwtIExvbmdpdCAqQW5jaG8NCiAgdm9sdW1lbiA8LSBhcmVhICogQWx0dXJhDQogIHJldHVybih2b2x1bWVuKQ0KfQ0KDQpgYGANCg0KICMjIyBFamVyY2ljaW8NCiANClZhbiBhIGNyZWFyIHVuYSBmdW5jaW9uIHF1ZSBjYWxjdWxlIGVsIGFyZWEgZm9saWFyIGRlIHVuYSBlc3BlY2llIGRlIGFyYm9sZXMgdW5pY2EgZW4gZWwgbXVuZG8gcXVlIHRpZW5lIGhvamFzIHRyaWFuZ3VsYXJlczogJEEgPSBiaC8yJA0KIA0KDQpgYGB7cn0NCmNhbGNfYXJlYV9mb2xpYXIgPC0gZnVuY3Rpb24oYmFzZSwgYWx0dXJhKSB7DQogIGFyZWEgPC0gKGJhc2UgKiBhbHR1cmEpIC8gMg0KICByZXR1cm4oYXJlYSkNCn0NCg0KY2FsY19hcmVhX2ZvbGlhcig4LjMsIDEzKQ0KDQpgYGANCg0KIyMjIENvbWJpbmFuZG8gZnVuY2lvbmVzDQoNClNlIGhhIGRlc2N1YmllcnRvIHF1ZSBlbiBlc3RhIGVzcGVjaWUgZGUgYXJib2xlcyBzZSBwdWVkZSBlc3RpbWFyIGxvcyBkw61zIGRlIGNyZWNpbWllbnRvIGRlIGxhIGhvamEgdXNhbmRvIGVsIGFyZWEgZGUgbGFzIG1pc21hcyBjb24gbGEgc2lndWllbnRlIGZvcm11bGE6IENyID0gQSBeMS43Mw0KDQpgYGB7cn0NCiMgRnVuY2lvbiBwYXJhIGVzdGltYXIgY3JlY2ltaWVudG8gZGUgbGFzIGhvamFzDQoNCmVzdF9jcmVjaW0gPC0gZnVuY3Rpb24oYXJlYSkgew0KICBjcmVjaW0gPC0gYXJlYSBeIDEuNzMNCiAgcmV0dXJuKGNyZWNpbSkNCn0NCg0KIyMgTmVzdGVkIGZ1bmN0aW9ucyBvIGZ1bmNpb25lcyBjb21iaW5hZGFzDQoNCmNyZWNpbV9ob2phIDwtIGVzdF9jcmVjaW0oY2FsY19hcmVhX2ZvbGlhcigzLDUpKQ0KDQpgYGANCg0KIyMgRm9yIGxvb3BzDQoNCkxvcyBfZm9yIGxvb3BzXyBzZSB1c2FuIGN1YW5kbyBoYXkgdW4gcGVkYXpvIGRlIGNvZGlnbyBxdWUgbmVjZXNpdGFzIHJlcGV0aXIgdmFyaWFzIHZlY2VzLg0KDQojIyMgRXN0dWN0dXJhIGLDoXNpY2ENCg0KYGBge3J9DQoNCmZvciAobnVtZXJvX2RlX2Nvc2EgaW4gbGlzdGFfZGVfY29zYXMpIHsNCiAgYWNjaW9uKGNvc2EpDQp9DQpgYGANCg0KIyMjIEVqZW1wbG8gc2ltcGxlIHVzYW5kbyB1biB2ZWN0b3INCg0KYGBge3J9DQpsb25naXRzIDwtIGMoMS42LCAzLCA4KSAjIHZlY3Rvcg0KDQpmb3IgKGEgaW4gbG9uZ2l0cykgeyAjIGVsIG5vbWJyZSBhIGVzIGFyYml0cmFyaW8gbXV5IGJpZW4gcG9kcsOtYSB1c2FyIHNvbG8gdW5hIGxldHJhIHUgb3RybyBub21icmUgcGVybyBlbCBub21icmUgZGViZSBjb2luY2lkaXIgY29uIGxhIGFjY2lvbiBxdWUgc2UgZXN0YSBjb21hbmRhbmRvDQogIHByaW50KDIuNjUqYSBeIDAuOSkgIyBzZSBwb25lIHByaW50IHBhcmEgb2J0ZW5lciBlbCByZXN1bHRhZG8geSBwb2RlciB2ZXJsbyBwZXJvIG5vIGVzdGEgZ3VhcmRhZG8NCn0gDQoNCg0KIyMgVW4gZm9yIGxvb3AgY29uIG11bHRpcGxlcyBwYXNvcw0KDQpmb3IgKHggaW4gbG9uZ2l0cykgew0KICBtYXNhIDwtIDIuNjUgKiB4IF4gMC45DQogIG1hc2FfbGIgPC0gbWFzYSAqIDIuMg0KICBwcmludChtYXNhX2xiKQ0KfQ0KDQpgYGANCiMjIyMgRWplcmNpY2lvDQoNCmBgYHtyfQ0KIyBWYW1vcyBhIG1vZGlmaWNhciBlc3RlIGZvciBsb29wIHBhcmEgcXVlIGltcHJpbWEgbXVsdGlwbG9zIGRlIDMNCg0KZm9yIChpIGluIDE6NSkgew0KICBwcmludChpICogMykNCn0NCg0KIyMgQWhvcmEgcXVpZXJvIHF1ZSBoYWdhbiB1biBmb3IgbG9vcCBwYXJhIGNhbWJpYXIgZXN0b3MgdmFsb3JlcyBkZSBjbSBhIHB1bGdhZGFzIGNtLzIuNTQNCg0KY2VudGltIDwtIGMoMTM1LDQ1LDIzLDE2NywzMCw1NCwyOSkNCg0KZm9yIChjbSBpbiBjZW50aW0pIHsNCiAgcHVsZyA8LSBjbSAvIDIuNTQNCiAgcHJpbnQocHVsZykNCn0NCg0KYGBgDQojIyMgQ29tbyBzZSBhcGxpY2EgdW4gZm9yIGxvb3AgYSB1biBkYXRhZnJhbWUNCg0KUGFyYSBwb2RlciBzZWxlY2Npb25hciB1bmEgZGUgbGFzIGNvbHVtbmFzIG8gZmlsYXMgc2UgZWxpZ2UgdW4gaW5kZXggbyBwb3NpY29uIHBhcmEgcXVlIHNlIHZheWEgcmVwaXRpZW5kbw0KDQpgYGB7cn0NCg0KTWVkaWRhc19jbGFzZSA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvQ2xhc3MtZGF0YS5jc3YiKQ0KDQojIE1vZGlmaWNhciBsYSBhbHR1cmEgZGUgY20gYSBwaWVzDQoNCmZvciAoaSBpbiAxOiBucm93KE1lZGlkYXNfY2xhc2UpKSB7DQogIGFsdHVyYV9mdCA8LSBNZWRpZGFzX2NsYXNlJEhlaWdodC5jbVtpXS8zMC40OA0KICBwcmludChhbHR1cmFfZnQpDQp9DQoNCmBgYA0KU2kgYmllbiBhc2kgcHVkaW1vcyB0cmFuc2Zvcm1hciB0b2RhIGxhIGFsdHVyYSBhIHBpZXMsIGVuIHJlYWxpZGFkIGxhIHRhYmxhIHNpZ3VlIHNpbiBoYWJlcnNlIGNhbWJpYWRvIHkgZXNvcyByZXN1bHRhZG9zIF9fwr9Db21vIHBvZGVtb3MgZ3VhcmRhcmxvP19fDQoNCmBgYHtyfQ0KYWx0X3BpZXMgPC0gdmVjdG9yKG1vZGUgPSAibnVtZXJpYyIsDQogICAgICAgICAgICAgICAgICAgbGVuZ3RoID0gbnJvdyhNZWRpZGFzX2NsYXNlKSkNCiMgUHJpbWVyIGxvb3ANCg0KZm9yIChpIGluIDE6IG5yb3coTWVkaWRhc19jbGFzZSkpIHsNCiAgYWx0dXJhX2Z0IDwtIE1lZGlkYXNfY2xhc2UkSGVpZ2h0LmNtW2ldLzMwLjQ4DQogIHByaW50KGFsdHVyYV9mdCkNCn0NCg0KIyBsb29wIHF1ZSBndWFyZGEgbG9zIGRhdG9zDQoNCmZvciAoaSBpbiAxOiBucm93KE1lZGlkYXNfY2xhc2UpKSB7DQogIGFsdHVyYV9mdCA8LSBNZWRpZGFzX2NsYXNlJEhlaWdodC5jbVtpXS8zMC40OA0KICBhbHRfcGllc1tpXSA8LSBhbHR1cmFfZnQgI2NhbWJpYW1vcyBwcmludCBwYXJhIHF1ZSBsbyBndWFyZGUgZW4gZWwgdmVjdG9yDQp9DQoNCmFsdF9waWVzDQoNCmBgYA0KDQojIyMgRWplcmNpY2lvDQoNCkFob3JhIHF1aWVybyBxdWUgcmVwaXRhbiBlbCBwcm9jZXNvIGRlIGd1YXJkYXIgbG9zIGRhdG9zIGRlIHVuIGZvciBsb29wIGRlbnRybyBkZSB1biB2ZWN0b3IgbW9kaWZpY2FuZG8gZWwgZm9yIGxvb3AgcXVlIHVzYW1vcyBwYXJhIG1vZGlmaWNhciBjbSBhIHB1bGdhZGFzLg0KDQpgYGB7cn0NCmNlbnRpbSA8LSBjKDEzNSw0NSwyMywxNjcsMzAsNTQsMjkpDQoNCmZvciAoaiBpbiBjZW50aW0pIHsNCiAgcHVsZyA8LSBqIC8gMi41NA0KICBwcmludChwdWxnKQ0KfQ0KDQpwdWxnYWQgPC0gdmVjdG9yIChtb2RlID0gIm51bWVyaWMiLA0KICAgICAgICAgICAgICAgICAgbGVuZ3RoID0gbGVuZ3RoKGNlbnRpbSkpDQoNCmZvciAoaiBpbiAxOiBsZW5ndGgoY2VudGltKSkgew0KICBwdWxnIDwtIGogLyAyLjU0DQogIHB1bGdhZFtqXSA8LSBwdWxnDQp9DQoNCmBgYA0KDQojIyMgSW50ZWdyYXIgZGF0b3MgZGUgdW4gZm9yIGxvb3AgZW4gdW4gZGF0YSBmcmFtZQ0KDQpgYGB7cn0NCg0KIyBVbmlyIGVsIHZlY3RvciBjb24gZWwgZGF0YWZyYW1lLiBTZSBlc3RhIGFncmVnYW5kbyB1bmEgY29sdW1uYSBhIG51ZXN0cmEgdGFibGEgb3JpZ2luYWwNCg0KTWVkaWRhc19jbGFzZSA8LSBjYmluZChNZWRpZGFzX2NsYXNlLGFsdF9waWVzKSAjIGxhIGMgZXMgZGUgY29sdW1uYQ0KDQojIyBEaXJlY3RhbWVudGUgZW4gbGEgdGFibGENCg0KZm9yIChpIGluIDE6IG5yb3coTWVkaWRhc19jbGFzZSkpIHsNCiAgYWx0dXJhX2Z0IDwtIE1lZGlkYXNfY2xhc2UkSGVpZ2h0LmNtW2ldLzMwLjQ4DQogIE1lZGlkYXNfY2xhc2UkYWx0X3BpZXNbaV0gPC0gYWx0dXJhX2Z0ICMgY2FtYmlhbW9zIHBhcmEgcXVlIGxvIGd1YXJkZSBkaXJlY3RhbWVudGUgZW4gZWwgZGF0YSBmcmFtZQ0KfQ0KDQojIyBIYWNlciBjYWxjdWxvcyBjb24gbGFzIGNvbHVtbmFzDQoNCkFjaWRvcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvQWNpZG9zX2V4LmNzdiIpDQoNCg0Kc2FwcGx5KEFjaWRvcyxtb2RlKSAjIHNpcnZlIHBhcmEgcmV2aXNhciBsb3MgdGlwbyBkZSBjYXJhY3RlciBkZSBjYWRhIGNvbHVtbmEgZW4gdW4gZGF0YWZyYW1lDQoNCmZvciAoaSBpbiAyOiBuY29sKEFjaWRvcykpIHsNCiAgUHJvbWVkaW9zIDwtIG1lYW4oQWNpZG9zWyxpXSwgbmEucm0gPSBUUlVFKQ0KICBwcmludChQcm9tZWRpb3MpDQp9DQoNCiMgRWplbXBsbyBwYXJhIGVsIGNvZGlnbyBzb2xvIHBhcmEgc2FjYXIgcHJvbWVkaW8NCg0KbWVhbihBY2lkb3NbLDJdKSAjIHZhIGEgc2FsaXIgTkEgcG9ycXVlIGVuIGxhIGNvbHVtbmEgZmFsdGFuIHZhbG9yZXMgcG9yIGxvIHF1ZSBzZSBjYW1iaWEgYToNCg0KbWVhbihBY2lkb3NbLDJdLCBuYS5ybSA9IFRSVUUpICMgYXF1w60gbWUgZXN0YSByZW1vdmllbmRvIGxvcyB2YWxvcmVzIE5BDQoNCiMgU2luIGVtYmFyZ28gZXN0ZSBubyBzZSBndWFyZG8gcG9yIGxvIHF1ZSBlc3RlIHNlcmlhIGVsIHByb2Nlc28gcGFyYSBndWFyZGFybG86DQoNCmFjX3Byb20gPC0gYygpDQoNCmZvciAoaSBpbiAyOiBuY29sKEFjaWRvcykpIHsNCiAgUHJvbWVkaW9zIDwtIG1lYW4oQWNpZG9zWyxpXSwgbmEucm0gPSBUUlVFKQ0KICBhY19wcm9tW2ldIDwtIGMoUHJvbWVkaW9zKQ0KfQ0KDQpBY2lkb3MgPC0gcmJpbmQoQWNpZG9zLGFjX3Byb20pICMgcm93YmluZCBlcyBwYXJhIGFncmVnYXIgdW5hIGZpbGENCg0KYGBgDQoNCiMjIyMgRWplcmNpY2lvcw0KDQpgYGB7cn0NCiMgMS4gQWdyZWdhciBhbCBhcmNoaXZvIGRlIG1lZGlkYXNfY2xhc2Ugb3RyYSBjb2x1bW5hIGVuIGVsIHF1ZSBsYSBjaXJjdW5mZXJlbmNpYSBkZSBsYSBjYWJlemEgZXN0ZSBlbiBwdWxnYWRhcy5jbS8yLjU0DQoNCmZvciAoaSBpbiAxOiBucm93KE1lZGlkYXNfY2xhc2UpKSB7DQogIGNpcmNfcHVsZyA8LSBNZWRpZGFzX2NsYXNlJENpcmN1bWZlcmVuY2VIZWFkLmNvbVtpXS8yLjU0DQogIE1lZGlkYXNfY2xhc2UkY2lyY3VuX3B1bGdbaV0gPC0gY2lyY19wdWxnDQp9DQoNCiMgMi4gRW4gZWwgYXJjaGl2byBkZSBhY2lkb3MgeWEgYWdyZWdhbW9zIHVuYSBmaWxhIGNvbiBsb3MgcHJvbWVkaW9zIGFob3JhIHRyYXRlbiBkZSBhZ3JlZ2FyIHVuYSBjb24gbGEgZGVzdmlhY2lvbiBlc3RhbmRhci4NCg0KYWNfZGVzIDwtIGMoKQ0KDQpmb3IgKGkgaW4gMjogbmNvbChBY2lkb3MpKSB7DQogIERlc3ZpYWNpb24gPC0gc2QoQWNpZG9zWyxpXSwgbmEucm0gPSBUUlVFKQ0KICBhY19kZXNbaV0gPC0gYyhEZXN2aWFjaW9uKQ0KfQ0KDQpBY2lkb3MgPC0gcmJpbmQoQWNpZG9zLGFjX2RlcykNCg0KYGBgDQoNCg0KDQoNCg0KICAgICAgICAgICAgICAgIA0KDQo=</div>
 
 
 
