@@ -287,9 +287,151 @@ Acidos <- rbind(Acidos,ac_des)
 
 ```
 
+## Comandos If Else
+
+Los comandos de If Else en Rstudio son una parte fundamental de la programación ya que la computadora es capaz de "tomar decisiones" dandole _condiciones._
+
+### El mas basico: If statement
+
+```{r}
+# Estructura basica If statement
+
+if (condicion_que_debe_ser_verdad) {
+  Haz_algo
+}
+
+## Ejemplo con condiciones numericas
+
+x <- 7
+
+if (x > 5) { # estos objetos si aparecen en el ambiente global
+  x <- x ^ 2 # si if es FALSO no hace nada
+}
+
+# Ejemplo Biologico
+
+veg_tipo <- "arbol"
+volumen <- 16
+
+# <- = son equivalente
+# <- y == no lo son
+
+if (veg_tipo == "arbol") { # cuando pones solo un = es un operador atematico mientras que == significa es igual a 
+  masa <- 2.6 * volumen ^ 0.9 # este objeto si se guarda
+}
+
+masa
+```
+#### Ejercicio
+
+Como maestros de secundaria ustedes estan calificando unos examenes. Si el alumno tuvo mas de 70 aciertos en el examen pasa. Creen un _if statement_ que me arroje APROBADO dependiendo de la calificacion del alumno.
 
 
+```{r}
+cal <- 70
+
+if (cal >= 70) {
+   print("APROBADO") 
+}  
+
+```
+### Complicamos mas la cosa: If Else statement
+
+Con el _If statement_ solo le decimos a la computadora si los datos que le dimos son CIERTOS si son FALSOS este comando simplemente no arroja nada por lo que le tenemos que agregar el _ELSE._
+
+```{r}
+x <- 4
+
+if (x > 5) {
+  x <- x ^ 2
+} else { # ahora si IF es falso tambien le decimos que hacer
+  x <- x ^ 3
+}
+
+# Y se puede complicar más la cosa
+
+veg_tipo <- "arbusto"
+volumen <- 16
+
+if (veg_tipo == "arbol") {  
+  masa <- 2.6 * volumen ^ 0.9 # este objeto si se guarda
+} else if (veg_tipo == "pasto") { # cadenita de condiciones
+  mass <- 0.6 * volumen ^ 1.2
+} else { # agregar la ultima condición
+  mass <- NA
+}
+
+```
+#### Ejercicio
+
+como maestros de secundaria ustedes siguen calificando los examenes pero ahora a los alumnos que sacaron mas de 90 aciertos les van a poner EXCELENTE; si tuvieron entre 90 y 70 aciertos dira APROBADO y menos de 70 REPROBADO. Modifiquen su codigo de _if statement_ agregando _else para que me arroje las 3 categorias dependiendo la calificacion del alumno.
+
+```{r}
+calif <- 70
+
+if (calif >= 90) {  
+  print("EXCELENTE")
+} else if (calif >= 70) {
+  print("APROBADO") 
+} else {
+  print("REPROBADO") 
+}
+
+```
+### La verson mas simplificada _ ifelse
+
+Esta version se define por estar "vectorizada" por lo que en vez de tener las condiciones en renglones, todo esta condensado en una solo linea.
+
+Es util cuando las comparaciones son mas sencillas e interesantemente se puede usar directamente con vectores en vez de valores simples.
+
+```{r}
+# Estructura simplificada
+
+ifelse(condicion, respuesta_TRUE, respuesta_FALSE)
+
+# Ejemplo basico
+
+edad_planta <- 1
+
+ifelse(edad_planta < 2, # condicion
+       "PLANTULA", # verdadero
+       "ADULTO") # falso
+
+# Ejemplo anidado
+
+ifelse(edad_planta < 2, # condicion
+       "PLANTULA", # verdadera
+       ifelse(edad_planta < 7, "JUVENIL", "ADULTO")) # falsa
+```
+
+#### Ejercicio
+
+El codigo previo que hicieron usando IF ELSE ahora conviertanlo al comando _ifelse_
+
+* Pista debe ser anidado
+
+```{r}
+
+calif <- 40
 
 
-                
+ifelse(calif >= 90, "EXCELENTE", ifelse(calif >=70, "APROBADO", "REPROBADO" ))
+
+```
+
+#### Aplicando ifelse a vectores
+
+```{r}
+# vector de numeros
+
+a <- c(5,7,2,9)
+
+# checar si es par o impar
+
+ifelse( a %% 2 == 0, "Par", "Impar")
+
+# condicion %% 2 == 0, cuando divides entre 2 el residuo es cero
+
+```
+
 
