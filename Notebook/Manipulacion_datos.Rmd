@@ -1,0 +1,151 @@
+---
+title: "Manipulación de datos"
+output: html_notebook
+---
+
+# Introducción
+
+En este modulo vamos a empezar haciendo estadistica basica con RStudio. Sin embargo, antes de hacer cualquier analisis estadistico es necesario que sepamos como podemos manipular nuestros datos modificando tablas y matrices. A partir de ahora todas las actividades que hagamos seran usando data frames y usando todo lo aprendido organizaremos nuestras notas.
+
+```{r}
+# Librerias
+
+library(dplyr)# manipulacion de datos, funciones, modificar columnas, filtrar, reordenar, calculos, etc.
+library(tidyr) # modificando las funciones de datos
+library(readr) # leer y escribir csvs
+library(udunits2) # conversión de unidades
+
+# Data
+
+Acidos <- read.csv("~/CursoR/CursoRgit/Materiales/Acidos_ex.csv")
+
+Medidas_clase <- read.csv("~/CursoR/CursoRgit/Materiales/Class-data.csv")
+
+Metadata <- read.csv("~/CursoR/CursoRgit/Materiales/Exud_metadata.csv")
+
+Plantas <- read.csv("~/CursoR/CursoRgit/Materiales/Tabla_plantas.csv")
+
+Roedores <- read.csv("~/CursoR/CursoRgit/Materiales/Roedores.csv")
+
+```
+# Modificación de datos con R base
+
+Si bien el paquete mas comun y util para manipular datos es tidyverse, R base tambien tienen varias funciones muy utiles para hacer modificaciones basicas.
+
+## ¿Como checar a estructura de nuestros datos?
+
+```{r}
+str(Medidas_clase) # Estructura interna, tipo de cada variable y nombres de las variables
+
+dim(Medidas_clase) # Filas y columnas
+nrow(Medidas_clase) ; ncol(Medidas_clase) # separar comando cortos es punto y coma: ;
+
+head(Medidas_clase) # Imprime las primeras 6 filas de una tabla
+
+```
+
+## Reordenar datos
+
+Si bien ni la fila ni la columna no necesita realmente un orden particular al momento de analizar los datos, muchas veces es conveniente visualmente.
+
+```{r}
+# Reordenar columnas
+
+Medidas_clase <- Medidas_clase[,c(1,9,4,2,3,5,6,7,8)]
+
+### Ejercicio: reordenar nuevamente todas las columnas menos ID en orden alfabetico.
+
+# Reordenar de mas a menos la tabla
+
+Acidos <- Acidos[order(Acidos[,2],decreasing = TRUE),]
+
+```
+
+Asi mismo muchas veces es conveniente cambiar filas a columnas y viceversa. Para ello tenemos el comando de _transpose()_
+
+```{r}
+# t() transpose
+
+Acidos <- as.data.frame(t(Acidos)) # tambien tenemos que especificar que tipo de objeto queremos como resultado
+
+colnames(Acidos) <- Acidos[1,] # renombrar las columnas con el nombre de los acidos
+
+Acidos <- Acidos[-1,] # borrar fila 1
+
+```
+
+## Renombrar variables
+
+Otro comando muy util que tiene R es el de cambiar el nombre de variables dentro de nuestro data frame. A diferencia de excel, en RStudio uno no puede cambiar directamente los valores de una celda dentro de una tabla para proteger los datos. Pare ello se puede usar el sig comando:
+
+```{r}
+
+Metadata$Plant_type[Metadata$Plant_type == "No Plant"] <- "Bulk Soil"
+
+### Ejercicio: Renombren en tratamiento Pi a Fosfato y Phi a Fosfito
+
+Metadata$Treatment[Metadata$Treatment == "Pi"] <- "Fosfato"
+Metadata$Treatment[Metadata$Treatment == "Phi"] <- "Fosfito"
+
+```
+## Subset de datos
+
+A veces es necesario analizar los datos por separado por lo que es util seleccionar solo algunos de nuestros datos basados en una o mas variables.
+
+```{r}
+# Seleccionar ciertas columnas
+
+Medidas_filt <- Medidas_clase[,c("ID", "Height.cm", "Sex")]
+
+# Basado en valores de las variables (filas)
+
+mujeres_altas <- Medidas_clase[which(Medidas_clase$Sex=="F" & Medidas_clase$Height.cm > 165),]
+
+View(mujeres_altas)
+
+### Ejercicio: Seleccionar hombres cabezones, es decir con la circunferencia mas de 60 cm
+
+hombres_cabezones <- Medidas_clase[which(Medidas_clase$Sex == "M" & Medidas_clase$CircumferenceHead.com > 60),]
+
+View(hombres_cabezones)
+
+```
+Finalmente otra funcion que sera util mas adelante es cambiar de orden los factores. Usualmente los factores dentro de una variable se ordenan y muestran de forma alfabetica. Sin embargo, estos ccambios no se van a ver hasta el momento de graficar
+
+```{r}
+
+Metadata <- factor(Metadata$Treatment, levels = c("Low P", "Fosfato", "Fosfito", "Pi/Phi mix"), ordered = TRUE)
+```
+
+### Ejercicio
+
+Al data frame _Planta_ Hacer las siguientes modificaciones:
+
+1. Cambiar de orden las columna para que TOC y MBC sean las primeras variables que se ven despues de los metadatos.
+
+2. Reorganizar la tabla con las plantas con mayor masa foliar hasta arriba. _shoots_
+
+3. En tipo de planta renombrar No plant a Bulk soil y en tratamiento Control a Pi.
+
+4. Finalmente crear un nuevo data frame en el que seleccionen todas las plantas _wid type_ con _tip count_ menor a 100.
+
+```{r}
+# 1. 
+Plantas <- Plantas[,c(1,2,3,4,5,15,16,6,7,8,9,10,11,12,13,14)]
+
+# 2.
+Plantas <- Plantas[order(Plantas[,9],decreasing = TRUE),]
+
+# 3.
+Plantas$Plant_Type[Plantas$Plant_Type == "No Plant"] <- "Bulk Soil"
+Plantas$Treatment[Plantas$Treatment == "Control"] <- "Pi"
+
+# 4.
+plantas_wt <- Plantas[which(Plantas$Plant_Type == "Wild Type" & Plantas$root_tip_count < 100),]
+
+View(plantas_wt)
+
+```
+
+
+
