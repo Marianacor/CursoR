@@ -1762,6 +1762,13 @@ seran usando data frames y usando todo lo aprendido organizaremos
 nuestras notas.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh1ZHVuaXRzMikgIyBjb252ZXJzacOzbiBkZSB1bmlkYWRlc1xuXG5gYGAifQ== -->
+<pre class="r"><code>library(udunits2) # conversión de unidades
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoidWR1bml0cyBzeXN0ZW0gZGF0YWJhc2UgcmVhZCBmcm9tIEM6L1VzZXJzL3ByaW52ZXN0aWdhY2lvbi9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1IvUi00LjMuMS9saWJyYXJ5L3VkdW5pdHMyL3NoYXJlL3VkdW5pdHMvdWR1bml0czIueG1sXG4ifQ== -->
+<pre><code>udunits system database read from C:/Users/prinvestigacion/AppData/Local/Programs/R/R-4.3.1/library/udunits2/share/udunits/udunits2.xml</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1807,6 +1814,16 @@ visualmente.</p>
 viceversa. Para ello tenemos el comando de <em>transpose()</em></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0KCkgdHJhbnNwb3NlXG5cbkFjaWRvcyA8LSBhcy5kYXRhLmZyYW1lKHQoQWNpZG9zKSkgIyB0YW1iaWVuIHRlbmVtb3MgcXVlIGVzcGVjaWZpY2FyIHF1ZSB0aXBvIGRlIG9iamV0byBxdWVyZW1vcyBjb21vIHJlc3VsdGFkb1xuXG5jb2xuYW1lcyhBY2lkb3MpIDwtIEFjaWRvc1sxLF0gIyByZW5vbWJyYXIgbGFzIGNvbHVtbmFzIGNvbiBlbCBub21icmUgZGUgbG9zIGFjaWRvc1xuXG5BY2lkb3MgPC0gQWNpZG9zWy0xLF0gIyBib3JyYXIgZmlsYSAxXG5cbmBgYCJ9 -->
+<pre class="r"><code># t() transpose
+
+Acidos &lt;- as.data.frame(t(Acidos)) # tambien tenemos que especificar que tipo de objeto queremos como resultado
+
+colnames(Acidos) &lt;- Acidos[1,] # renombrar las columnas con el nombre de los acidos
+
+Acidos &lt;- Acidos[-1,] # borrar fila 1
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1819,6 +1836,16 @@ dentro de una tabla para proteger los datos. Pare ello se puede usar el
 sig comando:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5NZXRhZGF0YSRQbGFudF90eXBlW01ldGFkYXRhJFBsYW50X3R5cGUgPT0gXCJObyBQbGFudFwiXSA8LSBcIkJ1bGsgU29pbFwiXG5cbiMjIyBFamVyY2ljaW86IFJlbm9tYnJlbiBlbiB0cmF0YW1pZW50byBQaSBhIEZvc2ZhdG8geSBQaGkgYSBGb3NmaXRvXG5cbk1ldGFkYXRhJFRyZWF0bWVudFtNZXRhZGF0YSRUcmVhdG1lbnQgPT0gXCJQaVwiXSA8LSBcIkZvc2ZhdG9cIlxuTWV0YWRhdGEkVHJlYXRtZW50W01ldGFkYXRhJFRyZWF0bWVudCA9PSBcIlBoaVwiXSA8LSBcIkZvc2ZpdG9cIlxuXG5gYGAifQ== -->
+<pre class="r"><code>
+Metadata$Plant_type[Metadata$Plant_type == &quot;No Plant&quot;] &lt;- &quot;Bulk Soil&quot;
+
+### Ejercicio: Renombren en tratamiento Pi a Fosfato y Phi a Fosfito
+
+Metadata$Treatment[Metadata$Treatment == &quot;Pi&quot;] &lt;- &quot;Fosfato&quot;
+Metadata$Treatment[Metadata$Treatment == &quot;Phi&quot;] &lt;- &quot;Fosfito&quot;
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1829,13 +1856,24 @@ util seleccionar solo algunos de nuestros datos basados en una o mas
 variables.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudmlldyhtdWplcmVzX2FsdGFzKVxuXG5gYGAifQ== -->
-<pre class="r"><code>view(mujeres_altas)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTZWxlY2Npb25hciBjaWVydGFzIGNvbHVtbmFzXG5cbk1lZGlkYXNfZmlsdCA8LSBNZWRpZGFzX2NsYXNlWyxjKFwiSURcIiwgXCJIZWlnaHQuY21cIiwgXCJTZXhcIildXG5cbiMgQmFzYWRvIGVuIHZhbG9yZXMgZGUgbGFzIHZhcmlhYmxlcyAoZmlsYXMpXG5cbm11amVyZXNfYWx0YXMgPC0gTWVkaWRhc19jbGFzZVt3aGljaChNZWRpZGFzX2NsYXNlJFNleD09XCJGXCIgJiBNZWRpZGFzX2NsYXNlJEhlaWdodC5jbSA+IDE2NSksXVxuXG5WaWV3KG11amVyZXNfYWx0YXMpXG5cbiMjIyBFamVyY2ljaW86IFNlbGVjY2lvbmFyIGhvbWJyZXMgY2FiZXpvbmVzLCBlcyBkZWNpciBjb24gbGEgY2lyY3VuZmVyZW5jaWEgbWFzIGRlIDYwIGNtXG5cbmhvbWJyZXNfY2FiZXpvbmVzIDwtIE1lZGlkYXNfY2xhc2Vbd2hpY2goTWVkaWRhc19jbGFzZSRTZXggPT0gXCJNXCIgJiBNZWRpZGFzX2NsYXNlJENpcmN1bWZlcmVuY2VIZWFkLmNvbSA+IDYwKSxdXG5cblZpZXcoaG9tYnJlc19jYWJlem9uZXMpXG5cbmBgYCJ9 -->
+<pre class="r"><code># Seleccionar ciertas columnas
+
+Medidas_filt &lt;- Medidas_clase[,c(&quot;ID&quot;, &quot;Height.cm&quot;, &quot;Sex&quot;)]
+
+# Basado en valores de las variables (filas)
+
+mujeres_altas &lt;- Medidas_clase[which(Medidas_clase$Sex==&quot;F&quot; &amp; Medidas_clase$Height.cm &gt; 165),]
+
+View(mujeres_altas)
+
+### Ejercicio: Seleccionar hombres cabezones, es decir con la circunferencia mas de 60 cm
+
+hombres_cabezones &lt;- Medidas_clase[which(Medidas_clase$Sex == &quot;M&quot; &amp; Medidas_clase$CircumferenceHead.com &gt; 60),]
+
+View(hombres_cabezones)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gdmlldyhtdWplcmVzX2FsdGFzKSA6IG5vIHNlIHB1ZG8gZW5jb250cmFyIGxhIGZ1bmNpw7NuIFwidmlld1wiXG4ifQ== -->
-<pre><code>Error in view(mujeres_altas) : no se pudo encontrar la función &quot;view&quot;</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Finalmente otra funcion que sera util mas adelante es cambiar de
@@ -1844,6 +1882,10 @@ ordenan y muestran de forma alfabetica. Sin embargo, estos ccambios no
 se van a ver hasta el momento de graficar</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5NZXRhZGF0YSA8LSBmYWN0b3IoTWV0YWRhdGEkVHJlYXRtZW50LCBsZXZlbHMgPSBjKFwiTG93IFBcIiwgXCJGb3NmYXRvXCIsIFwiRm9zZml0b1wiLCBcIlBpL1BoaSBtaXhcIiksIG9yZGVyZWQgPSBUUlVFKVxuYGBgIn0= -->
+<pre class="r"><code>
+Metadata &lt;- factor(Metadata$Treatment, levels = c(&quot;Low P&quot;, &quot;Fosfato&quot;, &quot;Fosfito&quot;, &quot;Pi/Phi mix&quot;), ordered = TRUE)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <div id="ejercicio" class="section level3">
@@ -1863,14 +1905,336 @@ las plantas <em>wid type</em> con <em>tip count</em> menor a
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxLiBcblBsYW50YXMgPC0gUGxhbnRhc1ssYygxLDIsMyw0LDUsMTUsMTYsNiw3LDgsOSwxMCwxMSwxMiwxMywxNCldXG5cbiMgMi5cblBsYW50YXMgPC0gUGxhbnRhc1tvcmRlcihQbGFudGFzWyw5XSxkZWNyZWFzaW5nID0gVFJVRSksXVxuXG4jIDMuXG5QbGFudGFzJFBsYW50X1R5cGVbUGxhbnRhcyRQbGFudF9UeXBlID09IFwiTm8gUGxhbnRcIl0gPC0gXCJCdWxrIFNvaWxcIlxuUGxhbnRhcyRUcmVhdG1lbnRbUGxhbnRhcyRUcmVhdG1lbnQgPT0gXCJDb250cm9sXCJdIDwtIFwiUGlcIlxuXG4jIDQuXG5wbGFudGFzX3d0IDwtIFBsYW50YXNbd2hpY2goUGxhbnRhcyRQbGFudF9UeXBlID09IFwiV2lsZCBUeXBlXCIgJiBQbGFudGFzJHJvb3RfdGlwX2NvdW50IDwgMTAwKSxdXG5cblZpZXcocGxhbnRhc193dClcblxuYGBgIn0= -->
+<pre class="r"><code># 1. 
+Plantas &lt;- Plantas[,c(1,2,3,4,5,15,16,6,7,8,9,10,11,12,13,14)]
+
+# 2.
+Plantas &lt;- Plantas[order(Plantas[,9],decreasing = TRUE),]
+
+# 3.
+Plantas$Plant_Type[Plantas$Plant_Type == &quot;No Plant&quot;] &lt;- &quot;Bulk Soil&quot;
+Plantas$Treatment[Plantas$Treatment == &quot;Control&quot;] &lt;- &quot;Pi&quot;
+
+# 4.
+plantas_wt &lt;- Plantas[which(Plantas$Plant_Type == &quot;Wild Type&quot; &amp; Plantas$root_tip_count &lt; 100),]
+
+View(plantas_wt)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+</div>
+<div id="manipulación-de-datos-usando-dplyr" class="section level1">
+<h1>Manipulación de datos usando dplyr</h1>
+<p>Dyplr es uno de los paquetes incluidos en el tidyverse y su funcion
+principal es la manipulacion y modificacion de tablas. Con este paquete
+se pueden hacer varias de las funciones que ya aprendimos y muchas otras
+mas. Sin embargo, la principal diferencia ente R base y dplyr es la
+capacidad de usar pipng al momento de hacer codigo</p>
+<div id="subset-de-datos-1" class="section level2">
+<h2>Subset de datos</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQb3IgZmlsYXMgKGZpbHRlcikgeSBjb2x1bW5hcyAoc2VsZWN0KVxuXG5maWx0ZXIoUm9lZG9yZXMsIHllYXIgPT0gMTk5NSlcbnNlbGVjdChSb2Vkb3JlcywgbW9udGgsIHNwZWNpZXMsIGdlbnVzKSAjIG5vIHNlIG5lY2VzaXRhIGVsIHNpZ25vIGRlIGRvbGFyZXMgY29uIGVzdGUgcGFxdWV0ZVxuXG5zZWxlY3QoUm9lZG9yZXMsIC1yZWNvcmRfaWQsIC1kYXkpICMgZXN0ZSBjb2RpZ28gc2lydmUgcGFyYSBxdWl0YXIgZXNhcyBjb2x1bW5hcyBjb24gZWwgc2lnbm8gZGUgbWVub3M6IC1cblxuYGBgIn0= -->
+<pre class="r"><code># Por filas (filter) y columnas (select)
+
+filter(Roedores, year == 1995)
+select(Roedores, month, species, genus) # no se necesita el signo de dolares con este paquete
+
+select(Roedores, -record_id, -day) # este codigo sirve para quitar esas columnas con el signo de menos: -
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="creando-un-nuevo-objeto-con-estos-comandos" class="section level3">
+<h3>Creando un nuevo objeto con estos comandos</h3>
+<p>Ahora veremos como usar la funcion de piping</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUm9lZF9taW5pIDwtIFJvZWRvcmVzICU+JSAjIGZ1bmNpb25hIGNvbW8gdW5hIGNhZGVuYSBxdWUgdW5lIHZhcmlhcyBmdW5jaW9uZXMganVudGFzXG4gIGZpbHRlcih3ZWlnaHQgPC0gNSkgJT4lICMgRWwgcmVzdWx0YWRvIGRlIGVzYSBmdW5jaW9uIGVzIGVsIGlucHV0IGRlZSBsYSBzaWd1aWVudGVcbiAgc2VsZWN0KHNwZWNpZXNfaWQsIHNleCwgd2VpZ2h0KSAjIE1hcyBmYWNpbCBkZSBsZWVyIHkgbm8gdGllbmVzIHF1ZSBjcmVhciBudWV2b3Mgb2JqZXRvcyBwYXJhIGNhZGEgY29tYW5kb1xuXG5gYGAifQ== -->
+<pre class="r"><code>Roed_mini &lt;- Roedores %&gt;% # funciona como una cadena que une varias funciones juntas
+  filter(weight &lt;- 5) %&gt;% # El resultado de esa funcion es el input dee la siguiente
+  select(species_id, sex, weight) # Mas facil de leer y no tienes que crear nuevos objetos para cada comando
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYGZpbHRlcigpYDpcbuKEuSBJbiBhcmd1bWVudDogYHdlaWdodCA8LSA1YC5cbkNhdXNlZCBieSBlcnJvcjpcbiEgYC4uMWAgbXVzdCBiZSBhIGxvZ2ljYWwgdmVjdG9yLCBub3QgdGhlIG51bWJlciA1LlxuQmFja3RyYWNlOlxuICAxLiBSb2Vkb3JlcyAlPiUgZmlsdGVyKHdlaWdodCA8LSA1KSAlPiUgLi4uXG4gMTAuIGRwbHlyOjo6ZHBseXJfaW50ZXJuYWxfZXJyb3IoLi4uKVxuIn0= -->
+<pre><code>Error in `filter()`:
+ℹ In argument: `weight &lt;- 5`.
+Caused by error:
+! `..1` must be a logical vector, not the number 5.
+Backtrace:
+  1. Roedores %&gt;% filter(weight &lt;- 5) %&gt;% ...
+ 10. dplyr:::dplyr_internal_error(...)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="ejercicio-1" class="section level3">
+<h3>Ejercicio</h3>
+<p>Usando una estructura de codigo similar a la anterior quiero que
+ahora filtren a los mega roedores con un peso mayor a 200 y que solo
+sean machos. Por ultimo quiero que solo se muestren el anio de colecta,
+species_id y el peso.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUm9lZF9tZWdhIDwtIFJvZWRvcmVzICU+JVxuICBmaWx0ZXIod2VpZ2h0ID49IDIwMCkgJT4lXG4gIGZpbHRlcihzZXggPT0gTSkgJT4lXG4gIHNlbGVjdCh5ZWFyLCBzcGVjaWVzX2lkLCB3ZWlnaHQpXG5cbmBgYCJ9 -->
+<pre class="r"><code>Roed_mega &lt;- Roedores %&gt;%
+  filter(weight &gt;= 200) %&gt;%
+  filter(sex == M) %&gt;%
+  select(year, species_id, weight)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYGZpbHRlcigpYDpcbuKEuSBJbiBhcmd1bWVudDogYHNleCA9PSBNYC5cbkNhdXNlZCBieSBlcnJvcjpcbiEgb2JqZXRvICdNJyBubyBlbmNvbnRyYWRvXG5CYWNrdHJhY2U6XG4gMS4gLi4uICU+JSBzZWxlY3QoeWVhciwgc3BlY2llc19pZCwgd2VpZ2h0KVxuIDQuIGRwbHlyOjo6ZmlsdGVyLmRhdGEuZnJhbWUoLiwgc2V4ID09IE0pXG4gNS4gZHBseXI6OjpmaWx0ZXJfcm93cyguZGF0YSwgZG90cywgYnkpXG4gNi4gZHBseXI6OjpmaWx0ZXJfZXZhbCguLi4pXG4gOC4gbWFzayRldmFsX2FsbF9maWx0ZXIoZG90cywgZW52X2ZpbHRlcilcbiA5LiBkcGx5ciAobG9jYWwpIGV2YWwoKVxuIn0= -->
+<pre><code>Error in `filter()`:
+ℹ In argument: `sex == M`.
+Caused by error:
+! objeto &#39;M&#39; no encontrado
+Backtrace:
+ 1. ... %&gt;% select(year, species_id, weight)
+ 4. dplyr:::filter.data.frame(., sex == M)
+ 5. dplyr:::filter_rows(.data, dots, by)
+ 6. dplyr:::filter_eval(...)
+ 8. mask$eval_all_filter(dots, env_filter)
+ 9. dplyr (local) eval()</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="agregar-una-nueva-columna-calculada" class="section level2">
+<h2>Agregar una nueva columna calculada</h2>
+<p>Para calcular nuevas columnas se puede usar la funcion
+<em>mutate</em>. En esta seccion de codigo estaremos usando ademas
+funciones del paquete units.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUm9lZG9yZXMgJT4lXG4gIG11dGF0ZSh3ZWlnaHRfa2cgPSB3ZWlnaHQvMTAwMCkgIyB1c2FuZG8gbGFzIHVuaWRhZGVzIG9yaWdpbmFlcyB5IHNpbiBlbCBwYXF1ZXRlXG5cbmlzLm5hKFJvZWRvcmVzJGhpbmRmb290X2xlbmd0aCkgIyBpcy5uYSBwZXJtaXRlIG9ic2VydmFyIHF1ZSB2YWxvcmVzIGVzdGFuIHZhY2lvcyB5IGN1YWxlcyBub1xuXG4jIyBVc2FuZG8gcGFxdWV0ZSB1bml0XG5Sb2Vkb3JlcyAlPiVcbiAgZmlsdGVyKCFpcy5uYSh3ZWlnaHQpKSAlPiUgIyBwZXJtaXRlIGJvcnJhciB0b2RvcyBsb3MgTkEgeSBlbCBzaWdvICEgZmlsdHJhIGxvcyB2YWxvcmVzIHF1ZSBOTyEgZXN0YW4gdmFjaW9zXG4gIHNlbGVjdCh3ZWlnaHQpICU+JVxuICBtdXRhdGUod2VpZ2h0X2tnID0gdWQuY29udmVydCh3ZWlnaHQsIFwiZ1wiLCBcImtnXCIpKSAlPiUgIyBhdXRvbWF0aWNhbWVudGUgY2FtYmlhIGRvcyB2YWxvcmVzXG4gIG11dGF0ZSh3ZWlnaHRfbGIgPSB1ZC5jb252ZXJ0KHdlaWdodCwgXCJnXCIsIFwibGJcIikpICMgY2FtYmlhIGEgbGlicmFzXG5cbiMjIG5vIHNlIGd1YXJkbyB0ZW5kcmlhbW9zIHF1ZSBhc2lnbmFyIGVzdGUgY29kaWdvIGEgdW4gb2JqZXRvXG5gYGAifQ== -->
+<pre class="r"><code>Roedores %&gt;%
+  mutate(weight_kg = weight/1000) # usando las unidades originaes y sin el paquete
+
+is.na(Roedores$hindfoot_length) # is.na permite observar que valores estan vacios y cuales no
+
+## Usando paquete unit
+Roedores %&gt;%
+  filter(!is.na(weight)) %&gt;% # permite borrar todos los NA y el sigo ! filtra los valores que NO! estan vacios
+  select(weight) %&gt;%
+  mutate(weight_kg = ud.convert(weight, &quot;g&quot;, &quot;kg&quot;)) %&gt;% # automaticamente cambia dos valores
+  mutate(weight_lb = ud.convert(weight, &quot;g&quot;, &quot;lb&quot;)) # cambia a libras
+
+## no se guardo tendriamos que asignar este codigo a un objeto</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="agrupar-y-analizar-datos" class="section level2">
+<h2>Agrupar y analizar datos</h2>
+<p>Otra funcion muy util es la de <em>group_by</em> en la que se pueden
+agrupar los datos para calcular ciertas medidas de estadistica
+descriptiva <em>summarize</em>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIE1lZGlhIHkgZGVzdmlhY2lvbiBlc3RhbmRhclxuXG5TdW1tIDwtIFJvZWRvcmVzICU+JVxuICBncm91cF9ieShzZXgsIHNwZWNpZXNfaWQpICU+JSAjIHZhcmlhYmxlcyBwb3IgbGFzIHF1ZSBzZSB2YW4gYSBhZ3J1cGFyIGxvcyBkYXRvcyBNRVRBREFUT1NcbiAgc3VtbWFyaXplKG1lYW5fd2VpZ2h0ID0gbWVhbih3ZWlnaHQsIG5hLnJtID0gVFJVRSksIFxuICAgICAgICAgICAgc2Rfd2VpZ2h0ID0gc2Qod2VpZ2h0LCBuYS5ybSA9IFRSVUUpKSAjIGVuIGVzdGUgY2FzbyBsZSBwZWRpbW9zIGVzcGVjaWZpY2FtZW50ZSBtZWRpYSB5IGRlc3ZpYWNpb24gZXN0YW5kYXJcblxuXG4jIyBSZW1vdmVyIHZhcmlhYmxlcyBkZSBsYXMgcXVlIG5vIHNlIHRlbmdhIGVsIHBlc29cblxuU3VtbSA8LSBSb2Vkb3JlcyAlPiVcbiAgZmlsdGVyKCFpcy5uYShzZXgpLCAhaXMubmEod2VpZ2h0KSkgJT4lICMgZmlsdHJhciBOQVxuICBncm91cF9ieShzZXgsIHNwZWNpZXNfaWQpICU+JVxuICBzdW1tYXJpemUobWVhbl93ZWlnaHQgPSBtZWFuKHdlaWdodCksXG4gICAgICAgICAgICBzZF93ZWlnaHQgPSBzZCh3ZWlnaHQpKVxuXG4jIyMgQ29udGFyXG5cbiMgQ29udGFyOiBjb3VudCgpIHZzLm4oKVxuXG5jb3VudChSb2Vkb3Jlcywgc3BlY2llc19pZCwgc2V4KSAjIGNvdW50IGp1bnRhIGxhIGZ1bmNpb24gZ3JvdXAgYnkgeSBzdW1tYXJpemUgbj1uIGVuIHVuIHNvbG8gY29tYW5kb1xuXG5Sb2Vkb3JlcyAlPiVcbiAgZmlsdGVyKCFpcy5uYShzZXgpLCAhaXMubmEod2VpZ2h0KSkgJT4lIFxuICBncm91cF9ieShzZXgsIHNwZWNpZXNfaWQpICU+JVxuICBzdW1tYXJpemUobWVhbl93ZWlnaHQgPSBtZWFuKHdlaWdodCksXG4gICAgICAgICAgICBzZF93ZWlnaHQgPSBzZCh3ZWlnaHQpLFxuICAgICAgICAgICAgbiA9IG4oKSkgIyBuKCkgY3VlbnRhIGxvcyBlbGVtZW50b3MgZW5jb250cmFkb3MgZW4gZWwgZ3J1cG9cblxuYGBgIn0= -->
+<pre class="r"><code>### Media y desviacion estandar
+
+Summ &lt;- Roedores %&gt;%
+  group_by(sex, species_id) %&gt;% # variables por las que se van a agrupar los datos METADATOS
+  summarize(mean_weight = mean(weight, na.rm = TRUE), 
+            sd_weight = sd(weight, na.rm = TRUE)) # en este caso le pedimos especificamente media y desviacion estandar
+
+
+## Remover variables de las que no se tenga el peso
+
+Summ &lt;- Roedores %&gt;%
+  filter(!is.na(sex), !is.na(weight)) %&gt;% # filtrar NA
+  group_by(sex, species_id) %&gt;%
+  summarize(mean_weight = mean(weight),
+            sd_weight = sd(weight))
+
+### Contar
+
+# Contar: count() vs.n()
+
+count(Roedores, species_id, sex) # count junta la funcion group by y summarize n=n en un solo comando
+
+Roedores %&gt;%
+  filter(!is.na(sex), !is.na(weight)) %&gt;% 
+  group_by(sex, species_id) %&gt;%
+  summarize(mean_weight = mean(weight),
+            sd_weight = sd(weight),
+            n = n()) # n() cuenta los elementos encontrados en el grupo
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Estas son otras funcione utiles que se pueden usar dentro del comando
+de <em>summarize</em>: * Center: mean(), median() * Spread: sd(), IQR(),
+mad() * Count: n(), n_distinct() * Range: min(), max(), quantile() *
+Position: first(), last(), nth() * Logical: any(), all()</p>
+<div id="ejercicios" class="section level3">
+<h3>Ejercicios</h3>
+<ol style="list-style-type: decimal">
+<li><p>Usando el dataframe <em>Roedores</em> crear una tabla filtrando
+valores NA de peso, agrupando por especie y resumiendo en
+cuartiles.</p></li>
+<li><p>Usando el dataframe de <em>Plantas</em> crear una tabla agrupando
+por planta y tratamiento y resumiendo media y desviacion estandar de la
+concentracion de Pi en raices y biomasa aerea. <em>roots_Pi</em> y
+<em>shoots_Pi</em></p></li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAyLlxucGxhbnQgPC0gUGxhbnRhcyAlPiVcbiAgZmlsdGVyKCFpcy5uYShQbGFudF9UeXBlKSwgIWlzLm5hKFRyZWF0bWVudCksICFpcy5uYShzaG9vdF9QaSksICFpcy5uYShyb290X1BpKSkgJT4lXG4gIGdyb3VwX2J5KFBsYW50X1R5cGUsIFRyZWF0bWVudCkgJT4lXG4gIHN1bW1hcml6ZShtZWRpYV9yYWl6ID0gbWVhbihyb290X1BpKSxcbiAgICAgICAgICAgIHNkX3JhaXogPSBzZChyb290X1BpKSxcbiAgICAgICAgICAgIG1lZGlhX2Jpb21hc2EgPSBtZWFuKHNob290X1BpKSxcbiAgICAgICAgICAgIHNkX2Jpb21hc2EgPSBzZChzaG9vdF9QaSkpXG5cbmBgYCJ9 -->
+<pre class="r"><code># 2.
+plant &lt;- Plantas %&gt;%
+  filter(!is.na(Plant_Type), !is.na(Treatment), !is.na(shoot_Pi), !is.na(root_Pi)) %&gt;%
+  group_by(Plant_Type, Treatment) %&gt;%
+  summarize(media_raiz = mean(root_Pi),
+            sd_raiz = sd(root_Pi),
+            media_biomasa = mean(shoot_Pi),
+            sd_biomasa = sd(shoot_Pi))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ1BsYW50X1R5cGUnLiBZb3UgY2FuIG92ZXJyaWRlIHVzaW5nIHRoZSBgLmdyb3Vwc2AgYXJndW1lbnQuXG4ifQ== -->
+<pre><code>`summarise()` has grouped output by &#39;Plant_Type&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="ordenar-los-datos" class="section level2">
+<h2>Ordenar los datos</h2>
+<p>Usando <em>select</em> y <em>arrange</em> se puede modificar el orden
+de columnas y filas respectivamente con diplyr.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIyBDYW1iaWFyIGRlIG9yZGVuIGxhcyBjb2x1bW5hc1xuXG5Sb2Vkb3JlcyAlPiVcbiAgZmlsdGVyKCFpcy5uYShzZXgpLCAhaXMubmEod2VpZ2h0KSkgJT4lXG4gIHNlbGVjdChyZWNvcmRfaWQsIHNwZWNpZXNfaWQsIHdlaWdodDp0YXhhKSAjIGxvcyBzaWdub3MgOiBzaXJ2ZSBwYXJhIGZpbHRyYXIgZGVzZGUgd2VpZ2h0IGhhc3RhIHRheGFcblxuIyMgT3JkZW5hciBhcnJhbmdlKCk6IHBvciBmaWxhc1xuXG5Sb2Vkb3JlcyAlPiVcbiAgZmlsdGVyKCFpcy5uYShzZXgpLCAhaXMubmEod2VpZ2h0KSkgJT4lIFxuICBncm91cF9ieShzZXgsIHNwZWNpZXNfaWQpICU+JVxuICBzdW1tYXJpemUobWVhbl93ZWlnaHQgPSBtZWFuKHdlaWdodCksXG4gICAgICAgICAgICBzZF93ZWlnaHQgPSBzZCh3ZWlnaHQpLFxuICAgICAgICAgICAgbiA9IG4oKSkgJT4lXG4gIGFycmFuZ2UobWVhbl93ZWlnaHQpICMgZWwgb3JkZW4gZXMgZGUgbWVub3IgYSBtYXlvclxuXG5Sb2Vkb3JlcyAlPiVcbiAgZmlsdGVyKCFpcy5uYShzZXgpLCAhaXMubmEod2VpZ2h0KSkgJT4lIFxuICBncm91cF9ieShzZXgsIHNwZWNpZXNfaWQpICU+JVxuICBzdW1tYXJpemUobWVhbl93ZWlnaHQgPSBtZWFuKHdlaWdodCksXG4gICAgICAgICAgICBzZF93ZWlnaHQgPSBzZCh3ZWlnaHQpLFxuICAgICAgICAgICAgbiA9IG4oKSkgJT4lXG4gIGFycmFuZ2UoZGVzYyhtZWFuX3dlaWdodCkpICMgZGVzYyBzaWduaWZpY2EgZGVzY2VuZGluZyBwb3IgbG8gcXVlIHNlIG11ZXN0cmEgbGEgdGFibGEgZGUgbWF5b3IgYSBtZW5vclxuXG5gYGAifQ== -->
+<pre class="r"><code>
+## Cambiar de orden las columnas
+
+Roedores %&gt;%
+  filter(!is.na(sex), !is.na(weight)) %&gt;%
+  select(record_id, species_id, weight:taxa) # los signos : sirve para filtrar desde weight hasta taxa
+
+## Ordenar arrange(): por filas
+
+Roedores %&gt;%
+  filter(!is.na(sex), !is.na(weight)) %&gt;% 
+  group_by(sex, species_id) %&gt;%
+  summarize(mean_weight = mean(weight),
+            sd_weight = sd(weight),
+            n = n()) %&gt;%
+  arrange(mean_weight) # el orden es de menor a mayor
+
+Roedores %&gt;%
+  filter(!is.na(sex), !is.na(weight)) %&gt;% 
+  group_by(sex, species_id) %&gt;%
+  summarize(mean_weight = mean(weight),
+            sd_weight = sd(weight),
+            n = n()) %&gt;%
+  arrange(desc(mean_weight)) # desc significa descending por lo que se muestra la tabla de mayor a menor
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="ejercicio-2" class="section level3">
+<h3>Ejercicio</h3>
+<ol style="list-style-type: decimal">
+<li>Usando el data frame de <em>Plantas</em> seleccionar unicamente tipo
+de planta y tratamiento junto con las variables relacionadas con raices
+y ordenarlas de menor a mayor por el peso de la raiz</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUGxhbnRhcyAlPiVcbiAgc2VsZWN0KFBsYW50X1R5cGUsIFRyZWF0bWVudCwgUm9vdHMsIHJvb3RfZGlhbV9tZWFuOnJvb3RfUGkpICU+JVxuICBhcnJhbmdlKFJvb3RzKVxuICBcbmBgYCJ9 -->
+<pre class="r"><code>Plantas %&gt;%
+  select(Plant_Type, Treatment, Roots, root_diam_mean:root_Pi) %&gt;%
+  arrange(Roots)
+  </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="modificar-los-dataframes" class="section level2">
+<h2>Modificar los dataframes</h2>
+<p>En dplyr la funcion <em>pivot()</em> es parecido a la función de
+<em>transpose</em> en R base para cambiar de filas a columnas y
+viceversa. Sin embargo en este caso ademas se agrupan los valores:</p>
+<ul>
+<li><em>pivot_wider():</em> Para modificar de filas a columnas</li>
+<li><em>pivot_longer():</em> Modificar de columnas a filas</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgcGl2b3RfbG9uZ2VyKCk6IHdpZGVyIGEgbG9uZ2VyLCB2YW1vcyBhIHJldmVydGlyIGxvIHF1ZSBoaWNpbW9zXG5Sb2Vkb3Jlc19sb25nIDwtIFJvZWRvcmVzX3dpZGVyICU+JVxuICBwaXZvdF9sb25nZXIoLXBsb3RfaWQsICMgcXVpdGFyIHBsb3RfaWQgcG9ycXVlIG5vIGVzIHVuIGdlbmVybyBvIHRhbWJpZW4gc2UgcHVlZGUgaGFjZXIgdXNhbmRvIGNvbHVtbmFzIDI6MTFcbiAgICAgICAgICAgICAgIG5tZXNfdG8gPSBcImdlbnVzXCIsXG4gICAgICAgICAgICAgICB2YWx1ZXNfdG8gPSBcIm1lYW5fd2VpZ2h0XCIpICU+JVxuICBmaWx0ZXIoIWlzLm5hKG1lYW5fd2VpZ2h0KSlcblxuYGBgIn0= -->
+<pre class="r"><code>## pivot_longer(): wider a longer, vamos a revertir lo que hicimos
+Roedores_long &lt;- Roedores_wider %&gt;%
+  pivot_longer(-plot_id, # quitar plot_id porque no es un genero o tambien se puede hacer usando columnas 2:11
+               nmes_to = &quot;genus&quot;,
+               values_to = &quot;mean_weight&quot;) %&gt;%
+  filter(!is.na(mean_weight))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYHBpdm90X2xvbmdlcigpYDpcbiEgQXJndW1lbnRzIGluIGAuLi5gIG11c3QgYmUgdXNlZC5cbuKcliBQcm9ibGVtYXRpYyBhcmd1bWVudDpcbuKAoiBubWVzX3RvID0gXCJnZW51c1wiXG7ihLkgRGlkIHlvdSBtaXNzcGVsbCBhbiBhcmd1bWVudCBuYW1lP1xuQmFja3RyYWNlOlxuIDEuIC4uLiAlPiUgZmlsdGVyKCFpcy5uYShtZWFuX3dlaWdodCkpXG4gMy4gdGlkeXI6OnBpdm90X2xvbmdlciguLCAtcGxvdF9pZCwgbm1lc190byA9IFwiZ2VudXNcIiwgdmFsdWVzX3RvID0gXCJtZWFuX3dlaWdodFwiKVxuIn0= -->
+<pre><code>Error in `pivot_longer()`:
+! Arguments in `...` must be used.
+✖ Problematic argument:
+• nmes_to = &quot;genus&quot;
+ℹ Did you misspell an argument name?
+Backtrace:
+ 1. ... %&gt;% filter(!is.na(mean_weight))
+ 3. tidyr::pivot_longer(., -plot_id, nmes_to = &quot;genus&quot;, values_to = &quot;mean_weight&quot;)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="ejercicio-3" class="section level3">
+<h3>Ejercicio</h3>
+<p>Usando la tabla <em>Roedores</em> crear una tabla filtrando valores
+vacios en longitud de la pata, agrupando por tipo de plot y genero y
+obteniendo el promedio de la longitud de la pata. Finalmente modifica la
+tabla para que las columnas sean los generos.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUm9lZG9yZXNfd2lkZXIgPC0gUm9lZG9yZXMgJT4lXG4gIGZpbHRlcighaXMubmEoaGluZGZvb3RfbGVuZ3RoKSkgJT4lXG4gIGdyb3VwX2J5KHBsb3RfdHlwZSwgZ2VudXMpICU+JVxuICBzdW1tYXJpc2UobWVhbl9mb290ID0gbWVhbihoaW5kZm9vdF9sZW5ndGgpKSAlPiVcbiAgcGl2b3Rfd2lkZXIobmFtZXNfZnJvbSA9IGdlbnVzLFxuICAgICAgICAgICAgICAgdmFsdWVzX2Zyb20gPSBtZWFuX2Zvb3QpXG5cbmBgYCJ9 -->
+<pre class="r"><code>Roedores_wider &lt;- Roedores %&gt;%
+  filter(!is.na(hindfoot_length)) %&gt;%
+  group_by(plot_type, genus) %&gt;%
+  summarise(mean_foot = mean(hindfoot_length)) %&gt;%
+  pivot_wider(names_from = genus,
+               values_from = mean_foot)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3Bsb3RfdHlwZScuIFlvdSBjYW4gb3ZlcnJpZGUgdXNpbmcgdGhlIGAuZ3JvdXBzYCBhcmd1bWVudC5cbiJ9 -->
+<pre><code>`summarise()` has grouped output by &#39;plot_type&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+</div>
+<div id="guardar-los-datos" class="section level1">
+<h1>Guardar los datos</h1>
+<p>En esta clase hicimos tablas pero ahora como las guardamos?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSIGJhc2VcbndyaXRlLmNzdihSb2Vkb3Jlc193aWRlLFwifi9DdXJzb1IvQ3Vyc29SZ2l0L0RhdG9zX1Byb2Nlc2Fkb3MvUm9lZG9yZXNfZ2VuX3Blc28uY3N2XCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code># R base
+write.csv(Roedores_wide,&quot;~/CursoR/CursoRgit/Datos_Procesados/Roedores_gen_peso.csv&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogbm8gZnVlIHBvc2libGUgYWJyaXIgZWwgYXJjaGl2byAnQzovVXNlcnMvcHJpbnZlc3RpZ2FjaW9uL0RvY3VtZW50cy9DdXJzb1IvQ3Vyc29SZ2l0L0RhdG9zX1Byb2Nlc2Fkb3MvUm9lZG9yZXNfZ2VuX3Blc28uY3N2JzogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeUVycm9yIGluIGZpbGUoZmlsZSwgaWZlbHNlKGFwcGVuZCwgXCJhXCIsIFwid1wiKSkgOiBcbiAgbm8gc2UgcHVlZGUgYWJyaXIgbGEgY29uZXhpw7NuXG4ifQ== -->
+<pre><code>Warning: no fue posible abrir el archivo &#39;C:/Users/prinvestigacion/Documents/CursoR/CursoRgit/Datos_Procesados/Roedores_gen_peso.csv&#39;: No such file or directoryError in file(file, ifelse(append, &quot;a&quot;, &quot;w&quot;)) : 
+  no se puede abrir la conexión</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
-</div>
-</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1hbmlwdWxhY2nDs24gZGUgZGF0b3MiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIEludHJvZHVjY2nDs24NCg0KRW4gZXN0ZSBtb2R1bG8gdmFtb3MgYSBlbXBlemFyIGhhY2llbmRvIGVzdGFkaXN0aWNhIGJhc2ljYSBjb24gUlN0dWRpby4gU2luIGVtYmFyZ28sIGFudGVzIGRlIGhhY2VyIGN1YWxxdWllciBhbmFsaXNpcyBlc3RhZGlzdGljbyBlcyBuZWNlc2FyaW8gcXVlIHNlcGFtb3MgY29tbyBwb2RlbW9zIG1hbmlwdWxhciBudWVzdHJvcyBkYXRvcyBtb2RpZmljYW5kbyB0YWJsYXMgeSBtYXRyaWNlcy4gQSBwYXJ0aXIgZGUgYWhvcmEgdG9kYXMgbGFzIGFjdGl2aWRhZGVzIHF1ZSBoYWdhbW9zIHNlcmFuIHVzYW5kbyBkYXRhIGZyYW1lcyB5IHVzYW5kbyB0b2RvIGxvIGFwcmVuZGlkbyBvcmdhbml6YXJlbW9zIG51ZXN0cmFzIG5vdGFzLg0KDQpgYGB7cn0NCiMgTGlicmVyaWFzDQoNCmxpYnJhcnkoZHBseXIpIyBtYW5pcHVsYWNpb24gZGUgZGF0b3MsIGZ1bmNpb25lcywgbW9kaWZpY2FyIGNvbHVtbmFzLCBmaWx0cmFyLCByZW9yZGVuYXIsIGNhbGN1bG9zLCBldGMuDQpsaWJyYXJ5KHRpZHlyKSAjIG1vZGlmaWNhbmRvIGxhcyBmdW5jaW9uZXMgZGUgZGF0b3MNCmxpYnJhcnkocmVhZHIpICMgbGVlciB5IGVzY3JpYmlyIGNzdnMNCmxpYnJhcnkodWR1bml0czIpICMgY29udmVyc2nDs24gZGUgdW5pZGFkZXMNCg0KIyBEYXRhDQoNCkFjaWRvcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvQWNpZG9zX2V4LmNzdiIpDQoNCk1lZGlkYXNfY2xhc2UgPC0gcmVhZC5jc3YoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL0NsYXNzLWRhdGEuY3N2IikNCg0KTWV0YWRhdGEgPC0gcmVhZC5jc3YoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL0V4dWRfbWV0YWRhdGEuY3N2IikNCg0KUGxhbnRhcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvVGFibGFfcGxhbnRhcy5jc3YiKQ0KDQpSb2Vkb3JlcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvUm9lZG9yZXMuY3N2IikNCg0KYGBgDQojIE1vZGlmaWNhY2nDs24gZGUgZGF0b3MgY29uIFIgYmFzZQ0KDQpTaSBiaWVuIGVsIHBhcXVldGUgbWFzIGNvbXVuIHkgdXRpbCBwYXJhIG1hbmlwdWxhciBkYXRvcyBlcyB0aWR5dmVyc2UsIFIgYmFzZSB0YW1iaWVuIHRpZW5lbiB2YXJpYXMgZnVuY2lvbmVzIG11eSB1dGlsZXMgcGFyYSBoYWNlciBtb2RpZmljYWNpb25lcyBiYXNpY2FzLg0KDQojIyDCv0NvbW8gY2hlY2FyIGEgZXN0cnVjdHVyYSBkZSBudWVzdHJvcyBkYXRvcz8NCg0KYGBge3J9DQpzdHIoTWVkaWRhc19jbGFzZSkgIyBFc3RydWN0dXJhIGludGVybmEsIHRpcG8gZGUgY2FkYSB2YXJpYWJsZSB5IG5vbWJyZXMgZGUgbGFzIHZhcmlhYmxlcw0KDQpkaW0oTWVkaWRhc19jbGFzZSkgIyBGaWxhcyB5IGNvbHVtbmFzDQpucm93KE1lZGlkYXNfY2xhc2UpIDsgbmNvbChNZWRpZGFzX2NsYXNlKSAjIHNlcGFyYXIgY29tYW5kbyBjb3J0b3MgZXMgcHVudG8geSBjb21hOiA7DQoNCmhlYWQoTWVkaWRhc19jbGFzZSkgIyBJbXByaW1lIGxhcyBwcmltZXJhcyA2IGZpbGFzIGRlIHVuYSB0YWJsYQ0KDQpgYGANCg0KIyMgUmVvcmRlbmFyIGRhdG9zDQoNClNpIGJpZW4gbmkgbGEgZmlsYSBuaSBsYSBjb2x1bW5hIG5vIG5lY2VzaXRhIHJlYWxtZW50ZSB1biBvcmRlbiBwYXJ0aWN1bGFyIGFsIG1vbWVudG8gZGUgYW5hbGl6YXIgbG9zIGRhdG9zLCBtdWNoYXMgdmVjZXMgZXMgY29udmVuaWVudGUgdmlzdWFsbWVudGUuDQoNCmBgYHtyfQ0KIyBSZW9yZGVuYXIgY29sdW1uYXMNCg0KTWVkaWRhc19jbGFzZSA8LSBNZWRpZGFzX2NsYXNlWyxjKDEsOSw0LDIsMyw1LDYsNyw4KV0NCg0KIyMjIEVqZXJjaWNpbzogcmVvcmRlbmFyIG51ZXZhbWVudGUgdG9kYXMgbGFzIGNvbHVtbmFzIG1lbm9zIElEIGVuIG9yZGVuIGFsZmFiZXRpY28uDQoNCiMgUmVvcmRlbmFyIGRlIG1hcyBhIG1lbm9zIGxhIHRhYmxhDQoNCkFjaWRvcyA8LSBBY2lkb3Nbb3JkZXIoQWNpZG9zWywyXSxkZWNyZWFzaW5nID0gVFJVRSksXQ0KDQpgYGANCg0KQXNpIG1pc21vIG11Y2hhcyB2ZWNlcyBlcyBjb252ZW5pZW50ZSBjYW1iaWFyIGZpbGFzIGEgY29sdW1uYXMgeSB2aWNldmVyc2EuIFBhcmEgZWxsbyB0ZW5lbW9zIGVsIGNvbWFuZG8gZGUgX3RyYW5zcG9zZSgpXw0KDQpgYGB7cn0NCiMgdCgpIHRyYW5zcG9zZQ0KDQpBY2lkb3MgPC0gYXMuZGF0YS5mcmFtZSh0KEFjaWRvcykpICMgdGFtYmllbiB0ZW5lbW9zIHF1ZSBlc3BlY2lmaWNhciBxdWUgdGlwbyBkZSBvYmpldG8gcXVlcmVtb3MgY29tbyByZXN1bHRhZG8NCg0KY29sbmFtZXMoQWNpZG9zKSA8LSBBY2lkb3NbMSxdICMgcmVub21icmFyIGxhcyBjb2x1bW5hcyBjb24gZWwgbm9tYnJlIGRlIGxvcyBhY2lkb3MNCg0KQWNpZG9zIDwtIEFjaWRvc1stMSxdICMgYm9ycmFyIGZpbGEgMQ0KDQpgYGANCg0KIyMgUmVub21icmFyIHZhcmlhYmxlcw0KDQpPdHJvIGNvbWFuZG8gbXV5IHV0aWwgcXVlIHRpZW5lIFIgZXMgZWwgZGUgY2FtYmlhciBlbCBub21icmUgZGUgdmFyaWFibGVzIGRlbnRybyBkZSBudWVzdHJvIGRhdGEgZnJhbWUuIEEgZGlmZXJlbmNpYSBkZSBleGNlbCwgZW4gUlN0dWRpbyB1bm8gbm8gcHVlZGUgY2FtYmlhciBkaXJlY3RhbWVudGUgbG9zIHZhbG9yZXMgZGUgdW5hIGNlbGRhIGRlbnRybyBkZSB1bmEgdGFibGEgcGFyYSBwcm90ZWdlciBsb3MgZGF0b3MuIFBhcmUgZWxsbyBzZSBwdWVkZSB1c2FyIGVsIHNpZyBjb21hbmRvOg0KDQpgYGB7cn0NCg0KTWV0YWRhdGEkUGxhbnRfdHlwZVtNZXRhZGF0YSRQbGFudF90eXBlID09ICJObyBQbGFudCJdIDwtICJCdWxrIFNvaWwiDQoNCiMjIyBFamVyY2ljaW86IFJlbm9tYnJlbiBlbiB0cmF0YW1pZW50byBQaSBhIEZvc2ZhdG8geSBQaGkgYSBGb3NmaXRvDQoNCk1ldGFkYXRhJFRyZWF0bWVudFtNZXRhZGF0YSRUcmVhdG1lbnQgPT0gIlBpIl0gPC0gIkZvc2ZhdG8iDQpNZXRhZGF0YSRUcmVhdG1lbnRbTWV0YWRhdGEkVHJlYXRtZW50ID09ICJQaGkiXSA8LSAiRm9zZml0byINCg0KYGBgDQojIyBTdWJzZXQgZGUgZGF0b3MNCg0KQSB2ZWNlcyBlcyBuZWNlc2FyaW8gYW5hbGl6YXIgbG9zIGRhdG9zIHBvciBzZXBhcmFkbyBwb3IgbG8gcXVlIGVzIHV0aWwgc2VsZWNjaW9uYXIgc29sbyBhbGd1bm9zIGRlIG51ZXN0cm9zIGRhdG9zIGJhc2Fkb3MgZW4gdW5hIG8gbWFzIHZhcmlhYmxlcy4NCg0KYGBge3J9DQojIFNlbGVjY2lvbmFyIGNpZXJ0YXMgY29sdW1uYXMNCg0KTWVkaWRhc19maWx0IDwtIE1lZGlkYXNfY2xhc2VbLGMoIklEIiwgIkhlaWdodC5jbSIsICJTZXgiKV0NCg0KIyBCYXNhZG8gZW4gdmFsb3JlcyBkZSBsYXMgdmFyaWFibGVzIChmaWxhcykNCg0KbXVqZXJlc19hbHRhcyA8LSBNZWRpZGFzX2NsYXNlW3doaWNoKE1lZGlkYXNfY2xhc2UkU2V4PT0iRiIgJiBNZWRpZGFzX2NsYXNlJEhlaWdodC5jbSA+IDE2NSksXQ0KDQpWaWV3KG11amVyZXNfYWx0YXMpDQoNCiMjIyBFamVyY2ljaW86IFNlbGVjY2lvbmFyIGhvbWJyZXMgY2FiZXpvbmVzLCBlcyBkZWNpciBjb24gbGEgY2lyY3VuZmVyZW5jaWEgbWFzIGRlIDYwIGNtDQoNCmhvbWJyZXNfY2FiZXpvbmVzIDwtIE1lZGlkYXNfY2xhc2Vbd2hpY2goTWVkaWRhc19jbGFzZSRTZXggPT0gIk0iICYgTWVkaWRhc19jbGFzZSRDaXJjdW1mZXJlbmNlSGVhZC5jb20gPiA2MCksXQ0KDQpWaWV3KGhvbWJyZXNfY2FiZXpvbmVzKQ0KDQpgYGANCkZpbmFsbWVudGUgb3RyYSBmdW5jaW9uIHF1ZSBzZXJhIHV0aWwgbWFzIGFkZWxhbnRlIGVzIGNhbWJpYXIgZGUgb3JkZW4gbG9zIGZhY3RvcmVzLiBVc3VhbG1lbnRlIGxvcyBmYWN0b3JlcyBkZW50cm8gZGUgdW5hIHZhcmlhYmxlIHNlIG9yZGVuYW4geSBtdWVzdHJhbiBkZSBmb3JtYSBhbGZhYmV0aWNhLiBTaW4gZW1iYXJnbywgZXN0b3MgY2NhbWJpb3Mgbm8gc2UgdmFuIGEgdmVyIGhhc3RhIGVsIG1vbWVudG8gZGUgZ3JhZmljYXINCg0KYGBge3J9DQoNCk1ldGFkYXRhIDwtIGZhY3RvcihNZXRhZGF0YSRUcmVhdG1lbnQsIGxldmVscyA9IGMoIkxvdyBQIiwgIkZvc2ZhdG8iLCAiRm9zZml0byIsICJQaS9QaGkgbWl4IiksIG9yZGVyZWQgPSBUUlVFKQ0KYGBgDQoNCiMjIyBFamVyY2ljaW8NCg0KQWwgZGF0YSBmcmFtZSBfUGxhbnRhXyBIYWNlciBsYXMgc2lndWllbnRlcyBtb2RpZmljYWNpb25lczoNCg0KMS4gQ2FtYmlhciBkZSBvcmRlbiBsYXMgY29sdW1uYSBwYXJhIHF1ZSBUT0MgeSBNQkMgc2VhbiBsYXMgcHJpbWVyYXMgdmFyaWFibGVzIHF1ZSBzZSB2ZW4gZGVzcHVlcyBkZSBsb3MgbWV0YWRhdG9zLg0KDQoyLiBSZW9yZ2FuaXphciBsYSB0YWJsYSBjb24gbGFzIHBsYW50YXMgY29uIG1heW9yIG1hc2EgZm9saWFyIGhhc3RhIGFycmliYS4gX3Nob290c18NCg0KMy4gRW4gdGlwbyBkZSBwbGFudGEgcmVub21icmFyIE5vIHBsYW50IGEgQnVsayBzb2lsIHkgZW4gdHJhdGFtaWVudG8gQ29udHJvbCBhIFBpLg0KDQo0LiBGaW5hbG1lbnRlIGNyZWFyIHVuIG51ZXZvIGRhdGEgZnJhbWUgZW4gZWwgcXVlIHNlbGVjY2lvbmVuIHRvZGFzIGxhcyBwbGFudGFzIF93aWQgdHlwZV8gY29uIF90aXAgY291bnRfIG1lbm9yIGEgMTAwLg0KDQpgYGB7cn0NCiMgMS4gDQpQbGFudGFzIDwtIFBsYW50YXNbLGMoMSwyLDMsNCw1LDE1LDE2LDYsNyw4LDksMTAsMTEsMTIsMTMsMTQpXQ0KDQojIDIuDQpQbGFudGFzIDwtIFBsYW50YXNbb3JkZXIoUGxhbnRhc1ssOV0sZGVjcmVhc2luZyA9IFRSVUUpLF0NCg0KIyAzLg0KUGxhbnRhcyRQbGFudF9UeXBlW1BsYW50YXMkUGxhbnRfVHlwZSA9PSAiTm8gUGxhbnQiXSA8LSAiQnVsayBTb2lsIg0KUGxhbnRhcyRUcmVhdG1lbnRbUGxhbnRhcyRUcmVhdG1lbnQgPT0gIkNvbnRyb2wiXSA8LSAiUGkiDQoNCiMgNC4NCnBsYW50YXNfd3QgPC0gUGxhbnRhc1t3aGljaChQbGFudGFzJFBsYW50X1R5cGUgPT0gIldpbGQgVHlwZSIgJiBQbGFudGFzJHJvb3RfdGlwX2NvdW50IDwgMTAwKSxdDQoNClZpZXcocGxhbnRhc193dCkNCg0KYGBgDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1hbmlwdWxhY2nDs24gZGUgZGF0b3MiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIEludHJvZHVjY2nDs24NCg0KRW4gZXN0ZSBtb2R1bG8gdmFtb3MgYSBlbXBlemFyIGhhY2llbmRvIGVzdGFkaXN0aWNhIGJhc2ljYSBjb24gUlN0dWRpby4gU2luIGVtYmFyZ28sIGFudGVzIGRlIGhhY2VyIGN1YWxxdWllciBhbmFsaXNpcyBlc3RhZGlzdGljbyBlcyBuZWNlc2FyaW8gcXVlIHNlcGFtb3MgY29tbyBwb2RlbW9zIG1hbmlwdWxhciBudWVzdHJvcyBkYXRvcyBtb2RpZmljYW5kbyB0YWJsYXMgeSBtYXRyaWNlcy4gQSBwYXJ0aXIgZGUgYWhvcmEgdG9kYXMgbGFzIGFjdGl2aWRhZGVzIHF1ZSBoYWdhbW9zIHNlcmFuIHVzYW5kbyBkYXRhIGZyYW1lcyB5IHVzYW5kbyB0b2RvIGxvIGFwcmVuZGlkbyBvcmdhbml6YXJlbW9zIG51ZXN0cmFzIG5vdGFzLg0KDQpgYGB7cn0NCiMgTGlicmVyaWFzDQoNCmxpYnJhcnkoZHBseXIpIyBtYW5pcHVsYWNpb24gZGUgZGF0b3MsIGZ1bmNpb25lcywgbW9kaWZpY2FyIGNvbHVtbmFzLCBmaWx0cmFyLCByZW9yZGVuYXIsIGNhbGN1bG9zLCBldGMuDQpsaWJyYXJ5KHRpZHlyKSAjIG1vZGlmaWNhbmRvIGxhcyBmdW5jaW9uZXMgZGUgZGF0b3MNCmxpYnJhcnkocmVhZHIpICMgbGVlciB5IGVzY3JpYmlyIGNzdnMNCmxpYnJhcnkodWR1bml0czIpICMgY29udmVyc2nDs24gZGUgdW5pZGFkZXMNCg0KIyBEYXRhDQoNCkFjaWRvcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvQWNpZG9zX2V4LmNzdiIpDQoNCk1lZGlkYXNfY2xhc2UgPC0gcmVhZC5jc3YoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL0NsYXNzLWRhdGEuY3N2IikNCg0KTWV0YWRhdGEgPC0gcmVhZC5jc3YoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL0V4dWRfbWV0YWRhdGEuY3N2IikNCg0KUGxhbnRhcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvVGFibGFfcGxhbnRhcy5jc3YiKQ0KDQpSb2Vkb3JlcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvUm9lZG9yZXMuY3N2IikNCg0KYGBgDQojIE1vZGlmaWNhY2nDs24gZGUgZGF0b3MgY29uIFIgYmFzZQ0KDQpTaSBiaWVuIGVsIHBhcXVldGUgbWFzIGNvbXVuIHkgdXRpbCBwYXJhIG1hbmlwdWxhciBkYXRvcyBlcyB0aWR5dmVyc2UsIFIgYmFzZSB0YW1iaWVuIHRpZW5lbiB2YXJpYXMgZnVuY2lvbmVzIG11eSB1dGlsZXMgcGFyYSBoYWNlciBtb2RpZmljYWNpb25lcyBiYXNpY2FzLg0KDQojIyDCv0NvbW8gY2hlY2FyIGEgZXN0cnVjdHVyYSBkZSBudWVzdHJvcyBkYXRvcz8NCg0KYGBge3J9DQpzdHIoTWVkaWRhc19jbGFzZSkgIyBFc3RydWN0dXJhIGludGVybmEsIHRpcG8gZGUgY2FkYSB2YXJpYWJsZSB5IG5vbWJyZXMgZGUgbGFzIHZhcmlhYmxlcw0KDQpkaW0oTWVkaWRhc19jbGFzZSkgIyBGaWxhcyB5IGNvbHVtbmFzDQpucm93KE1lZGlkYXNfY2xhc2UpIDsgbmNvbChNZWRpZGFzX2NsYXNlKSAjIHNlcGFyYXIgY29tYW5kbyBjb3J0b3MgZXMgcHVudG8geSBjb21hOiA7DQoNCmhlYWQoTWVkaWRhc19jbGFzZSkgIyBJbXByaW1lIGxhcyBwcmltZXJhcyA2IGZpbGFzIGRlIHVuYSB0YWJsYQ0KDQpgYGANCg0KIyMgUmVvcmRlbmFyIGRhdG9zDQoNClNpIGJpZW4gbmkgbGEgZmlsYSBuaSBsYSBjb2x1bW5hIG5vIG5lY2VzaXRhIHJlYWxtZW50ZSB1biBvcmRlbiBwYXJ0aWN1bGFyIGFsIG1vbWVudG8gZGUgYW5hbGl6YXIgbG9zIGRhdG9zLCBtdWNoYXMgdmVjZXMgZXMgY29udmVuaWVudGUgdmlzdWFsbWVudGUuDQoNCmBgYHtyfQ0KIyBSZW9yZGVuYXIgY29sdW1uYXMNCg0KTWVkaWRhc19jbGFzZSA8LSBNZWRpZGFzX2NsYXNlWyxjKDEsOSw0LDIsMyw1LDYsNyw4KV0NCg0KIyMjIEVqZXJjaWNpbzogcmVvcmRlbmFyIG51ZXZhbWVudGUgdG9kYXMgbGFzIGNvbHVtbmFzIG1lbm9zIElEIGVuIG9yZGVuIGFsZmFiZXRpY28uDQoNCiMgUmVvcmRlbmFyIGRlIG1hcyBhIG1lbm9zIGxhIHRhYmxhDQoNCkFjaWRvcyA8LSBBY2lkb3Nbb3JkZXIoQWNpZG9zWywyXSxkZWNyZWFzaW5nID0gVFJVRSksXQ0KDQpgYGANCg0KQXNpIG1pc21vIG11Y2hhcyB2ZWNlcyBlcyBjb252ZW5pZW50ZSBjYW1iaWFyIGZpbGFzIGEgY29sdW1uYXMgeSB2aWNldmVyc2EuIFBhcmEgZWxsbyB0ZW5lbW9zIGVsIGNvbWFuZG8gZGUgX3RyYW5zcG9zZSgpXw0KDQpgYGB7cn0NCiMgdCgpIHRyYW5zcG9zZQ0KDQpBY2lkb3MgPC0gYXMuZGF0YS5mcmFtZSh0KEFjaWRvcykpICMgdGFtYmllbiB0ZW5lbW9zIHF1ZSBlc3BlY2lmaWNhciBxdWUgdGlwbyBkZSBvYmpldG8gcXVlcmVtb3MgY29tbyByZXN1bHRhZG8NCg0KY29sbmFtZXMoQWNpZG9zKSA8LSBBY2lkb3NbMSxdICMgcmVub21icmFyIGxhcyBjb2x1bW5hcyBjb24gZWwgbm9tYnJlIGRlIGxvcyBhY2lkb3MNCg0KQWNpZG9zIDwtIEFjaWRvc1stMSxdICMgYm9ycmFyIGZpbGEgMQ0KDQpgYGANCg0KIyMgUmVub21icmFyIHZhcmlhYmxlcw0KDQpPdHJvIGNvbWFuZG8gbXV5IHV0aWwgcXVlIHRpZW5lIFIgZXMgZWwgZGUgY2FtYmlhciBlbCBub21icmUgZGUgdmFyaWFibGVzIGRlbnRybyBkZSBudWVzdHJvIGRhdGEgZnJhbWUuIEEgZGlmZXJlbmNpYSBkZSBleGNlbCwgZW4gUlN0dWRpbyB1bm8gbm8gcHVlZGUgY2FtYmlhciBkaXJlY3RhbWVudGUgbG9zIHZhbG9yZXMgZGUgdW5hIGNlbGRhIGRlbnRybyBkZSB1bmEgdGFibGEgcGFyYSBwcm90ZWdlciBsb3MgZGF0b3MuIFBhcmUgZWxsbyBzZSBwdWVkZSB1c2FyIGVsIHNpZyBjb21hbmRvOg0KDQpgYGB7cn0NCg0KTWV0YWRhdGEkUGxhbnRfdHlwZVtNZXRhZGF0YSRQbGFudF90eXBlID09ICJObyBQbGFudCJdIDwtICJCdWxrIFNvaWwiDQoNCiMjIyBFamVyY2ljaW86IFJlbm9tYnJlbiBlbiB0cmF0YW1pZW50byBQaSBhIEZvc2ZhdG8geSBQaGkgYSBGb3NmaXRvDQoNCk1ldGFkYXRhJFRyZWF0bWVudFtNZXRhZGF0YSRUcmVhdG1lbnQgPT0gIlBpIl0gPC0gIkZvc2ZhdG8iDQpNZXRhZGF0YSRUcmVhdG1lbnRbTWV0YWRhdGEkVHJlYXRtZW50ID09ICJQaGkiXSA8LSAiRm9zZml0byINCg0KYGBgDQojIyBTdWJzZXQgZGUgZGF0b3MNCg0KQSB2ZWNlcyBlcyBuZWNlc2FyaW8gYW5hbGl6YXIgbG9zIGRhdG9zIHBvciBzZXBhcmFkbyBwb3IgbG8gcXVlIGVzIHV0aWwgc2VsZWNjaW9uYXIgc29sbyBhbGd1bm9zIGRlIG51ZXN0cm9zIGRhdG9zIGJhc2Fkb3MgZW4gdW5hIG8gbWFzIHZhcmlhYmxlcy4NCg0KYGBge3J9DQojIFNlbGVjY2lvbmFyIGNpZXJ0YXMgY29sdW1uYXMNCg0KTWVkaWRhc19maWx0IDwtIE1lZGlkYXNfY2xhc2VbLGMoIklEIiwgIkhlaWdodC5jbSIsICJTZXgiKV0NCg0KIyBCYXNhZG8gZW4gdmFsb3JlcyBkZSBsYXMgdmFyaWFibGVzIChmaWxhcykNCg0KbXVqZXJlc19hbHRhcyA8LSBNZWRpZGFzX2NsYXNlW3doaWNoKE1lZGlkYXNfY2xhc2UkU2V4PT0iRiIgJiBNZWRpZGFzX2NsYXNlJEhlaWdodC5jbSA+IDE2NSksXQ0KDQpWaWV3KG11amVyZXNfYWx0YXMpDQoNCiMjIyBFamVyY2ljaW86IFNlbGVjY2lvbmFyIGhvbWJyZXMgY2FiZXpvbmVzLCBlcyBkZWNpciBjb24gbGEgY2lyY3VuZmVyZW5jaWEgbWFzIGRlIDYwIGNtDQoNCmhvbWJyZXNfY2FiZXpvbmVzIDwtIE1lZGlkYXNfY2xhc2Vbd2hpY2goTWVkaWRhc19jbGFzZSRTZXggPT0gIk0iICYgTWVkaWRhc19jbGFzZSRDaXJjdW1mZXJlbmNlSGVhZC5jb20gPiA2MCksXQ0KDQpWaWV3KGhvbWJyZXNfY2FiZXpvbmVzKQ0KDQpgYGANCkZpbmFsbWVudGUgb3RyYSBmdW5jaW9uIHF1ZSBzZXJhIHV0aWwgbWFzIGFkZWxhbnRlIGVzIGNhbWJpYXIgZGUgb3JkZW4gbG9zIGZhY3RvcmVzLiBVc3VhbG1lbnRlIGxvcyBmYWN0b3JlcyBkZW50cm8gZGUgdW5hIHZhcmlhYmxlIHNlIG9yZGVuYW4geSBtdWVzdHJhbiBkZSBmb3JtYSBhbGZhYmV0aWNhLiBTaW4gZW1iYXJnbywgZXN0b3MgY2NhbWJpb3Mgbm8gc2UgdmFuIGEgdmVyIGhhc3RhIGVsIG1vbWVudG8gZGUgZ3JhZmljYXINCg0KYGBge3J9DQoNCk1ldGFkYXRhIDwtIGZhY3RvcihNZXRhZGF0YSRUcmVhdG1lbnQsIGxldmVscyA9IGMoIkxvdyBQIiwgIkZvc2ZhdG8iLCAiRm9zZml0byIsICJQaS9QaGkgbWl4IiksIG9yZGVyZWQgPSBUUlVFKQ0KYGBgDQoNCiMjIyBFamVyY2ljaW8NCg0KQWwgZGF0YSBmcmFtZSBfUGxhbnRhXyBIYWNlciBsYXMgc2lndWllbnRlcyBtb2RpZmljYWNpb25lczoNCg0KMS4gQ2FtYmlhciBkZSBvcmRlbiBsYXMgY29sdW1uYSBwYXJhIHF1ZSBUT0MgeSBNQkMgc2VhbiBsYXMgcHJpbWVyYXMgdmFyaWFibGVzIHF1ZSBzZSB2ZW4gZGVzcHVlcyBkZSBsb3MgbWV0YWRhdG9zLg0KDQoyLiBSZW9yZ2FuaXphciBsYSB0YWJsYSBjb24gbGFzIHBsYW50YXMgY29uIG1heW9yIG1hc2EgZm9saWFyIGhhc3RhIGFycmliYS4gX3Nob290c18NCg0KMy4gRW4gdGlwbyBkZSBwbGFudGEgcmVub21icmFyIE5vIHBsYW50IGEgQnVsayBzb2lsIHkgZW4gdHJhdGFtaWVudG8gQ29udHJvbCBhIFBpLg0KDQo0LiBGaW5hbG1lbnRlIGNyZWFyIHVuIG51ZXZvIGRhdGEgZnJhbWUgZW4gZWwgcXVlIHNlbGVjY2lvbmVuIHRvZGFzIGxhcyBwbGFudGFzIF93aWQgdHlwZV8gY29uIF90aXAgY291bnRfIG1lbm9yIGEgMTAwLg0KDQpgYGB7cn0NCiMgMS4gDQpQbGFudGFzIDwtIFBsYW50YXNbLGMoMSwyLDMsNCw1LDE1LDE2LDYsNyw4LDksMTAsMTEsMTIsMTMsMTQpXQ0KDQojIDIuDQpQbGFudGFzIDwtIFBsYW50YXNbb3JkZXIoUGxhbnRhc1ssOV0sZGVjcmVhc2luZyA9IFRSVUUpLF0NCg0KIyAzLg0KUGxhbnRhcyRQbGFudF9UeXBlW1BsYW50YXMkUGxhbnRfVHlwZSA9PSAiTm8gUGxhbnQiXSA8LSAiQnVsayBTb2lsIg0KUGxhbnRhcyRUcmVhdG1lbnRbUGxhbnRhcyRUcmVhdG1lbnQgPT0gIkNvbnRyb2wiXSA8LSAiUGkiDQoNCiMgNC4NCnBsYW50YXNfd3QgPC0gUGxhbnRhc1t3aGljaChQbGFudGFzJFBsYW50X1R5cGUgPT0gIldpbGQgVHlwZSIgJiBQbGFudGFzJHJvb3RfdGlwX2NvdW50IDwgMTAwKSxdDQoNClZpZXcocGxhbnRhc193dCkNCg0KYGBgDQojIE1hbmlwdWxhY2nDs24gZGUgZGF0b3MgdXNhbmRvIGRwbHlyDQoNCkR5cGxyIGVzIHVubyBkZSBsb3MgcGFxdWV0ZXMgaW5jbHVpZG9zIGVuIGVsIHRpZHl2ZXJzZSB5IHN1IGZ1bmNpb24gcHJpbmNpcGFsIGVzIGxhIG1hbmlwdWxhY2lvbiB5IG1vZGlmaWNhY2lvbiBkZSB0YWJsYXMuIENvbiBlc3RlIHBhcXVldGUgc2UgcHVlZGVuIGhhY2VyIHZhcmlhcyBkZSBsYXMgZnVuY2lvbmVzIHF1ZSB5YSBhcHJlbmRpbW9zIHkgbXVjaGFzIG90cmFzIG1hcy4gU2luIGVtYmFyZ28sIGxhIHByaW5jaXBhbCBkaWZlcmVuY2lhIGVudGUgUiBiYXNlIHkgZHBseXIgZXMgbGEgY2FwYWNpZGFkIGRlIHVzYXIgcGlwbmcgYWwgbW9tZW50byBkZSBoYWNlciBjb2RpZ28NCg0KIyMgU3Vic2V0IGRlIGRhdG9zDQoNCmBgYHtyfQ0KIyBQb3IgZmlsYXMgKGZpbHRlcikgeSBjb2x1bW5hcyAoc2VsZWN0KQ0KDQpmaWx0ZXIoUm9lZG9yZXMsIHllYXIgPT0gMTk5NSkNCnNlbGVjdChSb2Vkb3JlcywgbW9udGgsIHNwZWNpZXMsIGdlbnVzKSAjIG5vIHNlIG5lY2VzaXRhIGVsIHNpZ25vIGRlIGRvbGFyZXMgY29uIGVzdGUgcGFxdWV0ZQ0KDQpzZWxlY3QoUm9lZG9yZXMsIC1yZWNvcmRfaWQsIC1kYXkpICMgZXN0ZSBjb2RpZ28gc2lydmUgcGFyYSBxdWl0YXIgZXNhcyBjb2x1bW5hcyBjb24gZWwgc2lnbm8gZGUgbWVub3M6IC0NCg0KYGBgDQojIyMgQ3JlYW5kbyB1biBudWV2byBvYmpldG8gY29uIGVzdG9zIGNvbWFuZG9zDQoNCkFob3JhIHZlcmVtb3MgY29tbyB1c2FyIGxhIGZ1bmNpb24gZGUgcGlwaW5nDQoNCmBgYHtyfQ0KUm9lZF9taW5pIDwtIFJvZWRvcmVzICU+JSAjIGZ1bmNpb25hIGNvbW8gdW5hIGNhZGVuYSBxdWUgdW5lIHZhcmlhcyBmdW5jaW9uZXMganVudGFzDQogIGZpbHRlcih3ZWlnaHQgPD0gNSkgJT4lICMgRWwgcmVzdWx0YWRvIGRlIGVzYSBmdW5jaW9uIGVzIGVsIGlucHV0IGRlZSBsYSBzaWd1aWVudGUNCiAgc2VsZWN0KHNwZWNpZXNfaWQsIHNleCwgd2VpZ2h0KSAjIE1hcyBmYWNpbCBkZSBsZWVyIHkgbm8gdGllbmVzIHF1ZSBjcmVhciBudWV2b3Mgb2JqZXRvcyBwYXJhIGNhZGEgY29tYW5kbw0KYGBgDQoNCiMjIyBFamVyY2ljaW8NCg0KVXNhbmRvIHVuYSBlc3RydWN0dXJhIGRlIGNvZGlnbyBzaW1pbGFyIGEgbGEgYW50ZXJpb3IgcXVpZXJvIHF1ZSBhaG9yYSBmaWx0cmVuIGEgbG9zIG1lZ2Egcm9lZG9yZXMgY29uIHVuIHBlc28gbWF5b3IgYSAyMDAgeSBxdWUgc29sbyBzZWFuIG1hY2hvcy4gUG9yIHVsdGltbyBxdWllcm8gcXVlIHNvbG8gc2UgbXVlc3RyZW4gZWwgYW5pbyBkZSBjb2xlY3RhLCBzcGVjaWVzX2lkIHkgZWwgcGVzby4NCg0KYGBge3J9DQpSb2VkX21lZ2EgPC0gUm9lZG9yZXMgJT4lDQogIGZpbHRlcih3ZWlnaHQgPiAyMDApICU+JSAjIGFsIHF1ZXJlciBmaWx0cmFyIHZhcmlhcyBjb3NhcyBzZSBuZWNlc2l0YW4gc2VwYXJhciBsb3MgZmlsdHJvcywgbm8gc2UgcHVlZGUgZW4gdW5vIG1pc21vDQogIGZpbHRlcihzZXggPT0gIk0iKSAlPiUNCiAgc2VsZWN0KHllYXIsIHNwZWNpZXNfaWQsIHdlaWdodCkNCg0KYGBgDQojIyBBZ3JlZ2FyIHVuYSBudWV2YSBjb2x1bW5hIGNhbGN1bGFkYQ0KDQpQYXJhIGNhbGN1bGFyIG51ZXZhcyBjb2x1bW5hcyBzZSBwdWVkZSB1c2FyIGxhIGZ1bmNpb24gX211dGF0ZV8uIEVuIGVzdGEgc2VjY2lvbiBkZSBjb2RpZ28gZXN0YXJlbW9zIHVzYW5kbyBhZGVtYXMgZnVuY2lvbmVzIGRlbCBwYXF1ZXRlIHVuaXRzLg0KDQpgYGB7cn0NClJvZWRvcmVzICU+JQ0KICBtdXRhdGUod2VpZ2h0X2tnID0gd2VpZ2h0LzEwMDApICMgdXNhbmRvIGxhcyB1bmlkYWRlcyBvcmlnaW5hZXMgeSBzaW4gZWwgcGFxdWV0ZQ0KDQppcy5uYShSb2Vkb3JlcyRoaW5kZm9vdF9sZW5ndGgpICMgaXMubmEgcGVybWl0ZSBvYnNlcnZhciBxdWUgdmFsb3JlcyBlc3RhbiB2YWNpb3MgeSBjdWFsZXMgbm8NCg0KIyMgVXNhbmRvIHBhcXVldGUgdW5pdA0KUm9lZG9yZXMgJT4lDQogIGZpbHRlcighaXMubmEod2VpZ2h0KSkgJT4lICMgcGVybWl0ZSBib3JyYXIgdG9kb3MgbG9zIE5BIHkgZWwgc2lnbyAhIGZpbHRyYSBsb3MgdmFsb3JlcyBxdWUgTk8hIGVzdGFuIHZhY2lvcw0KICBzZWxlY3Qod2VpZ2h0KSAlPiUNCiAgbXV0YXRlKHdlaWdodF9rZyA9IHVkLmNvbnZlcnQod2VpZ2h0LCAiZyIsICJrZyIpKSAlPiUgIyBhdXRvbWF0aWNhbWVudGUgY2FtYmlhIGRvcyB2YWxvcmVzDQogIG11dGF0ZSh3ZWlnaHRfbGIgPSB1ZC5jb252ZXJ0KHdlaWdodCwgImciLCAibGIiKSkgIyBjYW1iaWEgYSBsaWJyYXMNCg0KIyMgbm8gc2UgZ3VhcmRvIHRlbmRyaWFtb3MgcXVlIGFzaWduYXIgZXN0ZSBjb2RpZ28gYSB1biBvYmpldG8NCmBgYA0KDQojIyBBZ3J1cGFyIHkgYW5hbGl6YXIgZGF0b3MNCg0KT3RyYSBmdW5jaW9uIG11eSB1dGlsIGVzIGxhIGRlIF9ncm91cF9ieV8gZW4gbGEgcXVlIHNlIHB1ZWRlbiBhZ3J1cGFyIGxvcyBkYXRvcyBwYXJhIGNhbGN1bGFyIGNpZXJ0YXMgbWVkaWRhcyBkZSBlc3RhZGlzdGljYSBkZXNjcmlwdGl2YSBfc3VtbWFyaXplXy4NCg0KYGBge3J9DQojIyMgTWVkaWEgeSBkZXN2aWFjaW9uIGVzdGFuZGFyDQoNClN1bW0gPC0gUm9lZG9yZXMgJT4lDQogIGdyb3VwX2J5KHNleCwgc3BlY2llc19pZCkgJT4lICMgdmFyaWFibGVzIHBvciBsYXMgcXVlIHNlIHZhbiBhIGFncnVwYXIgbG9zIGRhdG9zIE1FVEFEQVRPUw0KICBzdW1tYXJpemUobWVhbl93ZWlnaHQgPSBtZWFuKHdlaWdodCwgbmEucm0gPSBUUlVFKSwgDQogICAgICAgICAgICBzZF93ZWlnaHQgPSBzZCh3ZWlnaHQsIG5hLnJtID0gVFJVRSkpICMgZW4gZXN0ZSBjYXNvIGxlIHBlZGltb3MgZXNwZWNpZmljYW1lbnRlIG1lZGlhIHkgZGVzdmlhY2lvbiBlc3RhbmRhcg0KDQoNCiMjIFJlbW92ZXIgdmFyaWFibGVzIGRlIGxhcyBxdWUgbm8gc2UgdGVuZ2EgZWwgcGVzbw0KDQpTdW1tIDwtIFJvZWRvcmVzICU+JQ0KICBmaWx0ZXIoIWlzLm5hKHNleCksICFpcy5uYSh3ZWlnaHQpKSAlPiUgIyBmaWx0cmFyIE5BDQogIGdyb3VwX2J5KHNleCwgc3BlY2llc19pZCkgJT4lDQogIHN1bW1hcml6ZShtZWFuX3dlaWdodCA9IG1lYW4od2VpZ2h0KSwNCiAgICAgICAgICAgIHNkX3dlaWdodCA9IHNkKHdlaWdodCkpDQoNCiMjIyBDb250YXINCg0KIyBDb250YXI6IGNvdW50KCkgdnMubigpDQoNCmNvdW50KFJvZWRvcmVzLCBzcGVjaWVzX2lkLCBzZXgpICMgY291bnQganVudGEgbGEgZnVuY2lvbiBncm91cCBieSB5IHN1bW1hcml6ZSBuPW4gZW4gdW4gc29sbyBjb21hbmRvDQoNClJvZWRvcmVzICU+JQ0KICBmaWx0ZXIoIWlzLm5hKHNleCksICFpcy5uYSh3ZWlnaHQpKSAlPiUgDQogIGdyb3VwX2J5KHNleCwgc3BlY2llc19pZCkgJT4lDQogIHN1bW1hcml6ZShtZWFuX3dlaWdodCA9IG1lYW4od2VpZ2h0KSwNCiAgICAgICAgICAgIHNkX3dlaWdodCA9IHNkKHdlaWdodCksDQogICAgICAgICAgICBuID0gbigpKSAjIG4oKSBjdWVudGEgbG9zIGVsZW1lbnRvcyBlbmNvbnRyYWRvcyBlbiBlbCBncnVwbw0KDQpgYGANCg0KRXN0YXMgc29uIG90cmFzIGZ1bmNpb25lIHV0aWxlcyBxdWUgc2UgcHVlZGVuIHVzYXIgZGVudHJvIGRlbCBjb21hbmRvIGRlIF9zdW1tYXJpemVfOg0KKiBDZW50ZXI6IG1lYW4oKSwgbWVkaWFuKCkNCiogU3ByZWFkOiBzZCgpLCBJUVIoKSwgbWFkKCkNCiogQ291bnQ6IG4oKSwgbl9kaXN0aW5jdCgpDQoqIFJhbmdlOiBtaW4oKSwgbWF4KCksIHF1YW50aWxlKCkNCiogUG9zaXRpb246IGZpcnN0KCksIGxhc3QoKSwgbnRoKCkNCiogTG9naWNhbDogYW55KCksIGFsbCgpDQoNCiMjIyBFamVyY2ljaW9zDQoNCjEuIFVzYW5kbyBlbCBkYXRhZnJhbWUgX1JvZWRvcmVzXyBjcmVhciB1bmEgdGFibGEgZmlsdHJhbmRvIHZhbG9yZXMgTkEgZGUgcGVzbywgYWdydXBhbmRvIHBvciBlc3BlY2llIHkgcmVzdW1pZW5kbyBlbiBjdWFydGlsZXMuDQoNCjIuIFVzYW5kbyBlbCBkYXRhZnJhbWUgZGUgX1BsYW50YXNfIGNyZWFyIHVuYSB0YWJsYSBhZ3J1cGFuZG8gcG9yIHBsYW50YSB5IHRyYXRhbWllbnRvIHkgcmVzdW1pZW5kbyBtZWRpYSB5IGRlc3ZpYWNpb24gZXN0YW5kYXIgZGUgbGEgY29uY2VudHJhY2lvbiBkZSBQaSBlbiByYWljZXMgeSBiaW9tYXNhIGFlcmVhLiBfcm9vdHNfUGlfIHkgX3Nob290c19QaV8NCg0KYGBge3J9DQojIDEuDQpxdWFudGlsZShSb2Vkb3JlcyR3ZWlnaHQsIG5hLnJtID0gVFJVRSkgDQogICAgICAgICANCnJvZWQgPC0gUm9lZG9yZXMgJT4lDQogIGZpbHRlcighaXMubmEoc3BlY2llcyksICFpcy5uYSh3ZWlnaHQpKSAlPiUNCiAgZ3JvdXBfYnkoc3BlY2llcykgJT4lDQogIHN1bW1hcml6ZShjdWFydGlsZXMgPSBxdWFudGlsZSh3ZWlnaHQsIG5hLnJtID0gVFJVRSkpDQoNCiMgMi4NCnBsYW50IDwtIFBsYW50YXMgJT4lDQogIGZpbHRlcighaXMubmEoUGxhbnRfVHlwZSksICFpcy5uYShUcmVhdG1lbnQpLCAhaXMubmEoc2hvb3RfUGkpLCAhaXMubmEocm9vdF9QaSkpICU+JQ0KICBncm91cF9ieShQbGFudF9UeXBlLCBUcmVhdG1lbnQpICU+JQ0KICBzdW1tYXJpemUobWVkaWFfcmFpeiA9IG1lYW4ocm9vdF9QaSksDQogICAgICAgICAgICBzZF9yYWl6ID0gc2Qocm9vdF9QaSksDQogICAgICAgICAgICBtZWRpYV9iaW9tYXNhID0gbWVhbihzaG9vdF9QaSksDQogICAgICAgICAgICBzZF9iaW9tYXNhID0gc2Qoc2hvb3RfUGkpKQ0KICAgICAgICAgICAgDQpgYGANCiMjIE9yZGVuYXIgbG9zIGRhdG9zDQoNClVzYW5kbyBfc2VsZWN0XyB5IF9hcnJhbmdlXyBzZSBwdWVkZSBtb2RpZmljYXIgZWwgb3JkZW4gZGUgY29sdW1uYXMgeSBmaWxhcyByZXNwZWN0aXZhbWVudGUgY29uIGRpcGx5ci4NCg0KYGBge3J9DQoNCiMjIENhbWJpYXIgZGUgb3JkZW4gbGFzIGNvbHVtbmFzDQoNClJvZWRvcmVzICU+JQ0KICBmaWx0ZXIoIWlzLm5hKHNleCksICFpcy5uYSh3ZWlnaHQpKSAlPiUNCiAgc2VsZWN0KHJlY29yZF9pZCwgc3BlY2llc19pZCwgd2VpZ2h0OnRheGEpICMgbG9zIHNpZ25vcyA6IHNpcnZlIHBhcmEgZmlsdHJhciBkZXNkZSB3ZWlnaHQgaGFzdGEgdGF4YQ0KDQojIyBPcmRlbmFyIGFycmFuZ2UoKTogcG9yIGZpbGFzDQoNClJvZWRvcmVzICU+JQ0KICBmaWx0ZXIoIWlzLm5hKHNleCksICFpcy5uYSh3ZWlnaHQpKSAlPiUgDQogIGdyb3VwX2J5KHNleCwgc3BlY2llc19pZCkgJT4lDQogIHN1bW1hcml6ZShtZWFuX3dlaWdodCA9IG1lYW4od2VpZ2h0KSwNCiAgICAgICAgICAgIHNkX3dlaWdodCA9IHNkKHdlaWdodCksDQogICAgICAgICAgICBuID0gbigpKSAlPiUNCiAgYXJyYW5nZShtZWFuX3dlaWdodCkgIyBlbCBvcmRlbiBlcyBkZSBtZW5vciBhIG1heW9yDQoNClJvZWRvcmVzICU+JQ0KICBmaWx0ZXIoIWlzLm5hKHNleCksICFpcy5uYSh3ZWlnaHQpKSAlPiUgDQogIGdyb3VwX2J5KHNleCwgc3BlY2llc19pZCkgJT4lDQogIHN1bW1hcml6ZShtZWFuX3dlaWdodCA9IG1lYW4od2VpZ2h0KSwNCiAgICAgICAgICAgIHNkX3dlaWdodCA9IHNkKHdlaWdodCksDQogICAgICAgICAgICBuID0gbigpKSAlPiUNCiAgYXJyYW5nZShkZXNjKG1lYW5fd2VpZ2h0KSkgIyBkZXNjIHNpZ25pZmljYSBkZXNjZW5kaW5nIHBvciBsbyBxdWUgc2UgbXVlc3RyYSBsYSB0YWJsYSBkZSBtYXlvciBhIG1lbm9yDQoNCmBgYA0KIyMjIEVqZXJjaWNpbw0KDQoxLiBVc2FuZG8gZWwgZGF0YSBmcmFtZSBkZSBfUGxhbnRhc18gc2VsZWNjaW9uYXIgdW5pY2FtZW50ZSB0aXBvIGRlIHBsYW50YSB5IHRyYXRhbWllbnRvIGp1bnRvIGNvbiBsYXMgdmFyaWFibGVzIHJlbGFjaW9uYWRhcyBjb24gcmFpY2VzIHkgb3JkZW5hcmxhcyBkZSBtZW5vciBhIG1heW9yIHBvciBlbCBwZXNvIGRlIGxhIHJhaXoNCg0KYGBge3J9DQpQbGFudGFzICU+JQ0KICBzZWxlY3QoUGxhbnRfVHlwZSwgVHJlYXRtZW50LCBSb290cywgcm9vdF9kaWFtX21lYW46cm9vdF9QaSkgJT4lDQogIGFycmFuZ2UoUm9vdHMpDQogIA0KYGBgDQoNCiMjIE1vZGlmaWNhciBsb3MgZGF0YWZyYW1lcw0KDQpFbiBkcGx5ciBsYSBmdW5jaW9uIF9waXZvdCgpXyBlcyBwYXJlY2lkbyBhIGxhIGZ1bmNpw7NuIGRlIF90cmFuc3Bvc2VfIGVuIFIgYmFzZSBwYXJhIGNhbWJpYXIgZGUgZmlsYXMgYSBjb2x1bW5hcyB5IHZpY2V2ZXJzYS4gU2luIGVtYmFyZ28gZW4gZXN0ZSBjYXNvIGFkZW1hcyBzZSBhZ3J1cGFuIGxvcyB2YWxvcmVzOg0KDQoqIF9waXZvdF93aWRlcigpOl8gUGFyYSBtb2RpZmljYXIgZGUgZmlsYXMgYSBjb2x1bW5hcw0KKiBfcGl2b3RfbG9uZ2VyKCk6XyBNb2RpZmljYXIgZGUgY29sdW1uYXMgYSBmaWxhcw0KDQpgYGB7cn0NCiMjIHBpdm90X3dpZGVyKCk6IGxvbmdlciBhIHdpZGVyDQoNClJvZWRvcmVzX2d3IDwtIFJvZWRvcmVzICU+JQ0KICBmaWx0ZXIoIWlzLm5hKHdlaWdodCkpICU+JQ0KICBncm91cF9ieShwbG90X2lkLCBnZW51cykgJT4lDQogIHN1bW1hcmlzZShtZWFuX3dlaWdodCA9IG1lYW4od2VpZ2h0KSkgIyBhcXVpIGFncmVnYXJpYW1vcyBhIGZ1bmNpb24gcGl2b3QgcGFyYSBoYWNlcmxvIGRlIHRkbyBlbiB1biBzb2xvIGNvZGlnbw0KDQpSb2Vkb3Jlc193aWRlIDwtIFJvZWRvcmVzX2d3ICU+JSAjIHNlIHV0aWxpemEgZWwgbnVldm8gb2JqZXRvIHF1ZSBzZSBoaXpvDQogIHBpdm90X3dpZGVyKG5hbWVzX2Zyb20gPSBnZW51cywgIyBub21icmVzIGRlIGxhcyBjb2x1bW5hcw0KICAgICAgICAgICAgICB2YWx1ZXNfZnJvbSA9IG1lYW5fd2VpZ2h0KSAjIGNvbW8gc2VwYXJhciBsb3MgdmFsb3Jlcw0KDQojIyBlcyB1dGlsIHBhcmEgUENBUyB5IGhlYXRtYXBzDQoNCiMjIyBFamVyY2ljaW86IHRyYXRlbiBkZSBqdW50YXIgdG9kbyBlc3RlIHByb2Nlc28gZW4gdW4gc29sbyBwYXNvIHBhcmEgbm8gdGVuZXIgb2JqZXRvcyBpbnRlcm1lZGlvcw0KDQpSb2Vkb3Jlc193aWRlciA8LSBSb2Vkb3JlcyAlPiUNCiAgZmlsdGVyKCFpcy5uYSh3ZWlnaHQpKSAlPiUNCiAgZ3JvdXBfYnkocGxvdF9pZCwgZ2VudXMpICU+JQ0KICBzdW1tYXJpc2UobWVhbl93ZWlnaHQgPSBtZWFuKHdlaWdodCkpICU+JQ0KICBwaXZvdF93aWRlcihuYW1lc19mcm9tID0gZ2VudXMsIA0KICAgICAgICAgICAgICB2YWx1ZXNfZnJvbSA9IG1lYW5fd2VpZ2h0KQ0KDQojIyBwaXZvdF9sb25nZXIoKTogd2lkZXIgYSBsb25nZXIsIHZhbW9zIGEgcmV2ZXJ0aXIgbG8gcXVlIGhpY2ltb3MNClJvZWRvcmVzX2xvbmcgPC0gUm9lZG9yZXNfd2lkZXIgJT4lDQogIHBpdm90X2xvbmdlcigtcGxvdF9pZCwgIyBxdWl0YXIgcGxvdF9pZCBwb3JxdWUgbm8gZXMgdW4gZ2VuZXJvIG8gdGFtYmllbiBzZSBwdWVkZSBoYWNlciB1c2FuZG8gY29sdW1uYXMgMjoxMQ0KICAgICAgICAgICAgICAgbmFtZXNfdG8gPSAiZ2VudXMiLCAjIHNlcmEgZWwgbm9tYnJlIGRlIGxhIG51ZXZhIGNvbHVtbmFzIHkgdXNhcmEgbG9zIGdlbmVyb3MgY29tbyB2YXJpYWJsZXMNCiAgICAgICAgICAgICAgIHZhbHVlc190byA9ICJtZWFuX3dlaWdodCIpICU+JSANCiAgZmlsdGVyKCFpcy5uYShtZWFuX3dlaWdodCkpICMgRXN0YSBmdW5jaW9uIG5vIHF1aXRhIGxvcyBOQXMgYXV0b21hdGljYW1lbnRlIHBvciBsbyBxdWUgbm9zb3Ryb3MgdGFtYmllbiB0ZW5lbW9zIHF1ZSBhZ3JlZ2FybG8NCg0KYGBgDQojIyMgRWplcmNpY2lvDQoNClVzYW5kbyBsYSB0YWJsYSBfUm9lZG9yZXNfIGNyZWFyIHVuYSB0YWJsYSBmaWx0cmFuZG8gdmFsb3JlcyB2YWNpb3MgZW4gbG9uZ2l0dWQgZGUgbGEgcGF0YSwgYWdydXBhbmRvIHBvciB0aXBvIGRlIHBsb3QgeSBnZW5lcm8geSBvYnRlbmllbmRvIGVsIHByb21lZGlvIGRlIGxhIGxvbmdpdHVkIGRlIGxhIHBhdGEuIEZpbmFsbWVudGUgbW9kaWZpY2EgbGEgdGFibGEgcGFyYSBxdWUgbGFzIGNvbHVtbmFzIHNlYW4gbG9zIGdlbmVyb3MuDQoNCmBgYHtyfQ0KUm9lZG9yZXNfd2lkZXIgPC0gUm9lZG9yZXMgJT4lDQogIGZpbHRlcighaXMubmEoaGluZGZvb3RfbGVuZ3RoKSkgJT4lDQogIGdyb3VwX2J5KHBsb3RfdHlwZSwgZ2VudXMpICU+JQ0KICBzdW1tYXJpc2UobWVhbl9mb290ID0gbWVhbihoaW5kZm9vdF9sZW5ndGgpKSAlPiUNCiAgcGl2b3Rfd2lkZXIobmFtZXNfZnJvbSA9IGdlbnVzLA0KICAgICAgICAgICAgICAgdmFsdWVzX2Zyb20gPSBtZWFuX2Zvb3QpDQoNCmBgYA0KIyBHdWFyZGFyIGxvcyBkYXRvcw0KDQpFbiBlc3RhIGNsYXNlIGhpY2ltb3MgdGFibGFzIHBlcm8gYWhvcmEgY29tbyBsYXMgZ3VhcmRhbW9zPw0KDQpgYGB7cn0NCg0KIyBDcmVhdGUgdW4gZGlyZWN0b3JpbyBudWV2byAoc29sbyB1bmEgdmV6KSB5IGVuIGNvbnNvbGENCg0KZGlyLmNyZWF0ZSgiRGF0b3NfUHJvY2VzYWRvcyIpICMgbnVldm8gZm9sZGVyDQoNCiMjIENyZWFyIHVuIGNzdiBkZSB1biBvYmpldG8gZW4gUnN0dWRpbw0KDQojIFIgYmFzZQ0Kd3JpdGUuY3N2KFJvZWRvcmVzX3dpZGUsIn4vQ3Vyc29SL0N1cnNvUmdpdC9Ob3RlYm9vay9EYXRvc19Qcm9jZXNhZG9zL1JvZWRvcmVzX2dlbl9wZXNvLmNzdiIpDQoNCg0KIyB0aWR5dmVyc2UNCiMgd3JpdGVfY3N2KFJvZWRvcmVzX2d3LCAiRGF0b3NfUHJvY2VzYWRvcy9Sb2VkX2dlbl9waWVybmEuY3N2IikNCiMgY29ycmVybG8gZW4gbGEgY29uc29sYQ0KYGBgDQoNCg0K</div>
 
 
 
