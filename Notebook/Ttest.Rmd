@@ -1,0 +1,33 @@
+---
+title: "T de Student y sus variaciones"
+output: html_notebook
+---
+
+# Introduccion
+
+Prueba de hipotesis parametrica para comparar la media de una o dos poblaciones. Se usa cuando se tiene una variable dependiente y 1 variable independiente de 2 opciones.
+
+```{r}
+Fosf <- read.csv("~/CursoR/CursoRgit/Materiales/phosphorus.csv")
+
+Profundidad <- ("~/CursoR/CursoRgit/Materiales/IBPJ.Thaw.csv")
+
+DOC <- ("~/CursoR/CursoRgit/Materiales/Pond.Lake.DOC.csv")
+
+Calidad_agua <- ("~/CursoR/CursoRgit/Materiales/WQ.August.csv")
+```
+
+# Prueba de T de una muestra
+
+Test de hipotesis estadistica para comparar la diferencia significativa entre una poblacion (tu variable) y un valor especifico
+
+_¿Cuando usarla?_
+
+* Analisis de gestion ambiental
+* Control de calidad
+
+```{r}
+t.test(Fosf$TDP, mu = 75.6) # mu valor de referencia
+```
+
+
