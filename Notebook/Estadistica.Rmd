@@ -1,0 +1,214 @@
+---
+title: "Estadistica descriptiva y normalizacion"
+output: html_notebook
+---
+# Introduccion 
+
+Ahora que ya sabemos como procesar y modificar nuestras tablas, es momento de aplicar todo lo aprendido a una de las bases del metodo cientifico: __el analisis estadistico__ 
+
+Si bien hay muchas maneras de analizar datos y aun mas metodos para ello. A lo largo de este modulo vamos a aprender un flujo basico para determinar que tipo de analisis es el mas idoneo para cada tipo de datos.
+
+```{r}
+# Libraries
+
+library(dplyr) # manipulacion de datos, funciones, modificar columans, filtrar, reordenar, calculos, etc 
+library(tidyr) # modificando las funciones de datos
+library(readr) # leer y escribir csvs
+library(udunits2) # conversion de unidades 
+
+
+# Data
+
+Plantas <- read.csv("~/CursoR/CursoRgit/Materiales/Tabla_plantas.csv")
+
+Stream <- read.csv("~/CursoR/CursoRgit/Materiales/stream.csv")
+
+Acidos <- read.csv("~/CursoR/CursoRgit/Materiales/Acidos_ex.csv")
+
+Fosf <- read.csv("~/CursoR/CursoRgit/Materiales/phosphorus.csv")
+
+Medidas_clase <- read.csv("~/CursoR/CursoRgit/Materiales/Class-data.csv")
+
+```
+
+# Estadistica descriptiva
+
+En la clase anterior ya vimos, los valores mas importantes dentro de la estadistica descriptiva. El objetivo de la estadística descriptiva es describir los datos observados de forma sintética y significativa para poder analizarlos mejor. La estadística descriptiva comprende tres categorías principales: 
+
+1. Distribución de frecuencias
+    + Count: n(), n_distinct() en dplyr o count()
+    + Range: min(), max(), quantile()
+2. Medidas de tendencia central 
+    + Center: mean() o promedio, median() o mediana
+3. Medidas de variabilidad.
+    + Spread: sd() _desviaion estandar_, IQR() _rango intercuartilico_, mad() _conectado con la mediana_
+    
+```{r}
+## 1. Distribucion
+
+# Count
+count(Medidas_clase, Sex, Handedness)
+
+# Range
+min(Medidas_clase$Height.cm)
+max(Medidas_clase$Height.cm)
+quantile(Medidas_clase$Height.cm)
+
+# 2. Tendencia central
+
+mean(Medidas_clase$Height.cm) # si tienes celdas vacías no olvides el na.rm = TRUE
+median(Medidas_clase$Height.cm)
+
+# 3. Variabilidad
+sd(Medidas_clase$Height.cm)
+IQR(Medidas_clase$Height.cm)
+mad(Medidas_clase$Height.cm)
+
+```
+## Ejercicio
+
+Usando el data frame de plantas cada quien va a elegir una variable y comparar media, mediana, desviacion estandar y desviacion de la mediana.
+
+```{r}
+
+mean(Plantas$root_length, na.rm = TRUE)
+median(Plantas$root_length, na.rm = TRUE)
+sd(Plantas$root_length, na.rm = TRUE)
+mad(Plantas$root_length, na.rm = TRUE)
+
+```
+# Normalizacion de datos
+
+La distribucion normal de datos se cracteriza por gran cantidad de datos alreddedor de la media y pocos datos en las colas  de forma __Simetrica__. 
+
+Es decir si conocemos la media y la desviacion estandar son conocidos la probabilidad de que cualquier observacion futura caiga dentro de un rango especifo ya es conocida
+
+Todos los analisis parametricos tiene como primera suposicion que los datos que se van a usar en el analisis siguen una distribucion normal e ahi la importancia de normalizar los datos.
+
+Si bien existen tests para datos parametricos estos son mas estrictos y no siempre van arrojar diferencias a pesar de ue si las hayan.
+
+## Como saber si nuestros datos son normales
+
+```{r}
+
+# Visualmente
+par(mfrow=c(1,2))
+hist(Stream$Temp.degC)
+qqnorm(Stream$Temp.degC)
+
+# Shapiro-Wilk normality test
+shapiro.test(Stream$Temp.degC) 
+
+# el test de shapiro indica que cuando p value es mayor a 0.05 es normal 
+```
+El test de Shapiro es muy estricto por lo que los datos que tengan un p-value
+cerca de 0.05 y un histograma y qqplot mas o menos lineal pueden ser considerados para estadisticas parametricas. Por ello cuando YO trabajo con datos empiezo revisando el test shapiro y de ahi continuo el analisis para determinar si el set de datos es normal.
+
+### Ejercicio
+
+En el data frame_Plantas_ cada quien elija una variable y determinen si sigue o no una distribuión normal.
+
+```{r}
+hist(Plantas$root_length)
+qqnorm(Plantas$root_length)
+shapiro.test(Plantas$root_length)
+
+```
+## Como checar normalidad en muchos dtos
+
+```{r}
+
+rownames(Acidos) <- Acidos[,1]
+Acidos <- Acidos[,-1]
+Acidos <- as.data.frame(t(Acidos))
+
+for (i in 1:ncol(Acidos)) {
+  shapiro <- shapiro.test(Acidos[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+for(i in 1:ncol(Acidos)) {
+  hist(Acidos[,i],
+       main = i)
+}
+
+# como se haria los qqplots?
+
+for(i in 1:ncol(Acidos)) {
+  qqnorm(Acidos[,i],
+       main = i)
+}
+```
+
+### Ejercicio 
+
+Modifiquen el codigo anterior para checar todas las variables en el data frame _Plantas_.
+
+```{r}
+
+for (i in 6:ncol(Plantas)) {
+  shapiro <- shapiro.test(Plantas[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+for(i in 6:ncol(Plantas)) {
+  hist(Plantas[,i],
+       main = i)
+}
+
+
+for(i in 6:ncol(Plantas)) {
+  qqnorm(Plantas[,i],
+       main = i)
+}
+
+```
+
+Aunque existen ecuaciones mas complejas para sets de datos especificos, no es recomendable transformar los datos hasta que se vuelven numeros artificiales que representen verdaderas diferencias biologicas. Por ello si despues de dos metodos de transformacion son usados y los datos siguen sin ser normales lo mejor es usar un metodo no parametrico para analizarlos.
+
+```{r}
+# checar normalidad
+
+shapiro.test(Fosf$TDP)
+hist(Fosf$TDP)
+qqnorm(Fosf$TDP)
+# estos datos no son normales
+
+# Transformar usando log3 log() significa logaritmo natural
+shapiro.test(log(Fosf$TDP)) 
+hist(log(Fosf$TDP))
+qqnorm(log(Fosf$TDP))
+
+### Como transformar de manera grupal
+
+Acid_log <- Acidos
+
+for (i in 1:ncol(Acidos)) {
+  Acid_log[,i] <- abs(log(Acidos[,i]))
+}
+
+```
+
+### Ejercicio final
+
+De las variabless que concluimos no eran normales en el data frame _Planta_ elegir el metodo de transformacion para normalizarlos y asi poder analizarlos. Enseñar a shapiro, hist y qqplot antes y despues de normalizar.
+
+```{r}
+par(mfrow=c(2,2))
+
+# Antes
+hist(Plantas$Shoots)
+qqnorm(Plantas$Shoots)
+
+# Despues
+hist(log(Plantas$Shoots))
+qqnorm(log(Plantas$Shoots))
+
+shapiro.test(Plantas$Shoots)
+shapiro.test(log(Plantas$Shoots))
+
+```
+
+
