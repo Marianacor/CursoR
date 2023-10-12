@@ -1,0 +1,94 @@
+---
+title: "ANOVA y Tukey HSD"
+output: html_notebook
+---
+
+# Introduccion
+
+A un nivel mayor de complejidad que las pruebas de t el ANOVA (Analysis of Variance) es una fórmula estadística que se utiliza para comparar varianzas entre las medias de diferentes (__mas de dos__) grupos. 
+
+Existe el ANOVA de una via en la que solo se tiene una variable independiente (con varios grupos) y se quiere ver la diferencia entre dichos grupos sobre una variable dependiente.
+
+El ANOVA de 2 vias anade otra variable independiente por lo que mide el efecto de dos variables independientes sobre una variable dependiente. Tambien existe la ANOVA de tres vias pero la complejidad en comparaciones y tratamientos crece bastante.
+
+```{r}
+# Library
+
+library(dplyr)
+library(tidyverse)
+library(car)
+
+# Data
+
+Rodillas <- read.csv("~/CursoR/CursoRgit/Materiales/Rodillas.csv")
+
+```
+# ANOVA de una via
+
+Es decir solo UN tratamiento independiente
+
+# ANOVA con R base
+
+R base puede calcular ANOVA de dos maneras diferentes, una de ellas usando el codigo _anova()_. Sin embargo, esta funcion base calcula automaticamente una ANOVA tipo I la cual da por sentado que los datos son balanceados por lo que cuando no sea así se debe usar la funcion del paquete _car_.
+
+```{r}
+# varable dep ~ variable indep, datos
+
+summary(aov(shift~treatment, data = Rodillas))
+
+anova(lm(shift~treatment, data = Rodillas))
+anova(aov(shift~treatment, data = Rodillas))
+```
+La diferencia entre lm y aov es el tipo de modelo y mas que nada la presentacion de los datos. Si quieresn saber mas al respecto pueden leer aqui:
+
+(lm vs. aov)[ https://www.oreilly.com/library/view/the-r-book/9780470510247/ch011-sec015.html]
+
+Sin embargo para fines utiles yo siempre uso aov() ya que por definición significa análisis de varianza
+
+# ANOVA con el paquete car 
+
+Este paquete esta enfocado a varios tipos de analisis estadisticos y su funcion de ANOVA tiene un argumento para lidiar con datos desbalanceados (Tipo II y III). Ademas que este paquete tambien cuenta con la funcion levene para checar igualdad de varianzas.
+
+(Tipos de ANOVA) [https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/]
+
+```{r}
+## Revisar por homogeneidad de varianzas
+
+leveneTest(shift~treatment, data = Rodillas) # mayor a 0.05 # levene.test no sirve
+
+plot(rod_anova,1) # Interpretacion: los reisduals tienen que estar distribuidos de manera aleatoria y tienen varianza constante.Pero este casi no lo van a ocupar
+
+## ANOVA
+rod_anova <- aov(shift~treatment, data = Rodillas) # se puede usar lm o aov
+Anova(rod_anova)
+
+## ANOVA tipo II
+Anova(rod_anova, type = 2) # fijense que comienza con mayuscula, se recomienda usar tipo 2 si los datos estan desbalanceados
+
+## ANOVA tipo III
+Anova(rod_anova, type = 3) # este no era el correctopara este tipo de datos
+```
+
+La diferencia entre e tipo II Y III es la interaccion de las variables independientes. Yo les recomiendo que usen tipo II si no estan seguros si sus variables interactuan entre si.
+
+_Conclusion:_ si p<0.05 entonces si hay difrencia significativa entre mis valores
+
+# Tukey HSD
+
+En el caso que una ANOVA nos muestre que existen diferencias significativas entre tratamientos, el paso siguiente es correr un test de Tukey HSD en el cual nos "desglose" la ANOVA y nos dice cuales de los tratamientos son diferentes.
+ Para esto solo hay un codigo el cual _TukeyHSD()_
+ 
+ ANOVA = sirve paa indicar si hay diferencias o no
+ Tukey = sirve para decir cuales si son diferentes
+ 
+```{r}
+TukeyHSD(rod_anova) # p<0.05
+
+TukeyHSD(aov(shift~treatment, data = Rodillas)) # los que son significativamente diferentes son ojos con control y rodillas con ojos.
+
+
+```
+ 
+ 
+
+
