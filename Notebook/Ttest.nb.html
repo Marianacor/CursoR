@@ -1759,6 +1759,15 @@ poblaciones. Se usa cuando se tiene una variable dependiente y 1
 variable independiente de 2 opciones.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRm9zZiA8LSByZWFkLmNzdihcIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL3Bob3NwaG9ydXMuY3N2XCIpXG5cblByb2Z1bmRpZGFkIDwtIHJlYWQuY3N2KFwifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvSUJQSi5UaGF3LmNzdlwiKVxuXG5ET0MgPC0gcmVhZC5jc3YoXCJ+L0N1cnNvUi9DdXJzb1JnaXQvTWF0ZXJpYWxlcy9Qb25kLkxha2UuRE9DLmNzdlwiKVxuXG5DYWxpZGFkX2FndWEgPC0gcmVhZC5jc3YoXCJ+L0N1cnNvUi9DdXJzb1JnaXQvTWF0ZXJpYWxlcy9XUS5BdWd1c3QuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code>Fosf &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/phosphorus.csv&quot;)
+
+Profundidad &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/IBPJ.Thaw.csv&quot;)
+
+DOC &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/Pond.Lake.DOC.csv&quot;)
+
+Calidad_agua &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/WQ.August.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1774,29 +1783,155 @@ especifico</p>
 </ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudC50ZXN0KEZvc2YkVERQLCBtdSA9IDc1LjYpICMgbXUgdmFsb3IgZGUgcmVmZXJlbmNpYVxuXG5gYGAifQ== -->
-<pre class="r"><code>t.test(Fosf$TDP, mu = 75.6) # mu valor de referencia
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjaGVjYXIgbm9ybWFsaWRhZFxuXG5zaGFwaXJvLnRlc3QoRm9zZiRURFApXG5oaXN0KEZvc2YkVERQKVxuXG50LnRlc3QoRm9zZiRURFAsIG11ID0gNzUuNilcbiMgbm8gZXN0YW4gbm9ybWFsaXphZG9zIGxvcyBkYXRvcyBwb3IgbG8gcXVlIHNlIHRpZW5lbiBxdWUgbm9ybWFsaXphciBwYXJhIHJlYWxpemFyIGxhIHBydWViYSBkZSBcIlRcIjpcblxuXG50LnRlc3QobG9nKEZvc2YkVERQKSwgbXUgPSBsb2coNzUuNikpICMgbXUgdmFsb3IgZGUgcmVmZXJlbmNpYVxuXG5gYGAifQ== -->
+<pre class="r"><code># checar normalidad
+
+shapiro.test(Fosf$TDP)
+hist(Fosf$TDP)
+
+t.test(Fosf$TDP, mu = 75.6)
+# no estan normalizados los datos por lo que se tienen que normalizar para realizar la prueba de &quot;T&quot;:
+
+
+t.test(log(Fosf$TDP), mu = log(75.6)) # mu valor de referencia
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5cdE9uZSBTYW1wbGUgdC10ZXN0XG5cbmRhdGE6ICBGb3NmJFREUFxudCA9IC0yOS40MzMsIGRmID0gNDY5LCBwLXZhbHVlIDwgMi4yZS0xNlxuYWx0ZXJuYXRpdmUgaHlwb3RoZXNpczogdHJ1ZSBtZWFuIGlzIG5vdCBlcXVhbCB0byA3NS42XG45NSBwZXJjZW50IGNvbmZpZGVuY2UgaW50ZXJ2YWw6XG4gMjMuNzIyNzggMzAuMjE2MjJcbnNhbXBsZSBlc3RpbWF0ZXM6XG5tZWFuIG9mIHggXG4gIDI2Ljk2OTUgXG4ifQ== -->
-<pre><code>
-    One Sample t-test
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="prueba-de-t-pareada" class="section level1">
+<h1>Prueba de T pareada</h1>
+<p>La prueba de T pareada es un metodo que se usa para comprobar si la
+media entre pares de medidas es o no igual a cero.</p>
+<p><em>¿Cuando usarla?</em></p>
+<ul>
+<li>Para pruebas de antes y despues (tienen que ser dos variables
+dependientes conectas entre si)</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDaGVjYXIgbm9ybWFsaWRhZCBlbiBsYSBkaWZlcmVuY2lhIGVudHJlIGNhZGEgc2V0IGRlIGRhdG9zXG5cbkRpZiA8LSBQcm9mdW5kaWRhZCRUaGF3LjIwMTBzIC0gUHJvZnVuZGlkYWQkVGhhdy4xOTcwc1xuXG5zaGFwaXJvLnRlc3QoRGlmKVxuXG5wYXIobWZyb3c9YygxLDIpKVxuaGlzdChEaWYpXG5xcW5vcm0oRGlmKVxuXG50LnRlc3QoUHJvZnVuZGlkYWQkVGhhdy4xOTcwcywgUHJvZnVuZGlkYWQkVGhhdy4yMDEwcyxcbiAgICAgICBhbHRlcm5hdGl2ZT1jKFwidHdvLnNpZGVkXCIpLFxuICAgICAgIG11PTAscGFpcmVkPVRSVUUpIFxuYGBgIn0= -->
+<pre class="r"><code># Checar normalidad en la diferencia entre cada set de datos
 
-data:  Fosf$TDP
-t = -29.433, df = 469, p-value &lt; 2.2e-16
-alternative hypothesis: true mean is not equal to 75.6
-95 percent confidence interval:
- 23.72278 30.21622
-sample estimates:
-mean of x 
-  26.9695 </code></pre>
-<!-- rnb-output-end -->
+Dif &lt;- Profundidad$Thaw.2010s - Profundidad$Thaw.1970s
+
+shapiro.test(Dif)
+
+par(mfrow=c(1,2))
+hist(Dif)
+qqnorm(Dif)
+
+t.test(Profundidad$Thaw.1970s, Profundidad$Thaw.2010s,
+       alternative=c(&quot;two.sided&quot;),
+       mu=0,paired=TRUE) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="ejercicio" class="section level2">
+<h2>Ejercicio</h2>
+<p>Encontrar o crear un mini set de datos que podria ser analizado
+usando una prueba de t pareada. Realizar el test y concluir si existe o
+no una diferencia estadistica</p>
+<p><em>Nota</em> codigo abs() es para valor absoluto, se usa cuando hay
+numeros negativos en nuestro set de datos</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0b3MgPC0gZGF0YS5mcmFtZShBZ2l0YWNpb25fMjRfaHJzID0gYygxLDE5LDIwLDIwLDE0LDEpLCBBZ2l0YWNpb25fNDhfaHJzID0gYygxLDE5LDIwLDE0LDEyLDUpLCBBZ3RhY2lvbl83Ml9ocnMgPSBjKDAsNCw4LDAsMCwyKSlcblxuRGlmZXIgPC0gZGF0b3MkQWdpdGFjaW9uXzI0X2hycyAtIGRhdG9zJEFnaXRhY2lvbl80OF9ocnNcblxuc2hhcGlyby50ZXN0KERpZmVyKVxuXG5wYXIobWZyb3c9YygxLDIpKVxuaGlzdChEaWZlcilcbnFxbm9ybShEaWZlcilcblxudC50ZXN0KGRhdG9zJEFnaXRhY2lvbl8yNF9ocnMsIGRhdG9zJEFnaXRhY2lvbl80OF9ocnMsXG4gICAgICAgYWx0ZXJuYXRpdmUgPSBjKFwidHdvLnNpZGVkXCIpLFxuICAgICAgIG11ID0gMCwgcGFpcmVkID0gVFJVRSlcblxuIyBubyBzb24gc2lnbmlmaWNhdGl2YW1lbnRlIGRpZmVyZW50ZXMsIHBvciBsbyBxdWUgbm8gaGF5IGRpZmVyZW5jaWEgZW50cmUgbG9zIGRvcyB0aWVtcG9zIGRpZmVyZW50ZXMgdXRpbGl6YWRvcy5cblxuYGBgIn0= -->
+<pre class="r"><code>datos &lt;- data.frame(Agitacion_24_hrs = c(1,19,20,20,14,1), Agitacion_48_hrs = c(1,19,20,14,12,5), Agtacion_72_hrs = c(0,4,8,0,0,2))
+
+Difer &lt;- datos$Agitacion_24_hrs - datos$Agitacion_48_hrs
+
+shapiro.test(Difer)
+
+par(mfrow=c(1,2))
+hist(Difer)
+qqnorm(Difer)
+
+t.test(datos$Agitacion_24_hrs, datos$Agitacion_48_hrs,
+       alternative = c(&quot;two.sided&quot;),
+       mu = 0, paired = TRUE)
+
+# no son significativamente diferentes, por lo que no hay diferencia entre los dos tiempos diferentes utilizados.
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="prueba-de-t-para-dos-muestras" class="section level1">
+<h1>Prueba de T para dos muestras</h1>
+<p>Esta es la mas comun o la mas conocida (tambien llamada prueba t de
+muestras independientes) es un metodo utilizado para probar si las
+medias de poblacion desconocidas de dos grupos son iguales o no.</p>
+<p>De este tipo de prueba hay dos variables la T de student y el test de
+Welch’s (no asume varianzas iguales)</p>
+<p><em>¿Cuando usarla?</em></p>
+<p>Comparar dos grupos diferentes en relacion con una variable
+dependiente:</p>
+<ul>
+<li>Biomasa de ua especie de planta en dos regimenes diferentes de
+crecimiento.</li>
+<li>Concentracion de metales pesados entres dos campos de cultivo.</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIEVzdHJ1Y3R1cmE6KHZhcmlhYmxlIGRlcCB+IHZhcmlhYmxlIGluZGVwLCBkYXRhPXRhYmxhKVxuXG50LnRlc3QoRE9DIH4gSGFiaXRhdCwgZGF0YSA9IERPQylcblxuIyBBcXVpIHNpIHNvbiBzaWduaWZpY2F0aXZhZW50ZSBkaWZcbmBgYCJ9 -->
+<pre class="r"><code>
+# Estructura:(variable dep ~ variable indep, data=tabla)
+
+t.test(DOC ~ Habitat, data = DOC)
+
+# Aqui si son significativaente dif</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Como pueden observar la estructura del codigo de estas pruebas no es
+tan complicada como todo el codigo previo que ya hemos hecho. Sin
+embargo lo complicado a partir de aqui es usar criterio para ver CUAL de
+todas las pruebas se debe usar para analizar los datos que tengas.</p>
+<div id="ejercicio-1" class="section level2">
+<h2>Ejercicio</h2>
+<p>Usando el data frame <em>calidad_Agua</em> comparar DOC (ppm),
+fosforo reactivo soluble(SRP:ug/L), y clorofila en fitoplancton (ug/L)
+en estanques de Alaska entre los anios 1970s y 2010s.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxLiBTUlBcbnNoYXBpcm8udGVzdChDYWxpZGFkX2FndWEkU1JQKVxuXG5wYXIobWZyb3c9YygxLDIpKVxuaGlzdChDYWxpZGFkX2FndWEkU1JQKVxucXFub3JtKENhbGlkYWRfYWd1YSRTUlApXG5cbnQudGVzdChsb2coU1JQKSB+IEVyYSwgZGF0YSA9IENhbGlkYWRfYWd1YSkgIyBzaSBoYXkgZGlmZXJlbmNpYXMgc2lnbmlmaWNhdGl2YXMgZW50cmVzIGxvcyBhbmlvcyB5IGVsIGZvc2Zvcm8gcmVhY3Rpdm8gc29sdWJsZSBxdWUgaGF5IGVuIGxvcyBlc3RhbnF1ZXNcblxuIyAyLiBQaHl0b1xuc2hhcGlyby50ZXN0KENhbGlkYWRfYWd1YSRQaHl0bylcblxucGFyKG1mcm93PWMoMSwyKSlcbmhpc3QoQ2FsaWRhZF9hZ3VhJFBoeXRvKVxucXFub3JtKENhbGlkYWRfYWd1YSRQaHl0bylcblxudC50ZXN0KGxvZyhQaHl0bykgfiBFcmEsIGRhdGEgPSBDYWxpZGFkX2FndWEpICMgc2kgaGF5IGRpZmVyZW5jaWFzIHNpZ25pZmljYXRpdmFzIGVudHJlcyBsb3MgYW5pb3MgeSBsYSBjbG9yb2ZpbGEgZW4gZml0b3BsYW5jdG9uXG5cbiMgMy4gRE9DMVxuc2hhcGlyby50ZXN0KENhbGlkYWRfYWd1YSRET0MxKVxuXG5wYXIobWZyb3c9YygxLDIpKVxuaGlzdChDYWxpZGFkX2FndWEkRE9DMSlcbnFxbm9ybShDYWxpZGFkX2FndWEkRE9DMSlcblxudC50ZXN0KERPQzEgfiBFcmEsIGRhdGEgPSBDYWxpZGFkX2FndWEpICMgc2kgaGF5IGRpZmVyZW5jaWFzIHNpZ25pZmljYXRpdmFzIGVudHJlIGxvcyBhbmlvcyB5IGVsIGNhcmJvbm8gb3JnYW5pY28gZGlzdWVsdG8gIFxuXG5gYGAifQ== -->
+<pre class="r"><code># 1. SRP
+shapiro.test(Calidad_agua$SRP)
+
+par(mfrow=c(1,2))
+hist(Calidad_agua$SRP)
+qqnorm(Calidad_agua$SRP)
+
+t.test(log(SRP) ~ Era, data = Calidad_agua) # si hay diferencias significativas entres los anios y el fosforo reactivo soluble que hay en los estanques
+
+# 2. Phyto
+shapiro.test(Calidad_agua$Phyto)
+
+par(mfrow=c(1,2))
+hist(Calidad_agua$Phyto)
+qqnorm(Calidad_agua$Phyto)
+
+t.test(log(Phyto) ~ Era, data = Calidad_agua) # si hay diferencias significativas entres los anios y la clorofila en fitoplancton
+
+# 3. DOC1
+shapiro.test(Calidad_agua$DOC1)
+
+par(mfrow=c(1,2))
+hist(Calidad_agua$DOC1)
+qqnorm(Calidad_agua$DOC1)
+
+t.test(DOC1 ~ Era, data = Calidad_agua) # si hay diferencias significativas entre los anios y el carbono organico disuelto  
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlQgZGUgU3R1ZGVudCB5IHN1cyB2YXJpYWNpb25lcyINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSW50cm9kdWNjaW9uDQoNClBydWViYSBkZSBoaXBvdGVzaXMgcGFyYW1ldHJpY2EgcGFyYSBjb21wYXJhciBsYSBtZWRpYSBkZSB1bmEgbyBkb3MgcG9ibGFjaW9uZXMuIFNlIHVzYSBjdWFuZG8gc2UgdGllbmUgdW5hIHZhcmlhYmxlIGRlcGVuZGllbnRlIHkgMSB2YXJpYWJsZSBpbmRlcGVuZGllbnRlIGRlIDIgb3BjaW9uZXMuDQoNCmBgYHtyfQ0KRm9zZiA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvcGhvc3Bob3J1cy5jc3YiKQ0KDQpQcm9mdW5kaWRhZCA8LSAoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL0lCUEouVGhhdy5jc3YiKQ0KDQpET0MgPC0gKCJ+L0N1cnNvUi9DdXJzb1JnaXQvTWF0ZXJpYWxlcy9Qb25kLkxha2UuRE9DLmNzdiIpDQoNCkNhbGlkYWRfYWd1YSA8LSAoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL1dRLkF1Z3VzdC5jc3YiKQ0KYGBgDQoNCiMgUHJ1ZWJhIGRlIFQgZGUgdW5hIG11ZXN0cmENCg0KVGVzdCBkZSBoaXBvdGVzaXMgZXN0YWRpc3RpY2EgcGFyYSBjb21wYXJhciBsYSBkaWZlcmVuY2lhIHNpZ25pZmljYXRpdmEgZW50cmUgdW5hIHBvYmxhY2lvbiAodHUgdmFyaWFibGUpIHkgdW4gdmFsb3IgZXNwZWNpZmljbw0KDQpfwr9DdWFuZG8gdXNhcmxhP18NCg0KKiBBbmFsaXNpcyBkZSBnZXN0aW9uIGFtYmllbnRhbA0KKiBDb250cm9sIGRlIGNhbGlkYWQNCg0KYGBge3J9DQp0LnRlc3QoRm9zZiRURFAsIG11ID0gNzUuNikgIyBtdSB2YWxvciBkZSByZWZlcmVuY2lhDQpgYGANCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlQgZGUgU3R1ZGVudCB5IHN1cyB2YXJpYWNpb25lcyINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSW50cm9kdWNjaW9uDQoNClBydWViYSBkZSBoaXBvdGVzaXMgcGFyYW1ldHJpY2EgcGFyYSBjb21wYXJhciBsYSBtZWRpYSBkZSB1bmEgbyBkb3MgcG9ibGFjaW9uZXMuIFNlIHVzYSBjdWFuZG8gc2UgdGllbmUgdW5hIHZhcmlhYmxlIGRlcGVuZGllbnRlIHkgMSB2YXJpYWJsZSBpbmRlcGVuZGllbnRlIGRlIDIgb3BjaW9uZXMuDQoNCmBgYHtyfQ0KRm9zZiA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvcGhvc3Bob3J1cy5jc3YiKQ0KDQpQcm9mdW5kaWRhZCA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvSUJQSi5UaGF3LmNzdiIpDQoNCkRPQyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvUG9uZC5MYWtlLkRPQy5jc3YiKQ0KDQpDYWxpZGFkX2FndWEgPC0gcmVhZC5jc3YoIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL1dRLkF1Z3VzdC5jc3YiKQ0KYGBgDQoNCiMgUHJ1ZWJhIGRlIFQgZGUgdW5hIG11ZXN0cmENCg0KVGVzdCBkZSBoaXBvdGVzaXMgZXN0YWRpc3RpY2EgcGFyYSBjb21wYXJhciBsYSBkaWZlcmVuY2lhIHNpZ25pZmljYXRpdmEgZW50cmUgdW5hIHBvYmxhY2lvbiAodHUgdmFyaWFibGUpIHkgdW4gdmFsb3IgZXNwZWNpZmljbw0KDQpfwr9DdWFuZG8gdXNhcmxhP18NCg0KKiBBbmFsaXNpcyBkZSBnZXN0aW9uIGFtYmllbnRhbA0KKiBDb250cm9sIGRlIGNhbGlkYWQNCg0KYGBge3J9DQojIGNoZWNhciBub3JtYWxpZGFkDQoNCnNoYXBpcm8udGVzdChGb3NmJFREUCkNCmhpc3QoRm9zZiRURFApDQoNCnQudGVzdChGb3NmJFREUCwgbXUgPSA3NS42KQ0KIyBubyBlc3RhbiBub3JtYWxpemFkb3MgbG9zIGRhdG9zIHBvciBsbyBxdWUgc2UgdGllbmVuIHF1ZSBub3JtYWxpemFyIHBhcmEgcmVhbGl6YXIgbGEgcHJ1ZWJhIGRlICJUIjoNCg0KDQp0LnRlc3QobG9nKEZvc2YkVERQKSwgbXUgPSBsb2coNzUuNikpICMgbXUgdmFsb3IgZGUgcmVmZXJlbmNpYQ0KDQpgYGANCg0KIyBQcnVlYmEgZGUgVCBwYXJlYWRhDQoNCkxhIHBydWViYSBkZSBUIHBhcmVhZGEgZXMgdW4gbWV0b2RvIHF1ZSBzZSB1c2EgcGFyYSBjb21wcm9iYXIgc2kgbGEgbWVkaWEgZW50cmUgcGFyZXMgZGUgbWVkaWRhcyBlcyBvIG5vIGlndWFsIGEgY2Vyby4NCg0KX8K/Q3VhbmRvIHVzYXJsYT9fDQoNCiogUGFyYSBwcnVlYmFzIGRlIGFudGVzIHkgZGVzcHVlcyAodGllbmVuIHF1ZSBzZXIgZG9zIHZhcmlhYmxlcyBkZXBlbmRpZW50ZXMgY29uZWN0YXMgZW50cmUgc2kpDQoNCmBgYHtyfQ0KIyBDaGVjYXIgbm9ybWFsaWRhZCBlbiBsYSBkaWZlcmVuY2lhIGVudHJlIGNhZGEgc2V0IGRlIGRhdG9zDQoNCkRpZiA8LSBQcm9mdW5kaWRhZCRUaGF3LjIwMTBzIC0gUHJvZnVuZGlkYWQkVGhhdy4xOTcwcw0KDQpzaGFwaXJvLnRlc3QoRGlmKQ0KDQpwYXIobWZyb3c9YygxLDIpKQ0KaGlzdChEaWYpDQpxcW5vcm0oRGlmKQ0KDQp0LnRlc3QoUHJvZnVuZGlkYWQkVGhhdy4xOTcwcywgUHJvZnVuZGlkYWQkVGhhdy4yMDEwcywNCiAgICAgICBhbHRlcm5hdGl2ZT1jKCJ0d28uc2lkZWQiKSwNCiAgICAgICBtdT0wLHBhaXJlZD1UUlVFKSANCmBgYA0KDQojIyBFamVyY2ljaW8NCg0KRW5jb250cmFyIG8gY3JlYXIgdW4gbWluaSBzZXQgZGUgZGF0b3MgcXVlIHBvZHJpYSBzZXIgYW5hbGl6YWRvIHVzYW5kbyB1bmEgcHJ1ZWJhIGRlIHQgcGFyZWFkYS4gUmVhbGl6YXIgZWwgdGVzdCB5IGNvbmNsdWlyIHNpIGV4aXN0ZSBvIG5vIHVuYSBkaWZlcmVuY2lhIGVzdGFkaXN0aWNhDQoNCl9Ob3RhXyBjb2RpZ28gYWJzKCkgZXMgcGFyYSB2YWxvciBhYnNvbHV0bywgc2UgdXNhIGN1YW5kbyBoYXkgbnVtZXJvcyBuZWdhdGl2b3MgZW4gbnVlc3RybyBzZXQgZGUgZGF0b3MNCg0KYGBge3J9DQpkYXRvcyA8LSBkYXRhLmZyYW1lKEFnaXRhY2lvbl8yNF9ocnMgPSBjKDEsMTksMjAsMjAsMTQsMSksIEFnaXRhY2lvbl80OF9ocnMgPSBjKDEsMTksMjAsMTQsMTIsNSksIEFndGFjaW9uXzcyX2hycyA9IGMoMCw0LDgsMCwwLDIpKQ0KDQpEaWZlciA8LSBkYXRvcyRBZ2l0YWNpb25fMjRfaHJzIC0gZGF0b3MkQWdpdGFjaW9uXzQ4X2hycw0KDQpzaGFwaXJvLnRlc3QoRGlmZXIpDQoNCnBhcihtZnJvdz1jKDEsMikpDQpoaXN0KERpZmVyKQ0KcXFub3JtKERpZmVyKQ0KDQp0LnRlc3QoZGF0b3MkQWdpdGFjaW9uXzI0X2hycywgZGF0b3MkQWdpdGFjaW9uXzQ4X2hycywNCiAgICAgICBhbHRlcm5hdGl2ZSA9IGMoInR3by5zaWRlZCIpLA0KICAgICAgIG11ID0gMCwgcGFpcmVkID0gVFJVRSkNCg0KIyBubyBzb24gc2lnbmlmaWNhdGl2YW1lbnRlIGRpZmVyZW50ZXMsIHBvciBsbyBxdWUgbm8gaGF5IGRpZmVyZW5jaWEgZW50cmUgbG9zIGRvcyB0aWVtcG9zIGRpZmVyZW50ZXMgdXRpbGl6YWRvcy4NCg0KYGBgDQoNCiMgUHJ1ZWJhIGRlIFQgcGFyYSBkb3MgbXVlc3RyYXMNCg0KRXN0YSBlcyBsYSBtYXMgY29tdW4gbyBsYSBtYXMgY29ub2NpZGEgKHRhbWJpZW4gbGxhbWFkYSBwcnVlYmEgdCBkZSBtdWVzdHJhcyBpbmRlcGVuZGllbnRlcykgZXMgdW4gbWV0b2RvIHV0aWxpemFkbyBwYXJhIHByb2JhciBzaSBsYXMgbWVkaWFzIGRlIHBvYmxhY2lvbiBkZXNjb25vY2lkYXMgZGUgZG9zIGdydXBvcyBzb24gaWd1YWxlcyBvIG5vLg0KDQpEZSBlc3RlIHRpcG8gZGUgcHJ1ZWJhIGhheSBkb3MgdmFyaWFibGVzIGxhIFQgZGUgc3R1ZGVudCB5IGVsIHRlc3QgZGUgV2VsY2gncyAobm8gYXN1bWUgdmFyaWFuemFzIGlndWFsZXMpDQoNCl/Cv0N1YW5kbyB1c2FybGE/Xw0KDQpDb21wYXJhciBkb3MgZ3J1cG9zIGRpZmVyZW50ZXMgZW4gcmVsYWNpb24gY29uIHVuYSB2YXJpYWJsZSBkZXBlbmRpZW50ZToNCg0KKiBCaW9tYXNhIGRlIHVhIGVzcGVjaWUgZGUgcGxhbnRhIGVuIGRvcyByZWdpbWVuZXMgZGlmZXJlbnRlcyBkZSBjcmVjaW1pZW50by4NCiogQ29uY2VudHJhY2lvbiBkZSBtZXRhbGVzIHBlc2Fkb3MgZW50cmVzIGRvcyBjYW1wb3MgZGUgY3VsdGl2by4NCg0KYGBge3J9DQoNCiMgRXN0cnVjdHVyYToodmFyaWFibGUgZGVwIH4gdmFyaWFibGUgaW5kZXAsIGRhdGE9dGFibGEpDQoNCnQudGVzdChET0MgfiBIYWJpdGF0LCBkYXRhID0gRE9DKQ0KDQojIEFxdWkgc2kgc29uIHNpZ25pZmljYXRpdmFlbnRlIGRpZg0KYGBgDQoNCkNvbW8gcHVlZGVuIG9ic2VydmFyIGxhIGVzdHJ1Y3R1cmEgZGVsIGNvZGlnbyBkZSBlc3RhcyBwcnVlYmFzIG5vIGVzIHRhbiBjb21wbGljYWRhIGNvbW8gdG9kbyBlbCBjb2RpZ28gcHJldmlvIHF1ZSB5YSBoZW1vcyBoZWNoby4gU2luIGVtYmFyZ28gbG8gY29tcGxpY2FkbyBhIHBhcnRpciBkZSBhcXVpIGVzIHVzYXIgY3JpdGVyaW8gcGFyYSB2ZXIgQ1VBTCBkZSB0b2RhcyBsYXMgcHJ1ZWJhcyBzZSBkZWJlIHVzYXIgcGFyYSBhbmFsaXphciBsb3MgZGF0b3MgcXVlIHRlbmdhcy4NCg0KIyMgRWplcmNpY2lvDQoNClVzYW5kbyBlbCBkYXRhIGZyYW1lIF9jYWxpZGFkX0FndWFfIGNvbXBhcmFyIERPQyAocHBtKSwgZm9zZm9ybyByZWFjdGl2byBzb2x1YmxlKFNSUDp1Zy9MKSwgeSBjbG9yb2ZpbGEgZW4gZml0b3BsYW5jdG9uICh1Zy9MKSBlbiBlc3RhbnF1ZXMgZGUgQWxhc2thIGVudHJlIGxvcyBhbmlvcyAxOTcwcyB5IDIwMTBzLg0KDQpgYGB7cn0NCiMgMS4gU1JQDQpzaGFwaXJvLnRlc3QoQ2FsaWRhZF9hZ3VhJFNSUCkNCg0KcGFyKG1mcm93PWMoMSwyKSkNCmhpc3QoQ2FsaWRhZF9hZ3VhJFNSUCkNCnFxbm9ybShDYWxpZGFkX2FndWEkU1JQKQ0KDQp0LnRlc3QobG9nKFNSUCkgfiBFcmEsIGRhdGEgPSBDYWxpZGFkX2FndWEpICMgc2kgaGF5IGRpZmVyZW5jaWFzIHNpZ25pZmljYXRpdmFzIGVudHJlcyBsb3MgYW5pb3MgeSBlbCBmb3Nmb3JvIHJlYWN0aXZvIHNvbHVibGUgcXVlIGhheSBlbiBsb3MgZXN0YW5xdWVzDQoNCiMgMi4gUGh5dG8NCnNoYXBpcm8udGVzdChDYWxpZGFkX2FndWEkUGh5dG8pDQoNCnBhcihtZnJvdz1jKDEsMikpDQpoaXN0KENhbGlkYWRfYWd1YSRQaHl0bykNCnFxbm9ybShDYWxpZGFkX2FndWEkUGh5dG8pDQoNCnQudGVzdChsb2coUGh5dG8pIH4gRXJhLCBkYXRhID0gQ2FsaWRhZF9hZ3VhKSAjIHNpIGhheSBkaWZlcmVuY2lhcyBzaWduaWZpY2F0aXZhcyBlbnRyZXMgbG9zIGFuaW9zIHkgbGEgY2xvcm9maWxhIGVuIGZpdG9wbGFuY3Rvbg0KDQojIDMuIERPQzENCnNoYXBpcm8udGVzdChDYWxpZGFkX2FndWEkRE9DMSkNCg0KcGFyKG1mcm93PWMoMSwyKSkNCmhpc3QoQ2FsaWRhZF9hZ3VhJERPQzEpDQpxcW5vcm0oQ2FsaWRhZF9hZ3VhJERPQzEpDQoNCnQudGVzdChET0MxIH4gRXJhLCBkYXRhID0gQ2FsaWRhZF9hZ3VhKSAjIHNpIGhheSBkaWZlcmVuY2lhcyBzaWduaWZpY2F0aXZhcyBlbnRyZSBsb3MgYW5pb3MgeSBlbCBjYXJib25vIG9yZ2FuaWNvIGRpc3VlbHRvICANCg0KYGBgDQoNCg0KDQo=</div>
 
 
 
