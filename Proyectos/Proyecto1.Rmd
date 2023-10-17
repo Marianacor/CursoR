@@ -1,0 +1,85 @@
+---
+title: "Proyecto_1"
+author: "Mariana Corte Rodriguez"
+date: "2023-10-16"
+output: html_document
+---
+# Introducción
+
+La lechuga _(Lactuca sativa L.)_ es una planta herbacea anual perteneciente a la familia Compositae. Es una hortaliza de oja que generalmente se consume en ensaladas
+
+```{r}
+# Data 
+
+Datos_proyecto <- read.csv("~/CursoR/CursoRgit/Proyectos/Datos_proyecto.csv")
+Estanque_plantas <- read.csv("~/CursoR/CursoRgit/Proyectos/Estanque_plantas.csv")
+
+# Librerias 
+
+library(dplyr)# manipulacion de datos, funciones, modificar columnas, filtrar, reordenar, calculos, etc.
+library(tidyr) # modificando las funciones de datos
+library(readr) # leer y escribir csvs
+library(tidyverse)
+library(car)
+
+
+
+```
+
+
+```{r}
+# varable dep ~ variable indep, datos
+
+summary(aov(Raices~Tratamiento, data = Datos_proyecto))
+
+# 1. Checar normalidad
+par(mfrow=c(1,2))
+hist(Datos_proyecto$Raices)
+qqnorm(Datos_proyecto$Raices) # no estan normalizados los datos
+
+shapiro.test(Datos_proyecto$Raices)
+
+# 2. Transformar los datos 
+par(mfrow=c(1,2))
+hist(log(Datos_proyecto$Raices))
+qqnorm(log(Datos_proyecto$Raices+1))
+
+shapiro.test(log(Datos_proyecto$Raices+1)) # se agrega un +1 porque hay valores infinitos y no se pueden sacra log a numeros ceros y al agregar un +1 se esta sumando un 1 a todos los datos a nalizar
+
+
+# Checar si estan balanceados
+Comp_suelos %>%
+  group_by(Temperature,Soil)%>%
+  summarise(n())
+
+leveneTest(logNH3 ~ Temperature*Soil, data = Comp_suelos)
+
+# Efecto aditivo
+est_anova <- aov(logNH3 ~ Temperature+Soil, data = Comp_suelos)
+Anova(est_anova)
+
+# Interaccion entre variables, es mejor siempre usar este tipo interactivo
+est_anova <- aov(logNH3 ~ Temperature*Soil, data = Comp_suelos)
+Anova(est_anova)
+
+est_Tukey <- TukeyHSD(est_anova)
+plot(est_Tukey)
+```
+
+
+
+### Ejercicio de correlación
+
+Usando los datos “modernos” de la tabla Estanques_plantas, determinar si existe una correlación entre la biomasa de dos especies acuáticas de plantas en los estanques de Alaska: Carex y Arctophila.
+
+1. Revisar si los datos cumplen todas las suposiciones de una correlación.
+2. Reportar el coeficiente de correlación y su p-value
+3. Explicar que significan estos valores y denle una interpretación a los resultados
+
+```{r}
+cor.test(Estanque_plantas$Artophila,Estanque_plantas$Carex,
+         method = "pearson")
+
+
+```
+
