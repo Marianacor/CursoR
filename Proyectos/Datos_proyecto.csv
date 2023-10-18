@@ -1,31 +1,31 @@
-Tratamiento ,Raices ,Hojas ,Condicion
-Control,NA,1,Luz
-Control,NA,1,Luz
-Control,1,3,Luz
-2 mg/L BAP + Adenina,NA,1,Luz
-2 mg/L BAP + Adenina,3,5,Luz
-2 mg/L BAP + Adenina,2,4,Luz
-4 mg/L BAP + Adenina,1,2,Luz
-4 mg/L BAP + Adenina,1,2,Luz
-4 mg/L BAP + Adenina,NA,NA,Luz
-2 mg/L BAP + Piridoxina,NA,1,Luz
-2 mg/L BAP + Piridoxina,1,4,Luz
-2 mg/L BAP + Piridoxina,0,5,Luz
-4 mg/L BAP + Piridoxina,1,3,Luz
-4 mg/L BAP + Piridoxina,3,3,Luz
-4 mg/L BAP + Piridoxina,1,3,Luz
-Control,1,2,Osc
-Control,2,6,Osc
-Control,1,3,Osc
-2 mg/L BAP + Adenina,NA,NA,Osc
-2 mg/L BAP + Adenina,NA,NA,Osc
-2 mg/L BAP + Adenina,NA,NA,Osc
-4 mg/L BAP + Adenina,1,2,Osc
-4 mg/L BAP + Adenina,2,1,Osc
-4 mg/L BAP + Adenina,NA,NA,Osc
-2 mg/L BAP + Piridoxina,3,5,Osc
-2 mg/L BAP + Piridoxina,2,3,Osc
-2 mg/L BAP + Piridoxina,3,4,Osc
-4 mg/L BAP + Piridoxina,1,5,Osc
-4 mg/L BAP + Piridoxina,1,2,Osc
-4 mg/L BAP + Piridoxina,1,2,Osc
+Tratamiento ,Condicion,Raices laterales,Hojas ,Longitud raiz
+Control,Luz,1,2,
+Control,Luz,1,2,
+Control,Luz,2,4,
+2 mg/L BAP + Adenina,Luz,1,2,
+2 mg/L BAP + Adenina,Luz,4,6,
+2 mg/L BAP + Adenina,Luz,3,5,
+4 mg/L BAP + Adenina,Luz,2,3,
+4 mg/L BAP + Adenina,Luz,2,3,
+4 mg/L BAP + Adenina,Luz,1,1,
+2 mg/L BAP + Piridoxina,Luz,1,2,
+2 mg/L BAP + Piridoxina,Luz,2,5,
+2 mg/L BAP + Piridoxina,Luz,1,6,
+4 mg/L BAP + Piridoxina,Luz,2,4,
+4 mg/L BAP + Piridoxina,Luz,4,4,
+4 mg/L BAP + Piridoxina,Luz,2,4,
+Control,Osc,2,3,
+Control,Osc,3,7,
+Control,Osc,2,4,
+2 mg/L BAP + Adenina,Osc,1,1,
+2 mg/L BAP + Adenina,Osc,1,1,
+2 mg/L BAP + Adenina,Osc,1,1,
+4 mg/L BAP + Adenina,Osc,2,3,
+4 mg/L BAP + Adenina,Osc,3,2,
+4 mg/L BAP + Adenina,Osc,1,1,
+2 mg/L BAP + Piridoxina,Osc,4,6,
+2 mg/L BAP + Piridoxina,Osc,3,4,
+2 mg/L BAP + Piridoxina,Osc,4,5,
+4 mg/L BAP + Piridoxina,Osc,2,6,
+4 mg/L BAP + Piridoxina,Osc,2,3,
+4 mg/L BAP + Piridoxina,Osc,2,3,

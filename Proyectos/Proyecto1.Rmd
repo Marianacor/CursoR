@@ -12,6 +12,7 @@ La lechuga _(Lactuca sativa L.)_ es una planta herbacea anual perteneciente a la
 # Data 
 
 Datos_proyecto <- read.csv("~/CursoR/CursoRgit/Proyectos/Datos_proyecto.csv")
+Set_datos <- read.csv("~/CursoR/CursoRgit/Proyectos/set_datos.csv")
 Estanque_plantas <- read.csv("~/CursoR/CursoRgit/Proyectos/Estanque_plantas.csv")
 
 # Librerias 
@@ -34,17 +35,17 @@ summary(aov(Raices~Tratamiento, data = Datos_proyecto))
 
 # 1. Checar normalidad
 par(mfrow=c(1,2))
-hist(Datos_proyecto$Raices)
-qqnorm(Datos_proyecto$Raices) # no estan normalizados los datos
+hist(Set_datos$Longitud_raiz_mm)
+qqnorm(Set_datos$Longitud_raiz_mm) # no estan normalizados los datos
 
-shapiro.test(Datos_proyecto$Raices)
+shapiro.test(Set_datos$Longitud_raiz_mm)
 
 # 2. Transformar los datos 
 par(mfrow=c(1,2))
-hist(log(Datos_proyecto$Raices))
-qqnorm(log(Datos_proyecto$Raices+1))
+hist(log(Set_datos$Longitud_raiz_mm))
+qqnorm(log(Set_datos$Longitud_raiz_mm))
 
-shapiro.test(log(Datos_proyecto$Raices+1)) # se agrega un +1 porque hay valores infinitos y no se pueden sacra log a numeros ceros y al agregar un +1 se esta sumando un 1 a todos los datos a nalizar
+shapiro.test(log(Set_datos$Longitud_raiz_mm)) # se agrega un +1 porque hay valores infinitos y no se pueden sacra log a numeros ceros y al agregar un +1 se esta sumando un 1 a todos los datos a nalizar
 
 
 # Checar si estan balanceados
