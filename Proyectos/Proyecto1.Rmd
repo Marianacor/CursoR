@@ -1,83 +1,129 @@
 ---
-title: "Proyecto_1"
+title: "Proyecto"
 author: "Mariana Corte Rodriguez"
 date: "2023-10-16"
-output: html_document
+output: pdf_document
 ---
 # Introducción
 
 La lechuga _(Lactuca sativa L.)_ es una planta herbacea anual perteneciente a la familia Compositae. Es una hortaliza de oja que generalmente se consume en ensaladas
 
 ```{r}
-# Data 
-
-Datos_proyecto <- read.csv("~/CursoR/CursoRgit/Proyectos/Datos_proyecto.csv")
-Set_datos <- read.csv("~/CursoR/CursoRgit/Proyectos/set_datos.csv")
-Estanque_plantas <- read.csv("~/CursoR/CursoRgit/Proyectos/Estanque_plantas.csv")
-
-# Librerias 
+# Librerias y Paquetes
 
 library(dplyr)# manipulacion de datos, funciones, modificar columnas, filtrar, reordenar, calculos, etc.
+
 library(tidyr) # modificando las funciones de datos
+
 library(readr) # leer y escribir csvs
+
 library(tidyverse)
-library(car)
 
+library(car) # Este paquete esta enfocado a varios tipos de analisis estadisticos y su funcion de ANOVA tiene un argumento para lidiar con datos desbalanceados (Tipo II y III). Ademas que este paquete tambien cuenta con la funcion levene para checar igualdad de varianzas.
 
+library(tinytex)
+
+library(devtools)
+
+devtools::install_github('yihui/tinytex')
 
 ```
 
+## Analisis estadistico
 
+Antes de comenzar a realizar el analisis estadistico del set de datos es necesario seguir los siguientes pasos para asegurarnos que los datos cumplan con todas las suposiciones:
+
+__1. Normalización:__ Los datos a analizar deben seguir una distribución normal por lo que se realizará el test de shapiro, un histograma y un qqplot. Codigos:
+
+* shapiro.test()
+* hist()
+* qqnorm()
+
+__2. Transformación:__ Si los datos de las variables a analizar no estan normalizados se deberán transformar siguiendo las normas dependiendo de como esten distribuidos los datos.
+
+__3. Balancear:__ Una vez que los datos esten normalizados se procede a revisar que las variables independientes del set de datos esten balanceadas para decidir que tipo de ANOVA se utilizara.
+
+__4. Homogeneidad de varianzas:__ Se caracteriza por poder comparar 2 o más poblaciones y esto es importante a la hora de contrastar la homogeneidad de varianzas para determinar si los grupos se distribuyen de forma normal o no. Si son homogeneos los datos se puede proceder a realizar el analisis de ANOVA y Tukey. Codigo:
+
+* leveneTest(varable dep ~ variable indep, datos =)
+
+__5. ANOVA:__ Es una fórmula estadística que se utiliza para comparar las varianzas entre las medias de mas de dos grupos. Existe el ANOVA de una sola vía en donde se compara una variable independiente sobre una variable dependiente. Así mismo, existe el ANOVA de dos vías en donde se compara dos variables independientes sobre una variable dependiente. Codigo:
+
+* aov(var dep ~ var indep, data = )
+* Anova(datos)
+* Anova(datos, type = 2)
+* Anova(datos, type = 3)
+
+__6. Tukey:__ En el caso que en el ANOVA existan diferencias significativas entre los tratamientos, el siguiente paso es realizar un test de Tukey en el cual nos indique cuales de los tratamientos son diferentes entre si. Codigo:
+
+* TukeyHSD()
+
+### Resultados del analisis estadistico:
 ```{r}
-# varable dep ~ variable indep, datos
+# Set de datos que se utilizara y que se cargo al ambiente utilizando la libreria readr: 
 
-summary(aov(Raices~Tratamiento, data = Datos_proyecto))
+Set_datos <- read.csv("~/CursoR/CursoRgit/Proyectos/Set_datos_nuevo.csv")
 
-# 1. Checar normalidad
-par(mfrow=c(1,2))
-hist(Set_datos$Longitud_raiz_mm)
-qqnorm(Set_datos$Longitud_raiz_mm) # no estan normalizados los datos
+```
 
-shapiro.test(Set_datos$Longitud_raiz_mm)
+#### 1. Normalización
+```{r}
+# Test de Shapiro
+for (i in 3:ncol(Set_datos)) {
+  shapiro <- shapiro.test(Set_datos[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
 
-# 2. Transformar los datos 
-par(mfrow=c(1,2))
-hist(log(Set_datos$Longitud_raiz_mm))
-qqnorm(log(Set_datos$Longitud_raiz_mm))
+# Histograma
+for(i in 3:ncol(Set_datos)) {
+  hist(Set_datos[,i],
+       main = i)
+}
 
-shapiro.test(log(Set_datos$Longitud_raiz_mm)) # se agrega un +1 porque hay valores infinitos y no se pueden sacra log a numeros ceros y al agregar un +1 se esta sumando un 1 a todos los datos a nalizar
+# Qqplot
+for(i in 3:ncol(Set_datos)) {
+  qqnorm(Set_datos[,i],
+       main = i)
+}
 
+```
 
-# Checar si estan balanceados
-Comp_suelos %>%
-  group_by(Temperature,Soil)%>%
-  summarise(n())
+#### 2. Transformación
+```{r}
 
-leveneTest(logNH3 ~ Temperature*Soil, data = Comp_suelos)
+```
 
-# Efecto aditivo
-est_anova <- aov(logNH3 ~ Temperature+Soil, data = Comp_suelos)
-Anova(est_anova)
+#### 3. Checar si los datos estan balanceados
+```{r}
 
-# Interaccion entre variables, es mejor siempre usar este tipo interactivo
-est_anova <- aov(logNH3 ~ Temperature*Soil, data = Comp_suelos)
-Anova(est_anova)
+```
 
-est_Tukey <- TukeyHSD(est_anova)
-plot(est_Tukey)
+#### 4. Homogeneidad de varianzas
+```{r}
+
+```
+
+#### 5. ANOVA y Tukey
+```{r}
+
 ```
 
 
-
-### Ejercicio de correlación
+## Ejercicio de correlación
 
 Usando los datos “modernos” de la tabla Estanques_plantas, determinar si existe una correlación entre la biomasa de dos especies acuáticas de plantas en los estanques de Alaska: Carex y Arctophila.
 
-1. Revisar si los datos cumplen todas las suposiciones de una correlación.
-2. Reportar el coeficiente de correlación y su p-value
-3. Explicar que significan estos valores y denle una interpretación a los resultados
+__1.__ Revisar si los datos cumplen todas las suposiciones de una correlación.
+
+__2.__ Reportar el coeficiente de correlación y su p-value
+
+__3.__ Explicar que significan estos valores y denle una interpretación a los resultados
 
 ```{r}
+# Set de datos que se utilizara y que se cargo al ambiente utilizando la libreria readr:
+Estanque_plantas <- read.csv("~/CursoR/CursoRgit/Proyectos/Estanque_plantas.csv")
+
 cor.test(Estanque_plantas$Artophila,Estanque_plantas$Carex,
          method = "pearson")
 

@@ -364,7 +364,7 @@ perteneciente a la familia Compositae. Es una hortaliza de oja que
 generalmente se consume en ensaladas</p>
 <pre class="r"><code># Data 
 
-Datos_proyecto &lt;- read.csv(&quot;~/CursoR/CursoRgit/Proyectos/Datos_proyecto.csv&quot;)
+Set_datos &lt;- read.csv(&quot;~/CursoR/CursoRgit/Proyectos/Set_datos_nuevo.csv&quot;)
 Estanque_plantas &lt;- read.csv(&quot;~/CursoR/CursoRgit/Proyectos/Estanque_plantas.csv&quot;)
 
 # Librerias 
@@ -401,18 +401,37 @@ library(tidyverse)</code></pre>
 ## The following object is masked from &#39;package:dplyr&#39;:
 ## 
 ##     recode</code></pre>
-<div id="ejercicio-de-correlación" class="section level3">
-<h3>Ejercicio de correlación</h3>
+<div id="analisis-estadistico" class="section level4">
+<h4>Analisis estadistico</h4>
+<p>Antes de comenzar a realizar el analisis estadistico del set de datos
+es necesario seguir los siguientes pasos para asegurarnos que los datos
+cumplan con todas las suposiciones:</p>
+<p><strong>1. Normalización:</strong> Los datos a analizar deben seguir
+una distribución normal por lo que se realizará el test de Shapiro, un
+histograma y un qqplot.</p>
+<p><strong>2. Transformación:</strong> Si los datos de las variables a
+analizar no estan normalizados se deberán transformar siguiendo las
+normas dependiendo de como esten distribuidos los datos.</p>
+<p><strong>3. Balancear:</strong> Una vez que los datos esten
+normalizados se procede a revisar que las variables independientes del
+set de datos esten balanceadas para decidir que tipo de ANOVA se
+utilizara.</p>
+<p><strong>4. Homogeneidad de varianzas:</strong></p>
+<p><strong>5. ANOVA:</strong></p>
+<p><strong>6. Tukey:</strong></p>
+<pre class="r"><code># 1. Checar normalidad para la variable de longitud de raiz</code></pre>
+</div>
+<div id="ejercicio-de-correlación" class="section level4">
+<h4>Ejercicio de correlación</h4>
 <p>Usando los datos “modernos” de la tabla Estanques_plantas, determinar
 si existe una correlación entre la biomasa de dos especies acuáticas de
 plantas en los estanques de Alaska: Carex y Arctophila.</p>
-<ol style="list-style-type: decimal">
-<li>Revisar si los datos cumplen todas las suposiciones de una
-correlación.</li>
-<li>Reportar el coeficiente de correlación y su p-value</li>
-<li>Explicar que significan estos valores y denle una interpretación a
-los resultados</li>
-</ol>
+<p><strong>1.</strong> Revisar si los datos cumplen todas las
+suposiciones de una correlación.</p>
+<p><strong>2.</strong> Reportar el coeficiente de correlación y su
+p-value</p>
+<p><strong>3.</strong> Explicar que significan estos valores y denle una
+interpretación a los resultados</p>
 <pre class="r"><code>cor.test(Estanque_plantas$Artophila,Estanque_plantas$Carex,
          method = &quot;pearson&quot;)</code></pre>
 <pre><code>## 
