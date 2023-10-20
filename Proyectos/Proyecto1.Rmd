@@ -2,7 +2,7 @@
 title: "Proyecto"
 author: "Mariana Corte Rodriguez"
 date: "2023-10-16"
-output: pdf_document
+output: html_document
 ---
 # Introducción
 
@@ -66,47 +66,47 @@ Set_datos <- read.csv("~/CursoR/CursoRgit/Proyectos/Set_datos_nuevo.csv")
 
 ```
 
-#### 1. Normalización
 ```{r}
+# 1. Normalización y Transformacion
+
 # Test de Shapiro
+
 for (i in 3:ncol(Set_datos)) {
   shapiro <- shapiro.test(Set_datos[,i])
   normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
   print(c(i,normal))
 }
 
-# Histograma
-for(i in 3:ncol(Set_datos)) {
-  hist(Set_datos[,i],
-       main = i)
-}
+# Histograma y qqplot para Longitud de Raiz
+par(mfrow=c(1,2))
+hist(Set_datos$Longitud_raiz_mm)
+qqnorm(Set_datos$Longitud_raiz_mm)
 
-# Qqplot
-for(i in 3:ncol(Set_datos)) {
-  qqnorm(Set_datos[,i],
-       main = i)
-}
+# Histograma y qqplot para Longitud de Tallo
+par(mfrow=c(1,2))
+hist(Set_datos$Longitud_tallo_mm)
+qqnorm(Set_datos$Longitud_tallo_mm)
 
-```
+par(mfrow=c(1,2))
+hist(log(Set_datos$Longitud_tallo_mm))
+qqnorm(log(Set_datos$Longitud_tallo_mm))
 
-#### 2. Transformación
-```{r}
+# Histograma y qqplot para Numero de hojas
+par(mfrow=c(1,2))
+hist(Set_datos$Numero_de_hojas)
+qqnorm(Set_datos$Numero_de_hojas)
 
-```
+par(mfrow=c(1,2))
+hist(log(Set_datos$Numero_de_hojas))
+qqnorm(log(Set_datos$Numero_de_hojas))
 
-#### 3. Checar si los datos estan balanceados
-```{r}
 
-```
 
-#### 4. Homogeneidad de varianzas
-```{r}
+# 3. Checar si los datos estan balanceados
 
-```
+# 4. Homogeneidad de varianzas
 
-#### 5. ANOVA y Tukey
-```{r}
-
+# 5. ANOVA y Tukey
 ```
 
 
@@ -120,13 +120,15 @@ __2.__ Reportar el coeficiente de correlación y su p-value
 
 __3.__ Explicar que significan estos valores y denle una interpretación a los resultados
 
+
 ```{r}
 # Set de datos que se utilizara y que se cargo al ambiente utilizando la libreria readr:
 Estanque_plantas <- read.csv("~/CursoR/CursoRgit/Proyectos/Estanque_plantas.csv")
 
-cor.test(Estanque_plantas$Artophila,Estanque_plantas$Carex,
+Estanque_filt <- Estanque_plantas[which(Estanque_plantas$Era == "Modern"),]
+
+cor.test(Estanque_filt$Artophila,Estanque_filt$Carex,
          method = "pearson")
-
-
 ```
+
 
