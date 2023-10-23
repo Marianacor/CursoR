@@ -2,7 +2,9 @@
 title: "Proyecto"
 author: "Mariana Corte Rodriguez"
 date: "2023-10-16"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 # Introducción
 
@@ -12,40 +14,112 @@ La lechuga _(Lactuca sativa L.)_ es una planta herbacea anual perteneciente a la
 # Librerias y Paquetes
 
 library(dplyr)# manipulacion de datos, funciones, modificar columnas, filtrar, reordenar, calculos, etc.
-
 library(tidyr) # modificando las funciones de datos
-
 library(readr) # leer y escribir csvs
-
 library(tidyverse)
-
 library(car) # Este paquete esta enfocado a varios tipos de analisis estadisticos y su funcion de ANOVA tiene un argumento para lidiar con datos desbalanceados (Tipo II y III). Ademas que este paquete tambien cuenta con la funcion levene para checar igualdad de varianzas.
-
 library(tinytex)
-
 library(devtools)
 
 devtools::install_github('yihui/tinytex')
 
 ```
-
 ## Analisis estadistico
 
 Antes de comenzar a realizar el analisis estadistico del set de datos es necesario seguir los siguientes pasos para asegurarnos que los datos cumplan con todas las suposiciones:
 
-__1. Normalización:__ Los datos a analizar deben seguir una distribución normal por lo que se realizará el test de shapiro, un histograma y un qqplot. Codigos:
+* Normalización 
+
+* Transformación
+
+* Balancear
+
+* Homogeneidad de varianzas 
+
+```{r}
+# Set de datos que se utilizara y que se cargo al ambiente utilizando la libreria readr: 
+
+Set_datos <- read.csv("~/CursoR/CursoRgit/Proyectos/Set_datos_nuevo.csv")
+
+```
+
+__1. Normalización y Transformacion:__ Los datos a analizar deben seguir una distribución normal por lo que se realizará el test de shapiro, un histograma y un qqplot. Codigos:
 
 * shapiro.test()
 * hist()
 * qqnorm()
 
-__2. Transformación:__ Si los datos de las variables a analizar no estan normalizados se deberán transformar siguiendo las normas dependiendo de como esten distribuidos los datos.
+Si los datos de las variables a analizar no estan normalizados se deberán transformar siguiendo las normas dependiendo de como esten distribuidos los datos.
 
-__3. Balancear:__ Una vez que los datos esten normalizados se procede a revisar que las variables independientes del set de datos esten balanceadas para decidir que tipo de ANOVA se utilizara.
+```{r}
+# Test de Shapiro
+
+for (i in 3:ncol(Set_datos)) {
+  shapiro <- shapiro.test(Set_datos[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+``` 
+
+Se utilizo la funcion "FOR LOOP IF ELSE" para resolver de una sola vez cual de las tres variables si cumplen con el test de shapiro.Se obtuvo como resultados que la variable de longitud de raiz si cumple con el test por que el valor de pvalue si es mayor a 0.05, mientras que la longitud de tallo y el numero de hojas no cumple. Se deberan transformar esas dos variables.
+
+```{r}
+# Histograma y qqplot para Longitud de Raiz
+
+par(mfrow=c(1,2))
+hist(Set_datos$Longitud_raiz_mm)
+qqnorm(Set_datos$Longitud_raiz_mm)
+```
+Ambos graficos se observan normalizados por lo que no es necesario transformar los datos para la variable de __Longitud_raiz_mm__.
+
+```{r}
+# Histograma y qqplot para Longitud de Tallo
+
+par(mfrow=c(2,2)) # se acomoda en 2 filas y columnas antes y despues de normalizar.
+hist(Set_datos$Longitud_tallo_mm)
+qqnorm(Set_datos$Longitud_tallo_mm)
+hist(log(Set_datos$Longitud_tallo_mm))
+qqnorm(log(Set_datos$Longitud_tallo_mm))
+
+shapiro.test(log(Set_datos$Longitud_tallo_mm))
+```
+
+Se transformaron los datos para la variable __Longitud_tallo_mm__ debido a que los datos se observan con sesgo a la derecha y por eso se utilizo la funcion "log". Una vez transformados los datos se obtiene un pvalue mayor a 0.05 para el test de shapiro, el histograma se observa simetrico y el qqplot esta un poco más linearizado.
+
+```{r}
+# Histograma y qqplot para Numero de hojas
+par(mfrow=c(2,2))
+hist(Set_datos$Numero_de_hojas)
+qqnorm(Set_datos$Numero_de_hojas)
+hist(asin(Set_datos$Numero_de_hojas))
+qqnorm(asin(Set_datos$Numero_de_hojas))
+
+shapiro.test(Set_datos$Numero_de_hojas)
+
+```
+
+__3. Checar si los datos estan balanceados:__ Una vez que los datos esten normalizados se procede a revisar que las variables independientes del set de datos esten balanceadas para decidir que tipo de ANOVA se utilizara.
+
+```{r}
+Set_datos %>%
+  group_by(Tratamiento,Temperatura)%>%
+  summarise(n())
+
+```
 
 __4. Homogeneidad de varianzas:__ Se caracteriza por poder comparar 2 o más poblaciones y esto es importante a la hora de contrastar la homogeneidad de varianzas para determinar si los grupos se distribuyen de forma normal o no. Si son homogeneos los datos se puede proceder a realizar el analisis de ANOVA y Tukey. Codigo:
 
-* leveneTest(varable dep ~ variable indep, datos =)
+* leveneTest(varable dep ~ variable indep, datos = )
+
+```{r}
+# Variable Longitud de raiz
+leveneTest(Longitud_raiz_mm ~ Tratamiento*Temperatura, data = Set_datos)
+
+#Variable Longitud de tallo
+leveneTest(log(Longitud_tallo_mm) ~ Tratamiento*Temperatura, data = Set_datos)
+``` 
+
+Da como resultado de pvalue 0.28 por lo que es mayor a 0.05, y por lo tanto  se puede continuar con el analisis de ANOVA. Da como resultado de pvalue 0.074 por lo que es mayor a 0.05, y por lo tanto se puede continuar con el analisis de ANOVA.
 
 __5. ANOVA:__ Es una fórmula estadística que se utiliza para comparar las varianzas entre las medias de mas de dos grupos. Existe el ANOVA de una sola vía en donde se compara una variable independiente sobre una variable dependiente. Así mismo, existe el ANOVA de dos vías en donde se compara dos variables independientes sobre una variable dependiente. Codigo:
 
@@ -54,61 +128,59 @@ __5. ANOVA:__ Es una fórmula estadística que se utiliza para comparar las vari
 * Anova(datos, type = 2)
 * Anova(datos, type = 3)
 
+```{r}
+# Variable Longitud de raiz
+Est_anova <- aov(Longitud_raiz_mm ~ Tratamiento*Temperatura, data = Set_datos)
+Anova(Est_anova)
+
+# Variable Longitud de tallo
+Est_anova2 <- aov(log(Longitud_tallo_mm) ~ Tratamiento*Temperatura, data = Set_datos)
+Anova(Est_anova2)
+```
+
 __6. Tukey:__ En el caso que en el ANOVA existan diferencias significativas entre los tratamientos, el siguiente paso es realizar un test de Tukey en el cual nos indique cuales de los tratamientos son diferentes entre si. Codigo:
 
 * TukeyHSD()
 
-### Resultados del analisis estadistico:
 ```{r}
-# Set de datos que se utilizara y que se cargo al ambiente utilizando la libreria readr: 
-
-Set_datos <- read.csv("~/CursoR/CursoRgit/Proyectos/Set_datos_nuevo.csv")
-
+# Variable Longitud de raiz
+Est_Tukey <- TukeyHSD(Est_anova)
+par(mfrow=c(1,3))
+plot(Est_Tukey)
 ```
+Se obtuvieron los siguientes resultados despues del analisis estadistico por Tukey:
+
+__1.__
+
+__2.__
+
+__3.__
+
+__4.__
+
+__5.__
+
+__6.__
 
 ```{r}
-# 1. Normalización y Transformacion
-
-# Test de Shapiro
-
-for (i in 3:ncol(Set_datos)) {
-  shapiro <- shapiro.test(Set_datos[,i])
-  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
-  print(c(i,normal))
-}
-
-# Histograma y qqplot para Longitud de Raiz
-par(mfrow=c(1,2))
-hist(Set_datos$Longitud_raiz_mm)
-qqnorm(Set_datos$Longitud_raiz_mm)
-
-# Histograma y qqplot para Longitud de Tallo
-par(mfrow=c(1,2))
-hist(Set_datos$Longitud_tallo_mm)
-qqnorm(Set_datos$Longitud_tallo_mm)
-
-par(mfrow=c(1,2))
-hist(log(Set_datos$Longitud_tallo_mm))
-qqnorm(log(Set_datos$Longitud_tallo_mm))
-
-# Histograma y qqplot para Numero de hojas
-par(mfrow=c(1,2))
-hist(Set_datos$Numero_de_hojas)
-qqnorm(Set_datos$Numero_de_hojas)
-
-par(mfrow=c(1,2))
-hist(log(Set_datos$Numero_de_hojas))
-qqnorm(log(Set_datos$Numero_de_hojas))
-
-
-
-# 3. Checar si los datos estan balanceados
-
-# 4. Homogeneidad de varianzas
-
-# 5. ANOVA y Tukey
+# Variable Longitud de tallo
+Est_Tukey2 <- TukeyHSD(Est_anova2)
+par(mfrow=c(1,3))
+plot(Est_Tukey2)
 ```
+Se obtuvieron los siguientes resultados despues del analisis estadistico por Tukey:
 
+__1.__ Las plantas a las que se les aplico fertilizante que crecieron a 15°C presentaron diferencias significativas sobre aquellas plantas que se les aplico bioestimulante a 15°C. Esto indica que si hay diferencias sobre el tratamiento que se utilizo en cuanto a la longitud de tallo de las plantas.
+
+__2.__ Las plantas a las que se les aplico bioestimulante y crecieron a 20°C no presentaron diferencias significativas sobre aquellas plantas que se les aplico bioestimulante a 15°C. Esto nos indica que no hay diferencias en el crecimiento del tallo de las plantas al variar la temperatura, en ambos casos las plantas crecieron bien al utilizar el tratamiento del bioestimulante.
+
+__3.__ Las plantas a las que se les aplico el fertilizante crecieron a 20°C presentaron diferencias significativas sobre aquellas plantas que se les aplico bioestimulante a 15°C. Esto nos indica que si hay diferencias en el crecimiento del tallo de las plantas al variar la temperatura y el tratamiento.
+
+__4.__ Las plantas a las que se les aplico el fertilizante a 20°C presentaron diferencias significativas sobre aquellas plantas que se les aplico bioestimulante a 15°C. Esto nos indica que si hay diferencias en el crecimiento del tallo de las plantas al variar la temperatura y el tratamiento.
+
+__5.__ 
+
+__6.__ 
 
 ## Ejercicio de correlación
 
