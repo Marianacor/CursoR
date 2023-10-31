@@ -1,0 +1,162 @@
+---
+title: "Visualizacion de datos usando ggplot2"
+output: html_notebook
+---
+
+# Introduccion
+
+Graficar con R tiene varias posibilidades. Hasta este momento todos los graficos que hemos hecho han sido con las funciones base. Si bien con las funciones base tambien se ppueden hacer grafico mediante decentes, la base para graficar en Rstudio ahora es el paquete gglot2.
+
+El nombre de __ggplot2__ viene de la _Gramatica de Graficar_ y creo que es importante mencionar ya que la sintaxis que usa es muy parecida a bloques de gramatica y aunque no lo crean es mucho mas facil de entender que R base.
+
+Los elementos de ggplot:
+
+1. Datos: Los datos en bruto que quieras graficar.
+
+2. Geometrias geom_: las figuras que van a representar los datos.
+
+3. Estetica aes(): que variables voy a graficar y que tan bonito se va a ver nuestro graficos y sus ojetos estadisiticos. Aqui se especifica posicion, color, tamaño, forma y transparencia.
+
+4. Escala scale_: las dimensiones de tu grafico y donde van a ser "dibujados" tus datos.
+
+5. Transformaciones estadisticas stat_: resumenes estadisticos que incluir en el grafico como quantiles, curvas y sumas.
+
+6. Coordnadas coor_
+
+7. Facetas facet_: el arreglo de los datos de una red de graficos
+
+8. Temas theme(): va a ser su mejor amigo! En general cambia de una manera rapida varios elementos visuales del grafico (fondo no datos).
+
+```{r}
+# Librerias
+library(tidyverse)
+library(ggplot2)
+
+# Data
+data("airquality")
+View(airquality)
+
+FlujoC <- read.csv("~/CursoR/CursoRgit/Materiales/flujos.csv")
+```
+
+# Sintaxis basica de un ggplot
+
+La sintaxis para ggplot2 nos entienda es un poco diferenre de R base. DE los elementos que les explique arriba un grafico base necesita que lo especifiques 3 cosas:
+
+* Datos: lo primero que definimos al abrir el comando ggplot()
+* Estetica: dentro de ese mismo comando entra aes() aqui es donde vamos a decirle al grafico QUE es lo que vamos a graficar es decir le vamos a especificar las variabales que queremos que nos grafique.
+* Geometria
+
+```{r}
+g <- ggplot(airquality, aes(x = Day, y = Temp))
+```
+
+¿Porque nos sale vacio el grafico?
+La ventaja de ggplot es que se puede guardar como un objeto al cual se le pueden ir agregando cosas:
+
+```{r}
+# agregando geometrias
+
+g + geom_point()
+g + geom_line()
+g + geom_line() + geom_point()
+
+```
+
+Como pueden ver con los mismos datos se puede hacer un grafico totalmente diferente. La clave esta en saber que bloques usar para construirlo!
+
+## Modificando las propiedades de una geometrias
+
+```{r}
+g +
+  geom_point(color = "#B03060", shape = "triangle", size = 2)+
+  geom_line(color = "#9370DB", linetype = "solid", lwd = .3)
+
+```
+
+## Temas
+
+```{r}
+theme_set(theme_bw())
+g + geom_point(color = "#B03060")
+g + geom_point(color = "azure")+ theme_dark()
+```
+
+## Ejercicio
+
+Usando los datos de ejemplo, creen que temperatura y radiacion solar esten correlacionados de alguna manera? Grafiquen con lo que hemos aprendido y diganme su opinion
+
+```{r}
+ggplot(airquality, aes(x = Solar.R, y = Temp))+
+  geom_point(color = "#B03060", shape = "triangle", size = 3)+
+  geom_line(color = "mediumpurple3", linetype = "solid", lwd = 0.7)+
+  theme_grey()
+
+```
+
+## Cambiando los ejes
+
+```{r}
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") # para poner unidades
+
+# agregando superindice
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", 
+       y = expression(paste("Temperature(°F)"
+                             ^"(Porfa cambien a Celsius)")))
+
+# agregando subindice
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(size = 3, fill = "#4EEE94",
+             color = "purple", shape = 21)+
+  xlab("Day")+
+  ylab(bquote("Temperature(°F)"["Porfa cambien a Celsius"]))
+
+# Cambiando tamanios de titulos 
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15)) # esto sirve para modificar el tamaño de cada eje
+
+# vs cambiando el tamaño de titulos en todo el grafico
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  theme_light(base_size = 13) # esto funciona para cambiar e tamaño en todo el grafico
+```
+
+Y de ahi de nuevo e cielo es el limite. Ademas de las modificaciones a los titulos de los ejes tambien se pueden mdificar la estetica de la escala como tal:
+
+```{r}
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  theme(axis.text = element_text(color = "dodgerblue",
+                                 size = 13,
+                                 face = "bold"))
+
+# modificando el angulo del texto
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  theme(axis.text = element_text(color = "dodgerblue",
+                                 size = 13,
+                                 face = "bold"),
+        axis.text.x = element_text(angle = 50,
+                                   vjust = 1, # cambia la altura a la que se colocan los numeros de la linea del eje vertical
+                                   hjust = 1, # cambia la distancia del eje de manera horizontal
+                                   size = 13))
+
+# o de done a donde va tu escala
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  ylim(c(50, 100))
+
+```
+
+
