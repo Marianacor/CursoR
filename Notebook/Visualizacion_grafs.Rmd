@@ -159,4 +159,52 @@ ggplot(airquality, aes(x = Day, y = Temp))+
 
 ```
 
+## Modificando los titulos
+
+```{r}
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  ggtitle("Calidad del Aire")
+
+# Ocupas mas que un solo titulo?
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)",
+       title = "Calidad de aire",
+       subtitle = "Odio los grados Farenheit",
+       caption = "Datos de ejemplo",
+       tag = "Fig. 1") 
+
+# Modificando la estetica del titulo
+ggplot(airquality, aes(x = Day, y = Temp))+
+  geom_point(color = "purple")+
+  labs(x = "Day", y = "Temperature(°F)") +
+  ggtitle("Calidad del Aire")+
+  theme(plot.title = element_text(hjust = 0.5, size = 20, color = "red", face = "bold"))
+ # face es para cambiar tipo de texto
+```
+
+# Ejercicio final
+
+Ahora si haran su primer grafico desde cero. Usando los datos de flujoC quiero que me grafiquen la concentracion de CH4 por minuto. El grafico debe incluir cada uno de los siguientes elementos:
+
+1. Por lo menos un cambio dentro de la geometria del grafico
+2. Etiquetas de los ejes(Y quiero que el 4 este en subindice)
+3. Modificacion de la escala de los ejes
+4. Un titulo con por lo menos una modificacion en formato
+
+```{r}
+ggplot(FlujoC, aes(x = Minute, y = CH4.conc))+
+  geom_point(size = 2, color = "#8B668B", shape = "triangle")+
+  geom_line(color = "mediumpurple3", linetype = "solid", lwd = 0.7)+
+  xlab("Tiempo (min)")+
+  ylab(bquote("CH"["4"]))+
+  ylim(c(12.5, 27.5))+
+  theme_gray(base_size = 13)+
+  ggtitle("Flujo de la concentracion de metano")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "#2F4F4F", face = "bold"))
+
+
+```
 
