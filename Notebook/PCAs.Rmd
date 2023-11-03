@@ -1,0 +1,108 @@
+---
+title: "Graficos de analisis de componentes principales"
+output: html_notebook
+---
+
+# Introduccion
+
+El analisis de componentes principales o PCA por sus siglas en ingles es un metodo de reduccion de dimensionalista que comunmente se usa para reducir la dimensionalidad de grandes sets de datos transformandos los mismos en datos simplicados que igual contengan la mayor cantidad de informacion posible del set original. Es uno de los métodos de análisis de datos multivariantes más utilizados que permite investigar conjuntos de datos multidimensionales con variables cuantitativas.
+
+En palabras mas simples (y al nivel de estadistica en el que comprendo los PCAs) este analisis lo que hace es transformar tus datos en "distancias" que toman en cuenta todas tus variables independientes y las traduce a puntos en un plano. Los valores de las variables dependientes definen cuales puntos estaran mas cerca unos de otros en el plano y de ahi se puede determinar la relacion que existe entre tus muestras. 
+
+El resultado de los PCAs son coordenadas por lo que siempre vienen acompanados de un grafico en el cual los ejes no tienen ninguna unidad. Siempre se usan el PC 1 y el 2 para graficar ya que estos son los que tienen el mayor porcentaje de explicacion en la variacion de los datos y ese porcentaje usualmente es lo que se reporta en el grafico.
+
+
+```{r}
+# Library
+library(tidyverse)
+library(ggplot2)
+library(ggforce)
+library(ggbreak)
+library(wesanderson)
+
+# Data
+Exudados <- read.csv("~/CursoR/CursoRgit/Materiales/Exudates_PCA.csv")
+
+# Ejercicio
+Metab <- read.csv("~/CursoR/CursoRgit/Materiales/Grupos_metabolicos.csv")
+```
+
+# Calcular PCAs
+
+```{r}
+### PCA values ###
+
+PCAc <- prcomp(Exudados[,4:42], center = TRUE,
+               scale. = TRUE) # center para que empiece a mostrar los datos del centro para afuera
+
+summary(PCAc) # checar nuestra proporcion de varianza
+```
+
+Si se fijan al correr el resumen de este objeto dice que nos va a dar la importancia de los componentes. En este caso tenemos 25 PCAs o componentes ya que tenemos 25 muestras. Como mencione anteriormente los que usan a graficar es PC1 y 2 y para saber los porcentajes se toma la proporcion de varianza.
+
+La proporcion de varianza se puede definir a el porcentaje que dicho PC describe los datos. Si entre el PC 1 y 2 el porcentaje o proporcion de varianza pasan el 50% quiere decir que son "significativas" y si se pueden usar para describir nuestros datos.
+
+En este caso:
+
+* PC1: 65.36%
+* PC2: 15.06%
+
+## Guardar la tabla de PCA
+
+```{r}
+PCAscores <- PCAc[["x"]]
+
+PCAscores <- as.data.frame(PCAscores) %>%
+  add_column(Plant_type = Exudados$Plant_type) %>%
+  add_column(Treatment = Exudados$Treatment)
+```
+
+## El grafico
+
+```{r}
+Exu_ellipse <- ggplot(data = PCAscores,
+                     aes(x = PC1, y = PC2, color = Treatment,
+                         shape = Plant_type))+
+  geom_point(size = 3)+
+  theme_bw()+
+  scale_color_manual(values = wes_palette("BottleRocket2", n = 4),
+                     name = "Treatment")
+
+Exu_ellipse <- Exu_ellipse +
+  geom_mark_ellipse(aes(fill = Treatment,
+                        color = Treatment))+
+  scale_fill_manual(values = wes_palette("BottleRocket2", n = 4),
+                    name = "Treatment")
+
+Exu_ellipse <- Exu_ellipse +
+  labs(x = "PC 1(65.36%)",
+       y = "PC 2 (15.06%)",
+       shape = "Plant Type")
+
+Exu_ellipse
+ 
+```
+
+### Mini ejercicio
+
+Cambien los colores dentro del grafico y el nombre de las leyendas a espanol
+
+```{r}
+Exu_ellipse <- ggplot(data = PCAscores,
+                     aes(x = PC1, y = PC2, color = Treatment,
+                         shape = Plant_type))+
+  geom_point(size = 3)+
+  theme_bw()+
+  scale_color_manual()
+
+Exu_ellipse <- Exu_ellipse +
+  geom_mark_ellipse(aes(fill = Treatment,
+                        color = Treatment))+
+  scale_fill_manual()
+
+Exu_ellipse <- Exu_ellipse +
+  labs(x = "PC 1(65.36%)",
+       y = "PC 2 (15.06%)",
+       shape = "Plant Type")
+```
+
