@@ -14,6 +14,8 @@ library(ggplot2)
 library(patchwork)
 library(RColorBrewer)
 library(ggbreak)
+library(plotrix)
+library(ggsignif)
 
 ## Data
 
@@ -579,4 +581,180 @@ ggplot(subset(Pesos, !is.na(Weight)), aes(x = genus, y = Weight, fill = sex))+
 
 Lo ultimo que le faltaria a nuestro grafico de barras son las barras de error:
 
+```{r}
+Roed_summ <- Roedores %>%
+  filter(!is.na(weight)) %>%
+  group_by(genus,sex) %>%
+  summarize(Mean = mean(weight, na.rm = TRUE),
+            SD = sd(weight, na.rm = TRUE),
+            STD = std.error(weight, na.rm = TRUE)) #usando el plotrix package
+
+# usando desviacion estandar
+ggplot(Roed_summ, aes(genus, Mean, fill = sex))+
+  geom_bar(stat = "identity", position = "dodge")+ # geom bar cuenta las variables y con identity usa el valor de las mismas en vez de contar
+  geom_errorbar(aes(ymin = Mean-SD, # nueva geometria
+                    ymax = Mean+SD), width = .2,
+                position=position_dodge(.9))
+
+# usando desviacion estandar error sirve para observar diferencias entre la variabilidad
+ggplot(Roed_summ, aes(genus, Mean, fill = sex))+
+  geom_bar(stat = "identity", position = "dodge")+
+  geom_errorbar(aes(ymin = Mean-STD, # nueva geometria
+                    ymax = Mean+STD), width = .2,
+                position=position_dodge(.9))
+```
+
+## Ejercicio
+
+Hagan una grafica con la longitud del sepalo de la tabla iris.Separen por especie, saquen la media y grafiquen incluyendo barras de error. Como siempre modifiquen colores y etiquetas de los ejes y leyendas
+
+```{r}
+# Filtrando datos
+Iris_summ <- iris %>%
+  filter(!is.na(Sepal.Length)) %>%
+  group_by(Species) %>%
+  summarize(Mean = mean(Sepal.Length),
+            SD = sd(Sepal.Length))
+
+# Grafico
+ggplot(Iris_summ, aes(Species, Mean, fill=Species))+
+  geom_bar(stat = "identity", position = "dodge", width = 0.4)+
+  scale_fill_brewer(palette = "Set2", name = "Especies")+
+  geom_errorbar(aes(ymin = Mean-SD,
+                    ymax = Mean+SD), width = .2,
+                position=position_dodge(.9))+ # sirve para mover la linea entre las barras
+  xlab("Especie")+
+  ylab("Promedio")
+```
+
+# Grafico circular
+
+Curiosamente ggplot no tiene una geometria especial para hacer graficos circulares o de pay. Sin embargo, para poder realizar estos graficos se tiene que modificar el geom_bar:
+
+```{r}
+ggplot(Roedores, aes(x = factor(1), fill = plot_type))+
+  geom_bar(width=1, color="white")+
+  coord_polar("y")+ # lo hace circular
+  theme_void()
+```
+
+En realidad el codigo para este tipo de graficos no es tan complicado. Lo mas dificil es tener la tabla en el forma correcto. Casi no van a usar este tipo de formato pero usualmente los datos que usen tendrian que estar en proporciones o porcentajes o poder convertirse a los mismos.
+
+# Anadiendo la significancia
+
+## Por grupos
+
+Como vimos durante la seccion de estadistica de nuestro curso las diferencias estadisticas crean grupos que se pueden representar con letras para ello podemos usar la funcion annotate.
+
+```{r}
+ggplot(CO2,aes(x = Type, y = uptake, fill = Treatment))+
+  geom_boxplot()+
+  scale_fill_manual(name = "Treatment",
+                    values = c("#FF6347", "mediumpurple4"))+
+  annotate(geom = "text", x = 0.8, y = 48, label = "a",
+           color = "darkred", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 1.2, y = 44, label = "a",
+           color = "darkred", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 1.8, y = 37, label = "ab",
+           color = "darkred", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 2.2, y = 24, label = "b",
+           color = "darkred", size = 4.5, fontface = 2)
+```
+
+## Barras de diferencias estadisticas
+
+Sin embargo, muchas veces tambien conviene agregar mas informacion sobre dichas diferencias. Para ello usamos el paquete ggsignif. Este paquete nos ayuda a agregar especificamente las comparaciones entre cada tratamiento.
+
+```{r}
+ggplot(CO2,aes(x = Type, y = uptake, fill = Treatment))+
+  geom_boxplot()+
+  scale_fill_manual(name = "Treatment",
+                    values = c("#FF6347", "mediumpurple4"))+
+  geom_signif(y_position = 48, xmin = 0.55, xmax= 1.4,
+              annotation = "NS", tip_length = 0.01, # grosor de la linea
+              col = 1, # es color
+              textsize = 3.2)+ # es el tamanio de la anotacion
+  geom_signif(y_position = 37, xmin = 1.53, xmax= 2.4,
+              annotation = "p<0.05", tip_length = 0.01, # grosor de la linea
+              col = 1)+ # es color
+  geom_signif(y_position = 53, xmin = 0.53, xmax= 2,
+              annotation = "NS", tip_length = 0.01, # grosor de la linea
+              col = 1) # es color
+```
+
+## O ambas
+
+```{r}
+ggplot(CO2,aes(x = Type, y = uptake, fill = Treatment))+
+  geom_boxplot()+
+  scale_fill_manual(name = "Treatment",
+                    values = c("#FF6347", "mediumpurple4"))+
+  geom_signif(y_position = 48, xmin = 0.55, xmax= 1.4,
+              annotation = "NS", tip_length = 0.01, col = 1, textsize = 3.2)+ 
+  geom_signif(y_position = 37, xmin = 1.53, xmax= 2.4,
+              annotation = "p<0.05", tip_length = 0.01, col = 1)+ 
+  annotate(geom = "text", x = 1, y = 55, label = "a",
+           color = "darkred", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 2, y = 48, label = "b",
+           color = "darkred", size = 4.5, fontface = 2)
+```
+
+## Ejercicio final
+
+Carguen nuevamente sus grafico de comp_soils y van a crear dos graficos: uno agregando grupos con letras y otro con barras de diferencias. Ahorita haganlo a ojo no necesito que calculen estadisticas reales.
+
+Presenten los graficos uno a lado del otro usando patchwork.
+
+```{r}
+Comp_soils$Temperature <- factor(Comp_soils$Temperature, 
+                        levels = c("7 deg", "17 deg"), 
+                        ordered = TRUE)
+# Grafico con letras
+letras <- ggplot(Comp_soils,aes(x = Temperature, y = TDP.ugL, fill = Soil, color = Soil))+
+  geom_boxplot(outlier.colour = "#CDCD00", outlier.shape = 18, outlier.size = 3)+
+  xlab("Temperatura")+
+  ylab("TDP(ugL)")+
+  ggtitle("Comparacion de suelos")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "#2F4F4F", face = "bold"))+
+   scale_color_manual(name = "Tipo de suelo",
+                    labels = c("Capa activa", "Capa permafrost"),
+                    values = c("#2E8B57", "#473C8B"))+
+   scale_fill_manual(name = "Tipo de suelo",
+                    labels = c("Capa activa", "Capa permafrost"),
+                    values = c("#43CD80", "#6959CD"))+
+  annotate(geom = "text", x = 0.8, y = 18, label = "a",
+           color = "#FF4500", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 1.2, y = 15, label = "b",
+           color = "#FF4500", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 1.8, y = 24, label = "ac",
+           color = "#FF4500", size = 4.5, fontface = 2)+
+  annotate(geom = "text", x = 2.2, y = 32, label = "c",
+           color = "#FF4500", size = 4.5, fontface = 2)
+
+# Grafico con barras
+barras <- ggplot(Comp_soils,aes(x = Temperature, y = TDP.ugL, fill = Soil, color = Soil))+
+  geom_boxplot(outlier.colour = "#CDCD00", outlier.shape = 18, outlier.size = 3)+
+  xlab("Temperatura")+
+  ylab("TDP(ugL)")+
+  ylim(c(0, 30))+
+  ggtitle("Comparacion de suelos")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "#2F4F4F", face = "bold"))+
+   scale_color_manual(name = "Tipo de suelo",
+                    labels = c("Capa activa", "Capa permafrost"),
+                    values = c("#2E8B57", "#473C8B"))+
+   scale_fill_manual(name = "Tipo de suelo",
+                    labels = c("Capa activa", "Capa permafrost"),
+                    values = c("#43CD80", "#6959CD"))+
+  geom_signif(y_position = 16, xmin = 0.5, xmax= 1.4, 
+              annotation = "p<0.05", tip_length = 0.01, col = 1, 
+              textsize = 3.2)+ 
+  geom_signif(y_position = 22, xmin = 0.5, xmax= 2, 
+              annotation = "p<0.05", tip_length = 0.01, col = 1,
+              textsize = 3.2)+ 
+  geom_signif(y_position = 30, xmin = 1.5, xmax= 2.4, 
+              annotation = "p<0.05", tip_length = 0.01, col = 1, 
+              textsize = 3.2) 
+
+letras | barras
+```
 
