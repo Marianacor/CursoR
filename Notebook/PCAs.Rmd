@@ -79,7 +79,7 @@ Exu_ellipse <- Exu_ellipse +
        y = "PC 2 (15.06%)",
        shape = "Plant Type")
 
-Exu_ellipse
+Exu_ellipse 
  
 ```
 
