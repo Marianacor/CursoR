@@ -1,0 +1,195 @@
+---
+title: "Pipeline para asignacion de secuencias"
+output: html_notebook
+---
+
+# Introduccion
+
+El proposito de esta clase es aprender a usar el paquete DADA2 que realiza inferencia de la taxonomia dentro de una muestra de datos de amplicones a una resolucion de un solo nucleotido.
+
+Las muestras que vamos a ocupar son probablemente unas que ustedes procesaron hace tiempo de plantaciones de banano. Por lo que me parecio buena idea ensenarles como analizarlas usando muestras parecidas a las que ustedes pronto analizaran solos. Sin embargo, dado que por primera vez vamos a ver codigo que verdaderamente tarda en correr para los propositoss e esta clase ustedes solo analizaran una seccion de los datos:
+
+* Hugo y Celina analizaran las muestras 1 a 3
+* Mariana y Larissa analizaran 7 a 10
+* Isa y Daniel analizaran las muestras 11,12,17,18
+
+Es mejor probar por partes el codigo
+
+## La nomenclatura de las muestras
+
+El analisis de datos de secuenciacion se hace a archivos fastq los cuales son una extension diferente del formato FASTA. La diferencia principal entre estos dos formatos es que los archivos fastq incluyen un quality score como control de calidad. Esto es super importante para que chequen cuando les manden sus datos de secuenciacion que de verdad esten en ese formato (Literal acabamos de tener un problema con ese problema)
+
+Los archivos fastq son un archivo de texto que contiene datos de secuenciacion y cada secuencia contiene 4 filas: 
+
+1. Un identificador de secuencia con informacion acerca la corrida en que se secuencio y el grupo con el que se secuencio. Usualmente yo lo veo como el marcador de que una nueva secuencia se reconocio. El contenido exacto varia dependiendo de la informacion y software usado para la secuenciacion.
+
+2. La secuencia con las bases: A,C,T,G y N para los nucleotidos no identificados
+
+3. Un separador que usualmente es solo un signo de (+) 
+
+4. Las puntaciones que calidad o quality scores. Estos valores son Phred +33 encoded, usando caracteres ASCII para representar puntuaciones de calidad. 
+
+El siguiente componente de las muestras que deben de conocer es que vienen _demultiplexed_. No se cual sea la traduccion al espanol pero basicamente significa que la muestras vienne separadas en lecturas al derecho (forward) y al reves (reverse). Para dada es muy importante que sus secuencias vengan en este formato y usualmente puede saberlo porque vienen con _*R1.fastq_ para forward y _*R2.fastq_ para reverse. Aunque otras veces puede venir solo el numero. Siempre es muy importante tener eso claro con su servicio de secuenciacion.
+
+Finalmente, este codigo tambien asume que las secuencias que vamos a analizar ya vienen sin nucleotidos no biologicos es decir primers, adapters, linkers. En este caso los datos que les proporcione ya vienen asi pero cuando veamos las adaptaciones de este codigo a ITS veran como comprobar si tiene primers y como removerlos
+
+## El pipeline
+
+El pipeline o en espanol tuberia que les voy a pasar van a poder ocuparlo de aqui en adelante y es una adaptacion del tutorial de DADA2. Sin embargo, como veremos mas adelante las partes claves que se deben de modificar dependiendo sus muestras son el filtrado y cortado
+
+Otra recomendacion que les doy (la cual la aprendi de la peor manera) es que continuamente vayan guardando los objetos que se vayan creando a lo largo del pipeline en parte para libera memoria de ambiente global de R pero tambien en caso de que su computadora decida morir durante el proceso.
+
+# Instalacion de DADA2
+
+## 1. Usando Bioconductor
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("dada2", version = "3.18")
+```
+# Librerias
+
+```{r}
+library(dada2); packageVersion("dada2") # nos ayuda a ver que version de dada2 estamos usando
+library(tidyverse)
+library(dplyr)
+```
+
+# Seleccion y preparacion de archivos
+
+```{r}
+## Fijar el camino al directorio donde estan mis muestras
+
+path <- "~/CursoR/CursoRgit/Secuenciacion" # este objeto me dara el camino a donde estan mis archivos  va a ser mas facil porque cada que escribamos "path" me mostraran los archivos de esa ruta
+
+list.files(path)
+
+## Ahora leeremos los nombres de nuestras muestras y los separaremos en objetos entre forward y reverse reads.
+
+# Forward
+fnFs <- sort(list.files(path,pattern="_R1.fastq", full.names = TRUE))
+
+# Reverse
+fnRs <- sort(list.files(path,pattern="_R2.fastq", full.names = TRUE))
+
+# Para saber si funciono el numero de caracteres debe ser igual al numero de muestras se imprime el objeto
+```
+
+Estos tambien van a depender de como se llaman sus muestras. Muchas veces en vez de decir R1 solo siene el numero o en vez de ser formato fastq como tal es una variacion .fq.gz que igual lo lee DADA2 pero deben ser cuidadosos sino les va a salir error.
+
+```{r}
+## Extract sample names
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`,1) # Este codigo funcionara dependiendo de como esta escrito el nombre de sus datos, por lo que al nombre de los archivos se debe que borrar el primer "_" para que solo muestre el nombre y el numero, si no solo sale el nombre de la muestra que es igual para todos
+
+# o podemos hacer un objeto nosotros
+sample.names <- c("CH7","CH8", "CH9", "CH10")
+```
+
+# Inspeccionar perfiles de calidad
+
+```{r}
+# forward
+plotQualityProfile(fnFs[3:4]) # cortar en 250
+
+# reverse
+plotQualityProfile(fnRs[3:4]) # mala calidad cortar en 250
+```
+* En el eje de las x tenemos el numero de bases que tenemos por secuencia y en el eje de las y tenemos su puntaje de calidad. Arriba de 30% es buen puntaje de calidad lo ideal es 40.
+
+* En la escala de grises se ve un heatmap con la frecuencia de cada puntaje en la posicion de cada base.
+
+* La media de los puntajes de calidad en cada posicion se muestra con la linea verde mientras que los cuartiles de la distribucion de los scores se muestran con la linea naranja
+
+* La linea roja muestra la proporcion a escala de las lecturas que se extiende hasta dicha posicion. Esta linea es mas util cuando se usa otras tecnologias de secuenciacion. Dado que estos dados fueron secuenciados usando Illumina todas las lecturas tienen la misma longitud, por eso la linea roja es recta.
+
+Al momento de secuenciar es comun que la calidad de los ultimos nucleotidos secuenciados en cada read siempre sea mas baja. Basados en la linea verde y naranja debemos de decidir donde cortar los ultimos nucleotidos para disminuir el numero de errores que puedan continuar mas adelante en el pipeline. 
+
+Sin embargo, es importante notar que esto dependera de la seccion que se mando a secuenciar en el caso de que la seccion sea V3, los cortes de ambos lados pueden ser bastante amplios ya que las superposiciones entre forward y reverse reads es casi total. Sin embargo, otras regiones como V3V4 o V1V2 las secuencias no pueden ser cortadas (o se cortan muy poco) ya que mas adelante en el paso de union de lecturas no va a funcionar ya que las muestras forward y reverse no se van a poder sobrelapar para hacer la union. 
+
+__Para ello deben tener amplio conocimiento de la naturaleza de sus muestras y revisar sus graficos de calidad. Sin embargo, prueba y error al momento de la union a veces es inevitable__
+
+# Filtrar y cortar 
+
+Primero crearemos una nueva carpeta para nuestras secuencias filtradas, asi como un nombre para los archivos .fastq que obtengamos
+
+```{r}
+# Guardando el camino a nuestras muestras filtradas en un objeto nuevo
+
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+
+# Asignando los nombres de las muestras a nuestros nuevos objetos
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+```
+
+La funcion principal para esta seccion es `filterAndTrim()`. El codigo incluire los siguientes parametros:
+
+* Los objetos de Forward and reverse reads 
+
+* El camino que acabamos de crear para nuestras forward and reverse reads ya filtradas
+
+* `truncQ= 2` removera lecturas con un score menor o igual a 2
+
+* `maxN=0` removera lecturas que tenga nucleotidos no reconocidos N. Este parametro es necesario ya que el resto del codigo asume que no hay N dentro de las lecturas
+
+* `truncLen` El numero de bases que se van a mantener basados en los graficos de calidad. Si no se incluye este parametro quiere decir que los reads no se van a cortar o truncar. Esto a veces se tiene que hacer cuando se tienen regiones V3V4 que no se superponen lo suficiente para hacer el corte
+
+* `maxEE=c(2,2)` Este es el parametro mas confuso pero se refiere a expected errors o errores esperados. El parametro se requiere como un vector C(#,#) en el cual el primer numero es para las forward reads y el segundo para las reverse. Mientras mas grande el valor, menos estricto es el argumento (Es decir se permite que hayn mas errores esperados). Los valores se seleccionan tambien basados en los graficos de calidad y no necesariamente tienen que ser iguales para ambos sets de lecturas.
+
+* El resto de los parametros se mantienen en sus valores default
+
+```{r}
+out <- filterAndTrim(fnFs, filtFs, # forward reads
+                     fnRs, filtRs, # reverse reads
+                     truncLen=c(250,250), # truncado o corte
+                     maxN=0, # remover Ns
+                     maxEE=c(2,2), # error esperado
+                     truncQ=2, # quality score
+                     rm.phix=TRUE, compress=TRUE, # defaults
+                     multithread=FALSE) # En windows multithread=FALSE
+```
+
+En realidad no es necesario guardarlo en un objeto ya que lo que el codigo hace en realidad es generar los archivos fastq con las secuencias ya filtradas. Sin embargo, a veces es conveniente ya que esta tabla muestra que tantas lecturas fueron descartadas con nuestros parametros. Si ves que demasiadas secuencias fueron descartadas probablemente seria mejor modificar varios de tus parametros. En contratste, siquieres ser un poco mas estricto con el filtrado de tus secuencias puedes reducir los valores de maxEE para que sea mas estricto pero siempre depende de cual sea tu proposito.
+
+_Especificamente con estas muestras pareceque si el proceso de cortado nos evita unir las muestras vamos a tener que modificar MaxEE y truncQ a que sean menos estrictos para no perder tantas muestras_
+
+```{r}
+# Ahora a guardar nuestro progreso
+
+write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads.csv") # esto es para guardar una tabla en mi carpeta de materiales
+
+#### Por si queremos retomar despues de filtrar ####
+
+## Nuevo Camino
+path2 <- "~/CursoR/CursoRgit/Secuenciacion/"
+
+# Forward
+filtFs <- sort(list.files(path2,pattern="_F_filt.fastq.gz", full.names = TRUE))
+
+# Reverse
+filtRs <- sort(list.files(path2,pattern="_R_filt.fastq.gz", full.names = TRUE))
+```
+
+# Tasas de error
+
+A partir de esta seccion el codigo empezara a tardar mas en correr asi que todos los objetos resultados seran guardados como __.Rdata__. Tambien les recomiendo que de rato en rato guarden su notebook solo en caso de que su compu decida que ya se canso. Al guardar los objetos en ese formato solo necesitamos subirlos a nuestro ambiente global si R se cierra y no tenemos que empezar desde cero
+
+Las tasas de error son estimadas hasta que se llegue a una convergencia entre las muestras usando un modelo de error parametrico. El codigo basicamente estima que tan probable es que una base en realidad sea otra (es decir la probabilidad de que haya transiciones) usando la puntuacion de calidad de dicha base. Los objetos generados en este paso se necesitan para hacer la inferencia de muestras.
+
+Como con varios tipos de problemas de machine-learning (aprendizaje automatizado), el algoritmo debe empezar con una suposicion inicial para la cual el numero maximo posible de tasa de error en estos datos se prueba. En este algoritmo esta suposicion es la tasa de error en caso de que la secuencia mas abundante es correcta y el resto son errores.
+
+
+```{r}
+# Forward
+errF <- learnErrors(filtFs, multithread=TRUE)
+save(errF,file = "errF.RData") # estos archivos se van a guardar en la carpeta del notebook por el momento podemo dejarlos ahi pero cuando tengan un proyecto ustedes si deben moverlos a la carpeta adecuada 
+
+# Reverse
+errR <- learnErrors(filtRs, multithread=TRUE)
+save(errR,file = "errR.RData")
+```
+
