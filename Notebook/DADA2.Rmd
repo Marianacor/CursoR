@@ -90,7 +90,7 @@ sample.names <- c("CH7","CH8", "CH9", "CH10")
 
 ```{r}
 # forward
-plotQualityProfile(fnFs[3:4]) # cortar en 250
+plotQualityProfile(fnFs[3:4]) # cortar en 250 no fue tan mal, en 240 no salio bien
 
 # reverse
 plotQualityProfile(fnRs[3:4]) # mala calidad cortar en 250
@@ -146,8 +146,8 @@ La funcion principal para esta seccion es `filterAndTrim()`. El codigo incluire 
 out <- filterAndTrim(fnFs, filtFs, # forward reads
                      fnRs, filtRs, # reverse reads
                      truncLen=c(250,250), # truncado o corte
-                     maxN=0, # remover Ns
-                     maxEE=c(2,2), # error esperado
+                     maxN=0, # remover Ns NUNCA SE MODIFICA
+                     maxEE=c(5,5), # error esperado
                      truncQ=2, # quality score
                      rm.phix=TRUE, compress=TRUE, # defaults
                      multithread=FALSE) # En windows multithread=FALSE
@@ -160,12 +160,12 @@ _Especificamente con estas muestras pareceque si el proceso de cortado nos evita
 ```{r}
 # Ahora a guardar nuestro progreso
 
-write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads.csv") # esto es para guardar una tabla en mi carpeta de materiales
+write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads2.csv") # esto es para guardar una tabla en mi carpeta de materiales
 
 #### Por si queremos retomar despues de filtrar ####
 
 ## Nuevo Camino
-path2 <- "~/CursoR/CursoRgit/Secuenciacion/"
+path2 <- "~/CursoR/CursoRgit/Secuenciacion/filtered/"
 
 # Forward
 filtFs <- sort(list.files(path2,pattern="_F_filt.fastq.gz", full.names = TRUE))
@@ -190,6 +190,83 @@ save(errF,file = "errF.RData") # estos archivos se van a guardar en la carpeta d
 
 # Reverse
 errR <- learnErrors(filtRs, multithread=TRUE)
-save(errR,file = "errR.RData")
+save(errR,file = "errR.RData") 
+
+# Para volver a subir los archivos nuevamente se utiliza:
+load("errF.RData")
+load("errR.RData")
+
+# Plot error rates
+plotErrors(errF, nominalQ = TRUE)
+plotErrors(errR, nominalQ = TRUE)
+
+```
+* Los graficos de error muestran las tasas de error para cada posible transicion (A→C, A→G, …). Los puntos son las tasas de error observadas para cada puntuacion de calidad. 
+
+* La linea negra muestra la tasa de error estimada despues de la convergencia basada en el algortimo de machine-learning
+ 
+* La linea roja muestra las tasas de error esperadas en la definicion nomina de un Q-score.
+
+__Basicamente se espera que la tasa errores estimada (la linea negra) tenga un buen fit a los puntos o tasas observadas y que las tasas de error disminuyan mientras la calidad se incrementa (linea roja)__
+
+# Inferencia de las muestras
+
+Este es el paso principal de todo el pipeline porque aqui es donde se retiran todos los errores de secuenciacion para dejar unicamente los miembros reales de la comunidad que fue secuenciada. Este codigo usa las lecturas ya filtradas y las tasas de error que acabamos de calcular para eliminar el ruido _(denoise)_ nuestras muestras
+
+Este paso ademas incluye de agrupamiento o _pooling_:
+
+* __pool = FALSE__ es el default quiere decir que las muestras no se agrupan de ninguna manera. Este default deben de usarlo cuando sus muestras provengan de lugares totalmente diferentes o que en teoria no deberian sobrelapar en sus comunidades bacterianas.
+
+* __pool = TRUE__ bajo este parametro todas las muestras se agrupan juntas para la inferencia. Este proceso pueden hacerlo cuando sepan que sus muestras son repeticiones de una misma parcela lugar o tratamiento. Sin embargo, tambien deberan tomar en cuenta el poder de su computadora; de todas las opciones esta es la que mas tarda y mas memoria RAM ocupa ya que hace la inferencia de todas las muestras al mismo tiempo. Por ello dependiendo de su numero de muestras es posible que su computadora no tenga el poder para correr el codigo de esa manera.
+
+* __pool = "pseudo"__ En este caso las muestras son procesadas individualmente pero se llevan acabo pasos auto-consistidos _(self consisted steps)_ los cuales incrementan la sensibilidad al usar argumentos previos de las otras muestras. Esta es una opcion intermedia ente agrupar o no basados en la velocidad de procesamiento y el numero de quimeras (cuando la agrupacion es verdadera el numero de quimeras se incrementa artificialmente). Usenla si sus muestras estan conectadas de alguna manera (mismo suelo base pero diferente tratamientos por ejemplo)
+
+__Esta es la parte del codigo que tarda mas en correr__
+
+```{r}
+# Forward
+dadaFs_nopool <- dada(filtFs, err=errF, multithread=TRUE,
+                      pool = FALSE)
+save(dadaFs_nopool, file = "dadaFs_nopool.RData")
+
+# Reverse
+dadaRs_nopool <- dada(filtRs, err=errR, multithread=TRUE,
+                      pool = FALSE)
+save(dadaRs_nopool, file = "dadaRs_nopool.RData")
+```
+# Uniendo las lecturas forward y reverse
+
+En este paso por fin se unen las lecturas y varios pares seran rechazados si no se superponen lo suficiente o contienen demasiados mismatches (desajustes?) en la zona de superposicion. El numero default de mismatches es >0, por lo que si se desea cambiar se tiene que agregar como argumento (no lo recomiendo). 
+
+Otros argumentos default son que el unico objeto devuelto de este codigo sea las secuencias ya unidas por al menos 12 bases. Todas estas condiciones se pueden cambiar pero yo prefiero no hacerlo. Otro parametro que se puede incluir es que se unan lecturas que no se superposicionan (pero no es recomendado) agregando el argumento _justConcatenate=TRUE_ al codigo.
+
+Desafortunadamente es hasta este paso donde se pueden dar cuenta si su proceso de truncado fue el correcto (paso 1). Si ven que al momento de unir pierden demasiadas secuencias (o de plano todas) tendran que regresar a esa parte
+
+```{r}
+mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, verbose = TRUE)
+save(mergers, file = "mergers.RData")
 ```
 
+Porque en este caso no funciono?
+
+* Corte demasiado y muchas secuencias no se pudieron unir
+
+* La zona de union tenia mismatches
+
+# Hacer Tabla de secuencias
+
+Despues de unir las lecturas con este objeto vamos a hacer una tabla de las secuencias. Esta tabla es una matriz que contiene ASVs (amplicon sequence variant) que es una version con mayor resolucion que los OTUs (Operational Taxonomic Unit). Las OTU utilizan un umbral de similitud arbitrario para agrupar lecturas, por lo que si el umbral más típico es del 3 % significa que estas unidades comparten el 97 % de la secuencia de ADN. Mientras que las ASV toman en cuenta la similitud y la abundancia de secuencias para determinar las lecturas dentro de grupos.1 De esta manera los ASV pueden encontrar las diferencias de secuencia con una variación tan pequeña como un solo nucleótido por lo tanto, los ASV representan una distinción más refinada entre secuencias.
+
+Pero bueno volviendo a la table esta va a tener nuestras muestras como filas y las secuencias o ASVs como columnas. Los datos dentro de la tabla es la abundancia de cada secuencia.
+
+```{r}
+## Sequence table
+
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab) # numero de muestras x numero de ASVs
+
+# Checar la longitud de todas las secuencias
+table(nchar(getSequences(seqtab)))
+```
+
+Otro paso importante despues de unir nuestras secuencias es checar su longitud. Dado que en teoria estas secuencias son V3 y en nuestros graficos vimos que tenian 300 bases, ninguna de nuestras muestras unidas deberia sobrepasar ese valor.
