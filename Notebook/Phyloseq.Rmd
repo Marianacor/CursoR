@@ -1,0 +1,105 @@
+---
+title: "Phyloseq: analizar microbiomas con R"
+output: html_notebook
+---
+
+Nuestro pipeline de DADA2 nos da como resultado 2 tablas: el conteo de las secuencias (abundancias) y la tabla de asignacion taxonomica. Ademas de ello, tenemos los datos de las caracteristicas de nuestras muestras, es decir los metadatos: Tipos de muestra, lugar, tratamientos, cultivos, etc. Tratar de balancear toda esta informacion al momento de analizar nuestros datos puede ser una tarea dificil por lo que R tiene un paquete para ello: __Phyloseq__
+
+Phyloseq es un paquete que ayuda a importar, almacenar, analizar y presentar graficamente datos de secuenciacion filogenetica que ya ha sido agrupada en OTUs o ASVs. Especialmente ayuda cuando ya esta asociada a datos de la muestra, arboles filogeneticos,y tablas de asignacion taxonomica agrupandolos en un solo objeto. Usando este objeto se pueden implementar otras herramientas disponibles en R para el analisis filogenetico.
+
+Algunos ejemplos:
+
+* Importar datos de denoising pipelines como DADA2, pero existen mas (es lo que haremos hoy)
+
+* Analisis de diversidad: metodos de distancias y ordinacion
+
+* Graficos de microbioma usando ggplot 2 (osea despues se pueden modificar con lo que ya aprendimos)
+
+* Manejos, calculos y modificaciones de objetos phyloseq
+
+# Instalacion
+
+## 1. Bioconductor 
+
+```{r}
+source('http://bioconductor.org/biocLite.R') # este no sirve
+biocLite('phyloseq') # este es para versiones mas viejas de R
+
+BiocManager::install("phyloseq")
+```
+
+# Librerias y datos
+
+```{r}
+library(phyloseq)
+
+load("taxa_ch.RData") # identificacion taxonomica
+load("seq_conteos.RData") # abundancia ASVs
+
+# Metadatos: nosotros haremos la tabla
+
+metadatos <- data.frame(Tratamiento = c(rep("Tratamiento", 3),"Testigo"),
+                        Tipo_suelo = c(rep("Rizosfera", 3),"Suelo"))
+
+row.names(metadatos) <- sample_names
+```
+
+Si bien nuestras matrices ya estan listas para usarse hay algunas modificaciones que son necesarias para crear nuestro objeto de phyloseq.
+
+### Abundancia de ASVs
+```{r}
+sample_names <- c("CH7", "CH8", "CH9", "CH10")
+row.names(seqtab.nochim) <- sample_names
+```
+
+Sin embargo nuestras columnas se siguen llamando . Por ello les voy a enseñar 2 metodos para modificar los nombres de sus secuencias:
+
+```{r}
+rando <- function(n = 5000) {
+  a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+  paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
+}
+
+dim(seqtab.nochim)
+seqnames <- rando(1706)
+
+# Guardar las secuencias en otro objeto antes de borrarlas
+
+Secuencias <- colnames(seqtab.nochim)
+write.csv(Secuencias, "~/CursoR/CursoRgit/Materiales/Secuencias.csv")
+
+# Cambiando nombre con codigo
+colnames(seqtab.nochim) <- seqnames
+
+### o nombrarlas de manera ordinal
+colnames(seqtab.nochim) <- c(paste0("Seq_",as.character(1:1706)))
+
+# Guardar la tabla
+write.csv(seqtab.nochim, "~/CursoR/CursoRgit/Materiales/Tabla_ASVs.csv")
+```
+
+### Tabla de asignacion taxonomica
+
+Para que nuestra tablas se puedan "unir" y analizarse juntas dentro del objeto de phyloseq necesitamos tener los mismos nombres para nuestras variables. Por ello ahora tenemos que cambiar los nombres de las filas de nuestra tabla de taxa (que son las secuencias que acabamos de quitar) al codigo o nombre que le dimos en la parte de arriba
+
+```{r}
+row.names(taxa) <- seqnames # si tenemos codigo
+
+roe.names(taxa) <- c(paste0("Seq_",as.character(1:1706))) # si usamos numeros
+# Guardar la tabla
+write.csv(taxa, "~/CursoR/CursoRgit/Materiales/taxa.csv")
+
+```
+
+Ahora si todo listo para armar nuestro objeto y usarlo para todo tipo de analisis:
+
+```{r}
+suelo_ch <- phyloseq(otu_table(seqtab.nochim,
+                               taxa_are_rows = FALSE), 
+                     sample_data(metadatos),
+                     tax_table(taxa))
+
+# y no se olviden de guardarlo
+save(suelo_ch, file = "Suelos_chiapas.RData")
+```
+
