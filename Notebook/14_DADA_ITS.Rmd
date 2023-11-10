@@ -1,0 +1,163 @@
+---
+title: "DADA2 para ITS"
+output: html_notebook
+---
+
+# Introduccion
+
+Otra variacion importante de DADA2 es como se puede aplicar al analisis de ITS. De la misma manera que la region 16S se usa para identificar bacterias, la region ITS se usa para identificar hongos. La diferencia mas grande entre ambas regiones es que el tamano de la region ITS es altamente variable por lo que el pipeline debe modificarse un poco.
+
+En este caso el punto de partida son archivos fastq pareados que fueron secuenciados por Illumina qe fueron separados (demultiplexed) por muestra y sin barcodes. Al igual que con 16S el resultado es una tabla de ASVs y otra asignando taxonomia usando la base de datos UNITE. 
+
+__La adicion clave al pipeline comparado con 16S es la identificacion, verificacion de la orientacion y remocion de los primers__
+
+## Porque es necesaria esta modficacion
+
+A diferencia del gen 16S rRNA, la región ITS tiene una longitud muy variable. Las regiones ITS1 e ITS2 comúnmente amplificadas varían entre 200 y 600 bases de longitud. Esta variación de longitud es biológica, no técnica, y surge de las altas tasas de inserciones y eliminaciones en la evolución de esta región genética menos conservada.
+
+La variación de longitud de la región ITS tiene consecuencias significativas para los pasos de filtrado y recorte del flujo de trabajo estándar DADA2. En primer lugar, el truncamiento a una longitud fija ya no es apropiado, ya que ese enfoque elimina las variantes ITS reales con longitudes más cortas que la longitud del truncamiento. En segundo lugar, la eliminación del priemr se complica por la posibilidad de que algunas, pero no todas, las lecturas se extiendan al primer opuesto cuando la región ITS amplificada es más corta que la longitud de la lectura.
+
+En el flujo de trabajo estándar 16S, generalmente es posible eliminar 
+los primers en el proceso de filtrado: 
+
+(filterAndTrim(..., trimLeft=(FWD_PRIMER_LEN, REV_PRIMER_LEN))) 
+
+ya que solo aparecen al comienzo de las lecturas. y tienen una longitud fija. Sin embargo, la complejidad de la región ITS requiere el uso de herramientas externas. Aquí vamos a usar _cutadapt_ para la eliminación de primers.
+
+# Librerias
+
+```{r}
+library(dada2)
+
+# Instalar
+BiocManager::install("ShortRead")
+BiocManager::install("Biostrings")
+
+library(ShortRead)
+packageVersion("ShortRead")
+
+library(Biostrings)
+packageVersion("Biostrings")
+```
+# Seleccion y preparacion de datos
+
+Como en este caso ustedes aun no tienen muestras de ITSs vamosa usar los datos de mi tesis:
+
+```{r}
+### Camino ###
+
+path <- "~/CursoR/CursoRgit/Secuencicion_ITS"
+list.files(path)
+
+## Forward y reverse
+fnFs <- sort(list.files(path, pattern = "_1.fastq.gz", full.names = TRUE))
+fnRs <- sort(list.files(path, pattern = "_2.fastq.gz", full.names = TRUE))
+```
+
+# Identificando primers
+
+Al momento de entregarme mis secuencias me dieron un archivo con barcodes, primers y linkers y de ahi 
+
+```{r}
+FWD <- "GGAAGTAAAAGTCGTAACAAGG"
+REV <- "GCTGCGTTCTTCATCGATGC"
+```
+
+Ahora tenemos que checar la orientacion de todos los primers:
+
+```{r}
+### Funcion predeterminada ###
+
+allOrients <- function(primer) {
+  # Crear todas las orientaciones de esas secuencias
+  require(Biostrings)
+  dna <- DNAString(primer)  # Para usar Biostrings usa DNAString objects no vectores
+  orients <- c(Forward = dna, Complement = Biostrings::complement(dna), Reverse = Biostrings::reverse(dna),
+               RevComp = Biostrings::reverseComplement(dna))
+  return(sapply(orients, toString))  # De regreso a vector
+}
+
+FWD.orients <- allOrients(FWD)
+REV.orients <- allOrients(REV)
+
+FWD.orients # te da las 4 posibilidades de variacion de la secuencia
+```
+
+La presencia de bases ambiguas (N) en las lecturas de secuenciación dificulta el mapeo preciso de secuencias de primers cortos. A continuación vamos a “filtrar previamente” las secuencias solo para eliminar aquellas con N, pero no realizaremos ningún otro filtrado.
+
+```{r}
+# nuestra carpeta se llamara filtN
+fnFs.filtN <- file.path(path, "filtN", basename(fnFs))
+fnRs.filtN <- file.path(path, "filtN", basename(fnRs))
+
+filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = FALSE) # multithread tiene que ver con el procesamiento de tu compu no afecta el analisis
+```
+
+Ahora estamos listos para contar el numero de veces que aparecen los primers en la lectura directa e inversa, considerando todas las orientaciones posibles de los primers.
+
+```{r}
+### Funcion predeterminada 2 ###
+
+primerHits <- function(primer, fn) {
+  # Counts number of reads in which the primer is found
+  nhits <- vcountPattern(primer, sread(readFastq(fn)), fixed = FALSE)
+  return(sum(nhits > 0))
+}
+
+# Revisar el sentido de los primers
+rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[4]]),
+      FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[4]]),
+      REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[4]]),
+      REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[4]]))
+```
+
+Como se esperaba, el primer FWD se encuentra en las lecturas directas en su orientacion directa y en algunas de las lecturas inversas en su orientacion de complemento inverso (debido a la lectura completa cuando la region ITS es corta). De manera similar, el primer REV se encuentra con sus orientaciones esperadas.
+
+# Remover primers usando cutadapt
+
+## Instalar cutadapt
+
+```{r}
+# Vamos a decirle donde esta cutadapt
+
+cutadapt <- "/Users/prinvestigacion/Downloads/cutadapt.exe"
+system2(cutadapt, args = "--version") # puedes usar comandos de shell dede R. Si les dice la verion de cutadapt todo funciono
+
+```
+
+## Guardar las muestras que vamos a cortar
+
+```{r}
+### Crear otro directorio
+
+path.cut <- file.path(path,"cutadapt")
+
+if(!dir.exists(path.cut)) dir.create(path.cut) 
+
+fnFs.cut <- file.path(path.cut, basename(fnFs))
+fnRs.cut <- file.path(path.cut, basename(fnRs))
+
+# Creando objetos cambiando de direccion
+FWD.RC <- dada2:::rc(FWD)
+REV.RC <- dada2:::rc(REV)
+
+# Forward reads
+R1.flags <- paste("-g", FWD, "-a", REV.RC)
+
+# Reverse reads
+R2.flags <- paste("-G", REV, "-A", FWD.RC)
+
+## Ahora si usando cutadapt
+
+## For loop predeterminado
+
+for(i in seq_along(fnFs)) {
+  system2(cutadapt, args = c(R1.flags, R2.flags, "-n", 2, # -n para usar las direcciones opuestas
+                             "-o", fnFs.cut[i], "-p", fnRs.cut[i], # archivos de salida
+                             fnFs.filtN[i], fnRs.filtN[i])) # archivos de entrada
+}
+
+```
+
+
+
