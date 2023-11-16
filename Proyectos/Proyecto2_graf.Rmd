@@ -1,0 +1,50 @@
+---
+title: "Proyecto 2 Grafico"
+output: html_notebook
+---
+
+```{r}
+# Librerias
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggsignif)
+
+# Data
+Datos <- read.csv("~/CursoR/CursoRgit/Proyectos/Set_datos_nuevo.csv")
+
+```
+
+```{r}
+theme_set(theme_gray())
+
+ggplot(Datos,aes(x = Temperatura, y = Longitud_raiz_mm, fill = Tratamiento, color = Tratamiento))+
+  geom_boxplot(outlier.colour = "#FF6347", outlier.shape = 18, outlier.size = 3)+
+  xlab("Temperatura")+
+  ylab("Longitud de raiz(mm)")+
+   labs(tag = "Fig. 1")+
+  ylim(c(0,14))+
+  ggtitle("Bioestimulante vs Fertilizante")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "#2F4F4F", face = "bold"), axis.text.x = element_text(vjust = 0.6, hjust = 0.6, size = 9), axis.text.y = element_text(vjust = 0.4, hjust = 0.6, size = 9))+
+   scale_color_manual(name = "Tratamiento",
+                    labels = c("Bioestimulante", "Fertilizante"),
+                    values = c("#2E8B57", "#473C8B"))+
+   scale_fill_manual(name = "Tratamiento",
+                    labels = c("Bioestimulante", "Fertilizante"),
+                    values = c("#43CD80", "#6959CD"))+
+  geom_signif(y_position = 13, xmin = 0.6, xmax= 2, 
+              annotation = "NS", tip_length = 0.03, col = 1, 
+              textsize = 4)+
+   geom_signif(y_position = 11.7, xmin = 1.6, xmax= 2.4, 
+              annotation = "p=2.70e-5", tip_length = 0.03, col = 1,
+              textsize = 4)+
+  geom_signif(y_position = 10.6, xmin = 0.6, xmax= 1.5, 
+              annotation = "p=7.48e-7", tip_length = 0.03, col = 1,
+              textsize = 4)+
+    geom_signif(y_position = 6.4, xmin = 1.02, xmax= 2.4, 
+              annotation = "p=0.0527", tip_length = 0.03, col = 1,
+              textsize = 4)
+
+```
+

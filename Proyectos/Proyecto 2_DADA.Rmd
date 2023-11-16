@@ -1,0 +1,154 @@
+---
+title: "Proyecto 2 DADA"
+output: html_notebook
+---
+
+```{r}
+library(dada2)
+library(tidyverse)
+library(dplyr)
+```
+
+
+```{r}
+# Determinar el camino al directorio donde estan las muestras:
+
+path <- "~/CursoR/CursoRgit/Secuenciacion_proyecto"
+
+# Ahora se separan las muestras en objetos entre forward y reverse reads:
+# Forward
+fnFs <- sort(list.files(path,pattern="_R1.fastq.gz", full.names = TRUE))
+
+# Reverse
+fnRs <- sort(list.files(path,pattern="_R2.fastq.gz", full.names = TRUE))
+
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`,1) 
+```
+
+# Revision de los perfiles de calidad
+
+```{r}
+# forward
+plotQualityProfile(fnFs[1]) 
+
+# reverse
+plotQualityProfile(fnRs[1])
+```
+
+# Filtrar y cortar 
+
+Primero crearemos una nueva carpeta para nuestras secuencias filtradas, asi como un nombre para los archivos .fastq que obtengamos
+
+```{r}
+# Guardando el camino a nuestras muestras filtradas en un objeto nuevo
+
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+
+# Asignando los nombres de las muestras a nuestros nuevos objetos
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+out <- filterAndTrim(fnFs, filtFs, # forward reads
+                     fnRs, filtRs, # reverse reads
+                     truncLen=c(240,210), # truncado o corte
+                     maxN=0, # remover Ns NUNCA SE MODIFICA
+                     maxEE=c(5,5), # error esperado
+                     truncQ=2, # quality score
+                     rm.phix=TRUE, compress=TRUE, # defaults
+                     multithread=FALSE) # En windows multithread=FALSE
+```
+
+```{r}
+# Se guarda el progreso:
+
+write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads4_proyecto.csv") 
+
+#### Por si queremos retomar despues de filtrar ####
+
+## Nuevo Camino
+path2 <- "~/CursoR/CursoRgit/Secuenciacion_proyecto/filtered/"
+
+# Forward
+filtFs <- sort(list.files(path2,pattern="_F_filt.fastq.gz", full.names = TRUE))
+
+# Reverse
+filtRs <- sort(list.files(path2,pattern="_R_filt.fastq.gz", full.names = TRUE))
+```
+
+# Tasas de error
+
+```{r}
+# Forward
+errF <- learnErrors(filtFs, multithread=TRUE)
+save(errF,file = "errFproyecto.RData")
+
+# Reverse
+errR <- learnErrors(filtRs, multithread=TRUE)
+save(errR,file = "errRproyecto.RData") 
+
+# Para volver a subir los archivos nuevamente se utiliza:
+load("errFproyecto.RData")
+load("errRproyecto.RData")
+
+# Plot error rates
+plotErrors(errF, nominalQ = TRUE)
+plotErrors(errR, nominalQ = TRUE)
+```
+# Inferencia de las muestras
+
+```{r}
+# Forward
+dadaFs_nopool <- dada(filtFs, err=errF, multithread=TRUE,
+                      pool = FALSE)
+save(dadaFs_nopool, file = "dadaFs_nopool_proyecto.RData")
+
+load("dadaFs_nopool_proyecto.RData")
+
+# Reverse
+dadaRs_nopool <- dada(filtRs, err=errR, multithread=TRUE,
+                      pool = FALSE)
+save(dadaRs_nopool, file = "dadaRs_nopool_proyecto.RData")
+
+load("dadaRs_nopool_proyecto.RData")
+```
+
+# Uniendo las lecturas forward y reverse
+
+```{r}
+mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, verbose = TRUE)
+save(mergers, file = "mergers_proyecto.RData")
+
+load("mergers_proyecto.RData")
+```
+
+# Hacer tablas de secuencias
+
+```{r}
+## Sequence table
+
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab) # numero de muestras x numero de ASVs
+
+# Checar la longitud de todas las secuencias
+table(nchar(getSequences(seqtab)))
+```
+
+# Quitar quimeras
+
+```{r}
+seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
+                                    multithread = TRUE, verbose = TRUE)
+save(seqtab.nochim, file = "seq_conteos.RData")
+
+# Identified 7421 bimeras out of 9127 input sequences. ANADIR al reporte
+
+# Basados en esto 81% de mis secuencias son quimeras
+
+## Comparar esta tabla con la original que incluye quimeras
+dim(seqtab.nochim)
+sum(seqtab.nochim)/sum(seqtab) # porcentaje de secuencias no quimericas que se mantuvieron
+```
+
+
