@@ -1,0 +1,214 @@
+---
+title: "Buenas prácticas"
+author: "Mariana Corte Rodriguez"
+date: "2023-10-04"
+output: html_notebook
+---
+
+## Liga para google
+[R Markdown cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
+## Notas
+
+_Script es ideal para escribir y correr códigos_
+
+__Rnotebook es útil para escribir notas dentro de Rstudio y Rmarkdown es mejor para documentos oficiales y se puede exportar a otros formatos como html, pdf y word__
+
+Para los títulos se pone antes del texto el hashtag para cambiar el tamaño, entre más agregues es más pequeño
+
+* Hay hasta 6 tamaños
+* Puedes escribir el texto con negritas agregando dos asteriscos antes y al final del texto.
+
+
+### Objetos y Valores
+
+Puede ser un número o una fórmula que da como resultado un número simple. Tambien puede ser una palabra, frase o texto.
+
+```{r}
+
+a <- 12345
+  
+b <- a/15
+  
+var <- "Mariana" 
+rm(var) # remove o quitar del environment
+
+```
+
+### Vectores
+
+Conjunto de varios valores en una sola dimension. No puedes mezclar caracteres de números y texto en un mismo vector, porque no los reconoce.
+
+```{r}
+
+vect <- c(1,2,3,4,5)
+nombres <- c("Larissa","Celina","Daniel","Hugo","Mariana")
+nombresjuntos <- c("Larissa,Celina,Daniel,Hugo,Mariana") # este no es un vector
+
+Part_1 <- "Larissa"
+
+particip <- c(Part_1,"Celina")
+
+camp <- c(1,"Temperatura",14,"Precipitacion")
+
+# Todo lo que esta antes de la flecha es un objeto
+```
+
+### Matrices
+
+Un tipo de tabla en el que todos sus valores son númericos. El formato de matriz a veces es necesario para ciertos calculos y/o tipos de graficos.
+
+```{r}
+
+## Creando una matriz desde cero
+
+ejemplo_matriz <- matrix(data = c(1, 2, 3, 4, 5, 6, 7, 8, 9), # datos para matriz
+              nrow = 3, # número de filas
+              ncol = 3) # número de columnas
+
+ejemplo_matriz # se escribe el nombre del objeto para que se vea la matriz en la consola
+
+
+matriz <- matrix(data = c(1, 2, 3, 4, 5, 6, 7, 8, 9), # datos para matriz
+              nrow = 3, # número de filas
+              ncol = 3, # número de columnas
+              byrow = TRUE) # organización de la matriz opcional
+matriz
+matriz [,1]
+
+# Nombre de filas
+
+rownames(ejemplo_matriz) <- c("a", "b", "c")
+
+# Nombre de columnas
+colnames(ejemplo_matriz) <- c("d", "e", "f")
+
+```
+
+### Data Frames
+
+Esto es el nombre que tienen las tablas en Rstudio. La definición de un data frame es una agrupación de vectores que tienen valores de diferentes tipos. Por ejemplo numerico y un texto.
+
+Una matriz se puede volver un data frame pero cuando lo haces al revés usualmente se pierden datos o puede ocurrir un error.
+
+```{r}
+## Haciendo una tabla desde cero en Rstudio
+
+names <- c("Larissa", "Celina", "Daniel", "Hugo", "Mariana")
+edades <- c(20, 22, 24, 26, 28)
+
+tabla <- data.frame(names, edades)
+
+
+tabla2 <- data.frame(names = c("Larissa", "Celina", "Daniel", "Hugo", "Mariana"), edades = c(20, 22, 24, 26, 28))
+
+## Subiendo una tabla desde excel
+
+# Usando R base
+
+Dat_clase <- read.csv("~/CursoR/CursoRgit/Materiales/Class-data.csv")
+
+
+# Usando un paquete de R para poner la tabla de excel no va a correr hasta que copies la liga en la consola porque estamos trabajando en un notebook.
+
+```
+
+__Como transformar una matriz a un data frame y viceversa__
+
+```{r}
+Acidos <- read.csv("~/CursoR/CursoRgit/Materiales/Acidos_ex.csv")# default en dataframe
+
+# A matriz
+
+Acidos <- as.matrix(Acidos)
+rownames(Acidos) <- Acidos[,1] # Tabla [filas,columnas] aquí le estamos cambiando los numeros de la columna inicial por los nombres de los acidos
+
+Acidos <- Acidos[,-1] # Con esta función Se esta borrando la columna que incluía los nombres en la tabla porque rstudio no puede leer numeros y texto en un mismo vector.
+
+#De vuelta a dataframe
+Acidos <- as.data.frame(Acidos) # puede ser util para agregar metadatos
+
+Acidos$NPC # sirve para ver una columna en especifico
+
+```
+
+### Listas y otros objetos raros
+
+Las listas son una colección de otros objetos en R. Rara vez van a crear una desde cero pero es importante reconocerlas cuando una formula da como resultado una lista. De esta manera se puede extraer objetos especificos de una lista en R studio para algun analisis en especifico.
+
+```{r}
+## Creando una lista
+
+lista_ejemplo <- list(c("Jan","Feb","Mar"),
+                      matrix(c(3,9,5,1,-2,8), nrow = 2),
+                      list("green",12.3))
+
+# Nombres de los elemntos en la lista
+
+names(lista_ejemplo) <- c("Meses", "Matriz", "Lista interna")
+
+# Ver la lista
+
+print(lista_ejemplo)
+
+# Extraer objetos de la lista
+
+matriz_lista <- lista_ejemplo$Matriz
+
+
+```
+
+### Paquetes
+
+Son extensiones al programa base de Rstudio. Contienen codigo, datos y documentacion que pueden ayudar a su entendimiemto
+
+Como instalar un paquete:
+
+* Manera facil: desde la consola ->
+* Manera dificil: con codigo
+
+```{r}
+library(tidyverse)
+
+```
+No se puede usar un paquete si no esta descargado pero no quieres usarlo en todo tu script esta la siguiente opcion:
+
+```{r}
+Acidos <- tidyverse::read_csv("CursoR/CursoRgit/Materiales/Acidos_ex.csv") # no usar este mejor usar el absoluto read.csv
+
+??tidyverse
+
+?matriz()
+
+library(car) # cargar la libreria es cada que abras Rstudio
+
+?Anova()
+
+```
+### Comandos
+
+Todo el codigo que hemos estado escribiendo puede efinirse como comandos los cuales usando un formato estandar piden un input para entregarlo al usarlo un output
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
