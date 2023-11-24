@@ -1,0 +1,437 @@
+---
+title: "Funciones, For loops, If else"
+output: html_notebook
+---
+### Para cambiar Rmarkdown a pdf usar:
+
+```{r}
+install.packages("tinytex")
+
+```
+
+## Funciones
+
+Set de argumentos que se organizan juntos para realizar una tarea especifica.
+
+En realidad todos los comandos que hemos usado son las funciones que ya vienen incluidas en R pero Rstudio tambien nos da la posibilidad de crear nuestras propias funciones
+
+### Componentes de una funcion
+
+* __Nombre de la funcion:__ Nosotros se lo damos
+* __Argumentos:__ Los elementos necesarios para llevar a cabo la funcion. _input_
+* __Cuerpo de la funcion:__ Define lo que va a hacer la funcion
+* __Respuesta:__ El valor o resultado de la tarea asignada a una funcion _output_
+
+```{r}
+
+nombre_funcion <- function(argumentos) { #lo que necesitas para calcular la funcion
+  respuesta <- haz_algo(argumentos) # calculos o modificaciones que haras con los argumentos
+  return(respuesta) # lo que se va a imprimir
+  } # todo lo que esta entre corchetes es la funcion
+```
+Piensen en las funciones como una accion por lo que por lo general el nombre empieza con un verbo:
+
+```{r}
+calc_vol_foliar <- function(longit, ancho, altura) {
+  area <- longit * ancho
+  volumen <- area * altura
+  return(volumen)
+}
+
+# Ahora usemos la funcion
+
+calc_vol_foliar(longit = 1, ancho = 2.5, altura = 2)
+
+arbusto1 <- calc_vol_foliar(1, 2.5, 2) # se puede usar sin agregar los nombres de que son los numeros pero se deben poner en el mismo orden.Al agregar el objeto de "arbusto1" ya se guarda el objeto como un valor en el environment.
+
+
+# Ahora usemos datos desde un dataframe
+
+### Creen un set de datos artificiales ###
+
+Arbustos <- data.frame(Longit = c(13, 2.6), 
+                       Ancho = c(1.8, 22), 
+                       Altura = c(3.9, 3.5))
+
+# Usemos la funcion
+
+calc_vol_foliar(Arbustos$Longit[1], #en estos corchetes no hay coma porque es una sola columna en una dimension
+                Arbustos$Ancho[1],
+                Arbustos$Altura[1])
+
+### sin la funcion debemos anotar lo siguiente.
+
+Arbustos$Longit[1]*Arbustos$Ancho[1]*Arbustos$Altura[1]
+
+## argumentos default
+
+calc_vol_foliar <- function(Longit, Ancho, Altura = 1) {
+  area <- Longit *Ancho
+  volumen <- area * Altura
+  return(volumen)
+}
+
+```
+
+ ### Ejercicio
+ 
+Van a crear una funcion que calcule el area foliar de una especie de arboles unica en el mundo que tiene hojas triangulares: $A = bh/2$
+ 
+
+```{r}
+calc_area_foliar <- function(base, altura) {
+  area <- (base * altura) / 2
+  return(area)
+}
+
+calc_area_foliar(8.3, 13)
+
+```
+
+### Combinando funciones
+
+Se ha descubierto que en esta especie de arboles se puede estimar los dís de crecimiento de la hoja usando el area de las mismas con la siguiente formula: Cr = A ^1.73
+
+```{r}
+# Funcion para estimar crecimiento de las hojas
+
+est_crecim <- function(area) {
+  crecim <- area ^ 1.73
+  return(crecim)
+}
+
+## Nested functions o funciones combinadas
+
+crecim_hoja <- est_crecim(calc_area_foliar(3,5))
+
+```
+
+## For loops
+
+Los _for loops_ se usan cuando hay un pedazo de codigo que necesitas repetir varias veces.
+
+### Estuctura básica
+
+```{r}
+
+for (numero_de_cosa in lista_de_cosas) {
+  accion(cosa)
+}
+```
+
+### Ejemplo simple usando un vector
+
+```{r}
+longits <- c(1.6, 3, 8) # vector
+
+for (a in longits) { # el nombre a es arbitrario muy bien podría usar solo una letra u otro nombre pero el nombre debe coincidir con la accion que se esta comandando
+  print(2.65*a ^ 0.9) # se pone print para obtener el resultado y poder verlo pero no esta guardado
+} 
+
+
+## Un for loop con multiples pasos
+
+for (x in longits) {
+  masa <- 2.65 * x ^ 0.9
+  masa_lb <- masa * 2.2
+  print(masa_lb)
+}
+
+```
+#### Ejercicio
+
+```{r}
+# Vamos a modificar este for loop para que imprima multiplos de 3
+
+for (i in 1:5) {
+  print(i * 3)
+}
+
+## Ahora quiero que hagan un for loop para cambiar estos valores de cm a pulgadas cm/2.54
+
+centim <- c(135,45,23,167,30,54,29)
+
+for (cm in centim) {
+  pulg <- cm / 2.54
+  print(pulg)
+}
+
+```
+### Como se aplica un for loop a un dataframe
+
+Para poder seleccionar una de las columnas o filas se elige un index o posicon para que se vaya repitiendo
+
+```{r}
+
+Medidas_clase <- read.csv("~/CursoR/CursoRgit/Materiales/Class-data.csv")
+
+# Modificar la altura de cm a pies
+
+for (i in 1: nrow(Medidas_clase)) {
+  altura_ft <- Medidas_clase$Height.cm[i]/30.48
+  print(altura_ft)
+}
+
+```
+Si bien asi pudimos transformar toda la altura a pies, en realidad la tabla sigue sin haberse cambiado y esos resultados __¿Como podemos guardarlo?__
+
+```{r}
+alt_pies <- vector(mode = "numeric",
+                   length = nrow(Medidas_clase))
+# Primer loop
+
+for (i in 1: nrow(Medidas_clase)) {
+  altura_ft <- Medidas_clase$Height.cm[i]/30.48
+  print(altura_ft)
+}
+
+# loop que guarda los datos
+
+for (i in 1: nrow(Medidas_clase)) {
+  altura_ft <- Medidas_clase$Height.cm[i]/30.48
+  alt_pies[i] <- altura_ft #cambiamos print para que lo guarde en el vector
+}
+
+alt_pies
+
+```
+
+### Ejercicio
+
+Ahora quiero que repitan el proceso de guardar los datos de un for loop dentro de un vector modificando el for loop que usamos para modificar cm a pulgadas.
+
+```{r}
+centim <- c(135,45,23,167,30,54,29)
+
+for (j in centim) {
+  pulg <- j / 2.54
+  print(pulg)
+}
+
+pulgad <- vector (mode = "numeric",
+                  length = length(centim))
+
+for (j in 1: length(centim)) {
+  pulg <- j / 2.54
+  pulgad[j] <- pulg
+}
+
+```
+
+### Integrar datos de un for loop en un data frame
+
+```{r}
+
+# Unir el vector con el dataframe. Se esta agregando una columna a nuestra tabla original
+
+Medidas_clase <- cbind(Medidas_clase,alt_pies) # la c es de columna
+
+## Directamente en la tabla
+
+for (i in 1: nrow(Medidas_clase)) {
+  altura_ft <- Medidas_clase$Height.cm[i]/30.48
+  Medidas_clase$alt_pies[i] <- altura_ft # cambiamos para que lo guarde directamente en el data frame
+}
+
+## Hacer calculos con las columnas
+
+Acidos <- read.csv("~/CursoR/CursoRgit/Materiales/Acidos_ex.csv")
+
+
+sapply(Acidos,mode) # sirve para revisar los tipo de caracter de cada columna en un dataframe
+
+for (i in 2: ncol(Acidos)) {
+  Promedios <- mean(Acidos[,i], na.rm = TRUE)
+  print(Promedios)
+}
+
+# Ejemplo para el codigo solo para sacar promedio
+
+mean(Acidos[,2]) # va a salir NA porque en la columna faltan valores por lo que se cambia a:
+
+mean(Acidos[,2], na.rm = TRUE) # aquí me esta removiendo los valores NA
+
+# Sin embargo este no se guardo por lo que este seria el proceso para guardarlo:
+
+ac_prom <- c()
+
+for (i in 2: ncol(Acidos)) {
+  Promedios <- mean(Acidos[,i], na.rm = TRUE)
+  ac_prom[i] <- c(Promedios)
+}
+
+Acidos <- rbind(Acidos,ac_prom) # rowbind es para agregar una fila
+
+```
+
+#### Ejercicios
+
+```{r}
+# 1. Agregar al archivo de medidas_clase otra columna en el que la circunferencia de la cabeza este en pulgadas.cm/2.54
+
+for (i in 1: nrow(Medidas_clase)) {
+  circ_pulg <- Medidas_clase$CircumferenceHead.com[i]/2.54
+  Medidas_clase$circun_pulg[i] <- circ_pulg
+}
+
+# 2. En el archivo de acidos ya agregamos una fila con los promedios ahora traten de agregar una con la desviacion estandar.
+
+ac_des <- c()
+
+for (i in 2: ncol(Acidos)) {
+  Desviacion <- sd(Acidos[,i], na.rm = TRUE)
+  ac_des[i] <- c(Desviacion)
+}
+
+Acidos <- rbind(Acidos,ac_des)
+
+```
+
+## Comandos If Else
+
+Los comandos de If Else en Rstudio son una parte fundamental de la programación ya que la computadora es capaz de "tomar decisiones" dandole _condiciones._
+
+### El mas basico: If statement
+
+```{r}
+# Estructura basica If statement
+
+if (condicion_que_debe_ser_verdad) {
+  Haz_algo
+}
+
+## Ejemplo con condiciones numericas
+
+x <- 7
+
+if (x > 5) { # estos objetos si aparecen en el ambiente global
+  x <- x ^ 2 # si if es FALSO no hace nada
+}
+
+# Ejemplo Biologico
+
+veg_tipo <- "arbol"
+volumen <- 16
+
+# <- = son equivalente
+# <- y == no lo son
+
+if (veg_tipo == "arbol") { # cuando pones solo un = es un operador matematico mientras que == significa es igual a 
+  masa <- 2.6 * volumen ^ 0.9 # este objeto si se guarda
+}
+
+masa
+```
+#### Ejercicio
+
+Como maestros de secundaria ustedes estan calificando unos examenes. Si el alumno tuvo mas de 70 aciertos en el examen pasa. Creen un _if statement_ que me arroje APROBADO dependiendo de la calificacion del alumno.
+
+
+```{r}
+cal <- 70
+
+if (cal >= 70) {
+   print("APROBADO") 
+}  
+
+```
+### Complicamos mas la cosa: If Else statement
+
+Con el _If statement_ solo le decimos a la computadora si los datos que le dimos son CIERTOS si son FALSOS este comando simplemente no arroja nada por lo que le tenemos que agregar el _ELSE._
+
+```{r}
+x <- 4
+
+if (x > 5) {
+  x <- x ^ 2
+} else { # ahora si IF es falso tambien le decimos que hacer
+  x <- x ^ 3
+}
+
+# Y se puede complicar más la cosa
+
+veg_tipo <- "arbusto"
+volumen <- 16
+
+if (veg_tipo == "arbol") {  
+  masa <- 2.6 * volumen ^ 0.9 # este objeto si se guarda
+} else if (veg_tipo == "pasto") { # cadenita de condiciones
+  mass <- 0.6 * volumen ^ 1.2
+} else { # agregar la ultima condición
+  mass <- NA
+}
+
+```
+#### Ejercicio
+
+como maestros de secundaria ustedes siguen calificando los examenes pero ahora a los alumnos que sacaron mas de 90 aciertos les van a poner EXCELENTE; si tuvieron entre 90 y 70 aciertos dira APROBADO y menos de 70 REPROBADO. Modifiquen su codigo de _if statement_ agregando _else para que me arroje las 3 categorias dependiendo la calificacion del alumno.
+
+```{r}
+calif <- 70
+
+if (calif >= 90) {  
+  print("EXCELENTE")
+} else if (calif >= 70) {
+  print("APROBADO") 
+} else {
+  print("REPROBADO") 
+}
+
+```
+### La verson mas simplificada _ ifelse
+
+Esta version se define por estar "vectorizada" por lo que en vez de tener las condiciones en renglones, todo esta condensado en una solo linea.
+
+Es util cuando las comparaciones son mas sencillas e interesantemente se puede usar directamente con vectores en vez de valores simples.
+
+```{r}
+# Estructura simplificada
+
+ifelse(condicion, respuesta_TRUE, respuesta_FALSE)
+
+# Ejemplo basico
+
+edad_planta <- 1
+
+ifelse(edad_planta < 2, # condicion
+       "PLANTULA", # verdadero
+       "ADULTO") # falso
+
+# Ejemplo anidado
+
+ifelse(edad_planta < 2, # condicion
+       "PLANTULA", # verdadera
+       ifelse(edad_planta < 7, "JUVENIL", "ADULTO")) # falsa
+```
+
+#### Ejercicio
+
+El codigo previo que hicieron usando IF ELSE ahora conviertanlo al comando _ifelse_
+
+* Pista debe ser anidado
+
+```{r}
+
+calif <- 40
+
+
+ifelse(calif >= 90, "EXCELENTE", ifelse(calif >=70, "APROBADO", "REPROBADO" ))
+
+```
+
+#### Aplicando ifelse a vectores
+
+```{r}
+# vector de numeros
+
+a <- c(5,7,2,9)
+
+# checar si es par o impar
+
+ifelse( a %% 2 == 0, "Par", "Impar")
+
+# condicion %% 2 == 0, cuando divides entre 2 el residuo es cero
+
+```
+
+
