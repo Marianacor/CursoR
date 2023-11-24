@@ -1,0 +1,171 @@
+---
+title: "Analisis no parametricos"
+output: html_notebook
+---
+
+# Introduccion
+
+Como vimos antes nuestros datos no van a poder ser analizados siempre por analisis paramtricos ya sea porque no se pueden normalizar o porque la naturaleza de los datos no lo permite. Para ello vamos a aprender varios tests no parametricos. Recuerden que siempre es mejor tratar de hacer todo lo posile para usar test parametricos antes de recurrir a estos test ya que son mas restrictivos y no tan sensibles como los tests parametricos.
+
+```{r}
+# Librerias
+library(dplyr)
+library(tidyverse)
+library(car)
+library(rstatix)
+library(PMCMRplus)
+library(dunn)
+
+# Datos
+
+Estanques <- read.csv("~/CursoR/CursoRgit/Materiales/BRW.ponds.csv")
+
+Exudados <- read.csv("~/CursoR/CursoRgit/Materiales/Exudados.csv")
+
+Comp_suelos <- read.csv("~/CursoR/CursoRgit/Materiales/Soil_Comparison.csv")
+
+Ejercicio <- read.csv("~/CursoR/CursoRgit/Materiales/Fertirriego.csv")
+```
+
+# Kruskal Wallis
+
+Este metodo se usa como sustituto a la _ANOVA de una via_ ya que no necesita normalidad de distribucion en la poblacion ni homogeneidad de varianza.
+
+```{r}
+# Primero revisar normalidad
+
+shapiro.test(Estanques$DOC)
+hist(Estanques$DOC) # si son normales
+
+# Homogeneidad de varianza con levenetest
+leveneTest(DOC ~ Region, data = Estanques)# la cumple? NO
+
+# Kruskal Wallis
+kruskal.test(DOC ~ Region, data = Estanques)
+
+# Comparar con ANOVA
+est_anova <- aov(DOC ~ Region, data = Estanques)
+Anova(est_anova)
+```
+
+Si lo comparan con el ANOVA el Kruskal Wallis es ma estricto y por lo tanto a veces puede afectar la significancia estadistica
+
+## Wilcoxon Rank
+
+Como con la ANOVA Kruskal Wallis nos dice si hay o no diferencias pero no CUALES son esas diferencias. Para ello usamos el equivalente no parametrico al test de _Tukey HSD_. El Pairwise Wilcoxon test es un post hoc test que se puede usar como sustitucion a Tukey.
+
+```{r}
+pairwise.wilcox.test(Estanques$DOC,
+                     Estanques$Region,
+                     p.adjust.method = "none")
+
+# Comparar con Tukey
+TukeyHSD(est_anova)
+
+```
+
+### Que es el p.adjust method?
+
+Ajusta los p-values cuando existen mmultiples comparaciones usando distintos. Existen varios [metodos](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/p.adjust) y aunque su explicacion matematica es algo complica es importante que conozcan su aplicacion. La funcion principal de estos metodos es ajustar p-values tomando en cuenta las comparaciones para evitar que se inflen demasiado y evitar falsos positivos. El metodo mas comun y tambien mas estricto es _bonferroni_ otro metodo menos estricto es _fdr_ o false discovery rate. Para aprender mas sobre que metodo usar pueden checar esta pagina:
+
+```{r}
+pairwise.wilcox.test(Estanques$DOC,
+                     Estanques$Region,
+                     p.adjust.method = "bonferroni")
+
+pairwise.wilcox.test(Estanques$DOC,
+                     Estanques$Region,
+                     p.adjust.method = "fdr")
+
+# Comparar con Tukey
+TukeyHSD(est_anova)
+
+```
+
+## Dunn test
+
+```{r}
+dunn.test::dunn.test(Estanques$DOC,
+                     Estanques$Region,
+                     method = "bonferroni")
+```
+
+### Ejercicio
+
+En el set de datos exudados hay 3 compuestos como variables dependientes. Determina cual de ellos no se puede analizar mediante tests parametricos y analizalo usando Kruskal Wallis para ver si existen diferencias significativas entre tratamientos. De ser asi realiza un post hoc test para ver cuales son las diferencias
+
+```{r}
+# Revisar normalidad
+
+shapiro.test(Exudados$Valarate_C18P) # si son normales
+
+shapiro.test(Exudados$Chorismate_C18N) # no son normales 
+hist(Exudados$Chorismate_C18N) 
+shapiro.test(sqrt(Exudados$Chorismate_C18N)) # ya se normaliza
+
+shapiro.test(Exudados$Glyoxalate_HILN) # no son normales
+hist(Exudados$Glyoxalate_HILN) 
+shapiro.test(log(Exudados$Glyoxalate_HILN)) # se debe analizar con test no parametrico
+
+# Homogeneidad de varianzas
+leveneTest(Glyoxalate_HILN ~ Treatment, data = Exudados)
+leveneTest(Chorismate_C18N ~ Treatment, data = Exudados)
+leveneTest(Valarate_C18P ~ Treatment, data = Exudados)
+
+# Kruskal Wallis
+kruskal.test(Glyoxalate_HILN ~ Treatment, data = Exudados) # es muy marginal si hay o no diferencias 
+
+# Wilcoxon
+pairwise.wilcox.test(Exudados$Glyoxalate_HILN,
+                     Exudados$Treatment,
+                     p.adjust.method = "none")
+
+pairwise.wilcox.test(Exudados$Glyoxalate_HILN,
+                     Exudados$Treatment,
+                     p.adjust.method = "fdr")
+```
+
+# Friedman test
+
+Como pueden ver en el caso de los exudados el test kruskal wallis no nos permite comparar interacciones entre dos variables independientes como con una ANOOVA . En este caso el equivalente no parametrico es el test de Friedman. Sin embargo, este test es sumamente restrictivo en los set de datos que pueden ser analizados con el y  veces es mejor usar kruskal wallis por separado en cada variable independiente.
+
+```{r}
+data("selfesteem", package = "datarium")
+head(selfesteem, 3)
+
+# Los datos tienen que estar balanceados
+
+selfesteem <- selfesteem %>%
+  gather(key = "time", value = "score", t1, t2, t3) %>%
+  convert_as_factor(id, time)
+head(selfesteem, 3)
+
+friedman.test(score ~ time |id, data = selfesteem)
+
+# Post hoc test equivalente a Tukey
+frdAllPairsNemenyiTest(score ~ time |id, data = selfesteem)
+```
+
+### Ejercicio final
+
+La mayor parte de ustedes tuvieron alguna variable en sus proyectos que no se podia analizar con tests parametricos. Usando lo que aprendimos hoy elijan una de esas variables y analicenla usando Kruskal wallis con cada variable independiente por separado.
+
+```{r}
+# Revisar si son normales
+
+shapiro.test(Ejercicio$Num_hojas) # no son normales
+shapiro.test(sqrt(Ejercicio$Num_hojas)) # no se normalizan por lo que se debe usar un test no parametrico
+
+# Kruskal Wallis
+
+kruskal.test(Num_hojas ~ Variedad, data = Ejercicio) # para la variable independiente de variedad no hay diferencias significativas
+
+kruskal.test(Num_hojas ~ Fertirriego, data = Ejercicio) # para la variable independiente fertirriego si hay diferencias significativas
+
+# Wilcoxon
+
+pairwise.wilcox.test(Ejercicio$Num_hojas,
+                     Ejercicio$Fertirriego,
+                     p.adjust.method = "bonferroni")
+```
+
