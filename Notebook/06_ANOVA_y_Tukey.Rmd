@@ -1,0 +1,200 @@
+---
+title: "ANOVA y Tukey HSD"
+output: html_notebook
+---
+
+# Introduccion
+
+A un nivel mayor de complejidad que las pruebas de t el ANOVA (Analysis of Variance) es una fórmula estadística que se utiliza para comparar varianzas entre las medias de diferentes (__mas de dos__) grupos. 
+
+Existe el ANOVA de una via en la que solo se tiene una variable independiente (con varios grupos) y se quiere ver la diferencia entre dichos grupos sobre una variable dependiente.
+
+El ANOVA de 2 vias anade otra variable independiente por lo que mide el efecto de dos variables independientes sobre una variable dependiente. Tambien existe la ANOVA de tres vias pero la complejidad en comparaciones y tratamientos crece bastante.
+
+```{r}
+# Library
+
+library(dplyr)
+library(tidyverse)
+library(car)
+library(agricolae)
+
+# Data
+
+Rodillas <- read.csv("~/CursoR/CursoRgit/Materiales/Rodillas.csv")
+
+Estanques <- read.csv("~/CursoR/CursoRgit/Materiales/BRW.ponds.csv")
+
+Comp_suelos <- read.csv("~/CursoR/CursoRgit/Materiales/Soil_Comparison.csv")
+
+```
+# ANOVA de una via
+
+Es decir solo UN tratamiento independiente
+
+# ANOVA con R base
+
+R base puede calcular ANOVA de dos maneras diferentes, una de ellas usando el codigo _anova()_. Sin embargo, esta funcion base calcula automaticamente una ANOVA tipo I la cual da por sentado que los datos son balanceados por lo que cuando no sea así se debe usar la funcion del paquete _car_.
+
+```{r}
+# varable dep ~ variable indep, datos
+
+summary(aov(shift~treatment, data = Rodillas))
+
+anova(lm(shift~treatment, data = Rodillas))
+anova(aov(shift~treatment, data = Rodillas))
+```
+La diferencia entre lm y aov es el tipo de modelo y mas que nada la presentacion de los datos. Si quieresn saber mas al respecto pueden leer aqui:
+
+(lm vs. aov)[ https://www.oreilly.com/library/view/the-r-book/9780470510247/ch011-sec015.html]
+
+Sin embargo para fines utiles yo siempre uso aov() ya que por definición significa análisis de varianza
+
+# ANOVA con el paquete car 
+
+Este paquete esta enfocado a varios tipos de analisis estadisticos y su funcion de ANOVA tiene un argumento para lidiar con datos desbalanceados (Tipo II y III). Ademas que este paquete tambien cuenta con la funcion levene para checar igualdad de varianzas.
+
+(Tipos de ANOVA) [https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/]
+
+```{r}
+## Revisar por homogeneidad de varianzas
+
+leveneTest(shift~treatment, data = Rodillas) # mayor a 0.05 se puede proceder con anova y tukey # levene.test no sirve
+
+plot(rod_anova,1) # Interpretacion: los residuals tienen que estar distribuidos de manera aleatoria y tienen varianza constante.Pero este casi no lo van a ocupar
+
+## ANOVA
+rod_anova <- aov(shift~treatment, data = Rodillas) # se puede usar lm o aov
+Anova(rod_anova)
+
+## ANOVA tipo II
+Anova(rod_anova, type = 2) # fijense que comienza con mayuscula, se recomienda usar tipo 2 si los datos estan desbalanceados
+
+## ANOVA tipo III
+Anova(rod_anova, type = 3) # este no era el correctopara este tipo de datos
+```
+
+La diferencia entre el tipo II Y III es la interaccion de las variables independientes. Yo les recomiendo que usen tipo II si no estan seguros si sus variables interactuan entre si.
+
+_Conclusion:_ si p<0.05 entonces si hay difrencia significativa entre mis valores
+
+# Como revisar si los datos estan balanceados se utiliza la variable independiente y si no estan balanceados se utiliza anova TIPO II O III  y para datos balanceados se utilizan los TRES TIPOS.
+
+
+```{r}
+Rodillas %>%
+  group_by(treatment)%>%
+  summarise(n())
+```
+
+
+# Tukey HSD
+
+En el caso que una ANOVA nos muestre que existen diferencias significativas entre tratamientos, el paso siguiente es correr un test de Tukey HSD en el cual nos "desglose" la ANOVA y nos dice cuales de los tratamientos son diferentes.
+ Para esto solo hay un codigo el cual _TukeyHSD()_
+ 
+ ANOVA = sirve paa indicar si hay diferencias o no
+ Tukey = sirve para decir cuales si son diferentes
+ 
+```{r}
+TukeyHSD(rod_anova) # p<0.05
+
+TukeyHSD(aov(shift~treatment, data = Rodillas)) # los que son significativamente diferentes son ojos con control y rodillas con ojos.
+plot(TukeyHSD(rod_anova))
+
+```
+ 
+## Ejercicio 
+
+Usando el dataframe de _Estanques_ vamos a comparar la calidad del agua en los estanques entres tres regiones diferentes de Alaska. Para ello cada uno de ustedes seleccionara una de las variables y llevara a cabo un test de ANOVA. No olviden tomar en cuenta los pasos:
+
+* Checar normalidad y de no estar normalizado transformar
+* Checar si el set de datos esta balanceado (para elegir el tipo de anova)
+* Checar homogeneidad de varianza 
+* Calcular ANOVA y si es significativa calcular Tukey HSD
+* Hacer un grafico del resultado Tukey
+
+_Shapiro y qqnorm salen con error o nan cuanso se transforman logaritmicamente porque la transformacion dio valores infinitos_
+
+```{r}
+# 1. Checar normalidad
+par(mfrow=c(1,2))
+hist(Estanques$PhytoCHLa)
+qqnorm(Estanques$PhytoCHLa) # no estan normalizados los datos
+
+shapiro.test(Estanques$PhytoCHLa)
+
+# 2. Transformar los datos 
+par(mfrow=c(1,2))
+hist(log(Estanques$PhytoCHLa))
+qqnorm(log(Estanques$PhytoCHLa+1))
+
+shapiro.test(log(Estanques$PhytoCHLa+1)) # se agrega un +1 porque hay valores infinitos y no se pueden sacra log a numeros ceros y al agregar un +1 se esta sumando un 1 a todos los datos a nalizar
+
+
+# 3. Checar si estan balanceados
+Estanques %>%
+  group_by(Region)%>%
+  summarise(n()) # No estan balanceados por lo que se debe usar tipo II de anova
+
+# 4. Checar homogeneidad
+leveneTest(log(PhytoCHLa+1)~Region, data = Estanques) # p es igual a 0.03 por lo que si se podría usar anova y tukey a pesar de ser menor a 0.05
+
+# 5. Calcular anova
+rod_anova2 <- aov(log(PhytoCHLa+1)~Region, data = Estanques)
+Anova(rod_anova2, type = 2) # si son significativamnte diferentes los datos de pHYTOCHLa entre las regiones
+
+# 6. Gráfico de Tukey
+TukeyHSD(rod_anova2) # los que son significativamente diferentes son IBP con BEO  y IBP con BRW
+
+plot(TukeyHSD(rod_anova2))
+
+```
+# ANOVA de 2 vias
+
+Aunque este tipo de analisis es sumamente util, muchas veces nuestros experimentos incluyen mas de una variable independiente que manipulamos. Para ello los datos se pueden comparar usando un ANOVA es de 2 o mas vias.
+
+```{r}
+# Checar si estan balanceados
+Comp_suelos %>%
+  group_by(Temperature,Soil)%>%
+  summarise(n())
+
+leveneTest(logNH3 ~ Temperature*Soil, data = Comp_suelos)
+
+# Efecto aditivo
+est_anova <- aov(logNH3 ~ Temperature+Soil, data = Comp_suelos)
+Anova(est_anova)
+
+# Interaccion entre variables, es mejor siempre usar este tipo interactivo
+est_anova <- aov(logNH3 ~ Temperature*Soil, data = Comp_suelos)
+Anova(est_anova)
+
+est_Tukey <- TukeyHSD(est_anova)
+plot(est_Tukey)
+
+# El camino facil de agricolae
+
+summary(est_anova)
+rtout <- HSD.test(est_anova, trt = c ("Temperature", "Soil"),
+                  alpha = 0.05)
+
+
+```
+## Ejercicio 
+
+Ahora les toca a ustedes cada quien va a elegir 1 variable y comparar los efectos de temperatura y tipo de suelo en ellas. Tienen que seguir el mismo proceso y al final me van a explicar porque si o no hay diferencias significativas entre los grupos.
+
+```{r}
+leveneTest(NO3.ugL ~ Temperature*Soil, data = Comp_suelos) # si es mayor a 0.05
+
+est_anova2 <- aov(NO3.ugL ~ Temperature*Soil, data = Comp_suelos)
+Anova(est_anova2)
+
+est_Tukey2 <- TukeyHSD(est_anova2)
+plot(est_Tukey2)
+
+```
+
+
+
