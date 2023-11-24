@@ -1,0 +1,376 @@
+---
+title: "Pipeline para asignacion de secuencias"
+output: html_notebook
+---
+
+# Introduccion
+
+El proposito de esta clase es aprender a usar el paquete DADA2 que realiza inferencia de la taxonomia dentro de una muestra de datos de amplicones a una resolucion de un solo nucleotido.
+
+Las muestras que vamos a ocupar son probablemente unas que ustedes procesaron hace tiempo de plantaciones de banano. Por lo que me parecio buena idea ensenarles como analizarlas usando muestras parecidas a las que ustedes pronto analizaran solos. Sin embargo, dado que por primera vez vamos a ver codigo que verdaderamente tarda en correr para los propositoss e esta clase ustedes solo analizaran una seccion de los datos:
+
+* Hugo y Celina analizaran las muestras 1 a 3
+* Mariana y Larissa analizaran 7 a 10
+* Isa y Daniel analizaran las muestras 11,12,17,18
+
+Es mejor probar por partes el codigo
+
+## La nomenclatura de las muestras
+
+El analisis de datos de secuenciacion se hace a archivos fastq los cuales son una extension diferente del formato FASTA. La diferencia principal entre estos dos formatos es que los archivos fastq incluyen un quality score como control de calidad. Esto es super importante para que chequen cuando les manden sus datos de secuenciacion que de verdad esten en ese formato (Literal acabamos de tener un problema con ese problema)
+
+Los archivos fastq son un archivo de texto que contiene datos de secuenciacion y cada secuencia contiene 4 filas: 
+
+1. Un identificador de secuencia con informacion acerca la corrida en que se secuencio y el grupo con el que se secuencio. Usualmente yo lo veo como el marcador de que una nueva secuencia se reconocio. El contenido exacto varia dependiendo de la informacion y software usado para la secuenciacion.
+
+2. La secuencia con las bases: A,C,T,G y N para los nucleotidos no identificados
+
+3. Un separador que usualmente es solo un signo de (+) 
+
+4. Las puntaciones que calidad o quality scores. Estos valores son Phred +33 encoded, usando caracteres ASCII para representar puntuaciones de calidad. 
+
+El siguiente componente de las muestras que deben de conocer es que vienen _demultiplexed_. No se cual sea la traduccion al espanol pero basicamente significa que la muestras vienne separadas en lecturas al derecho (forward) y al reves (reverse). Para dada es muy importante que sus secuencias vengan en este formato y usualmente puede saberlo porque vienen con _*R1.fastq_ para forward y _*R2.fastq_ para reverse. Aunque otras veces puede venir solo el numero. Siempre es muy importante tener eso claro con su servicio de secuenciacion.
+
+Finalmente, este codigo tambien asume que las secuencias que vamos a analizar ya vienen sin nucleotidos no biologicos es decir primers, adapters, linkers. En este caso los datos que les proporcione ya vienen asi pero cuando veamos las adaptaciones de este codigo a ITS veran como comprobar si tiene primers y como removerlos
+
+## El pipeline
+
+El pipeline o en espanol tuberia que les voy a pasar van a poder ocuparlo de aqui en adelante y es una adaptacion del tutorial de DADA2. Sin embargo, como veremos mas adelante las partes claves que se deben de modificar dependiendo sus muestras son el filtrado y cortado
+
+Otra recomendacion que les doy (la cual la aprendi de la peor manera) es que continuamente vayan guardando los objetos que se vayan creando a lo largo del pipeline en parte para libera memoria de ambiente global de R pero tambien en caso de que su computadora decida morir durante el proceso.
+
+# Instalacion de DADA2
+
+## 1. Usando Bioconductor
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("dada2", version = "3.18")
+```
+# Librerias
+
+```{r}
+library(dada2); packageVersion("dada2") # nos ayuda a ver que version de dada2 estamos usando
+library(tidyverse)
+library(dplyr)
+```
+
+# Seleccion y preparacion de archivos
+
+```{r}
+## Fijar el camino al directorio donde estan mis muestras
+
+path <- "~/CursoR/CursoRgit/Secuenciacion" # este objeto me dara el camino a donde estan mis archivos  va a ser mas facil porque cada que escribamos "path" me mostraran los archivos de esa ruta
+
+list.files(path)
+
+## Ahora leeremos los nombres de nuestras muestras y los separaremos en objetos entre forward y reverse reads.
+
+# Forward
+fnFs <- sort(list.files(path,pattern="_R1.fastq", full.names = TRUE))
+
+# Reverse
+fnRs <- sort(list.files(path,pattern="_R2.fastq", full.names = TRUE))
+
+# Para saber si funciono el numero de caracteres debe ser igual al numero de muestras se imprime el objeto
+```
+
+Estos tambien van a depender de como se llaman sus muestras. Muchas veces en vez de decir R1 solo siene el numero o en vez de ser formato fastq como tal es una variacion .fq.gz que igual lo lee DADA2 pero deben ser cuidadosos sino les va a salir error.
+
+```{r}
+## Extract sample names
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`,1) # Este codigo funcionara dependiendo de como esta escrito el nombre de sus datos, por lo que al nombre de los archivos se debe que borrar el primer "_" para que solo muestre el nombre y el numero, si no solo sale el nombre de la muestra que es igual para todos
+
+# o podemos hacer un objeto nosotros
+sample.names <- c("CH7","CH8", "CH9", "CH10")
+```
+
+# Inspeccionar perfiles de calidad
+
+```{r}
+# forward
+plotQualityProfile(fnFs[3:4]) # cortar en 250 no fue tan mal, en 240 no salio bien
+
+# reverse
+plotQualityProfile(fnRs[3:4]) # mala calidad cortar en 250
+```
+* En el eje de las x tenemos el numero de bases que tenemos por secuencia y en el eje de las y tenemos su puntaje de calidad. Arriba de 30% es buen puntaje de calidad lo ideal es 40.
+
+* En la escala de grises se ve un heatmap con la frecuencia de cada puntaje en la posicion de cada base.
+
+* La media de los puntajes de calidad en cada posicion se muestra con la linea verde mientras que los cuartiles de la distribucion de los scores se muestran con la linea naranja
+
+* La linea roja muestra la proporcion a escala de las lecturas que se extiende hasta dicha posicion. Esta linea es mas util cuando se usa otras tecnologias de secuenciacion. Dado que estos dados fueron secuenciados usando Illumina todas las lecturas tienen la misma longitud, por eso la linea roja es recta.
+
+Al momento de secuenciar es comun que la calidad de los ultimos nucleotidos secuenciados en cada read siempre sea mas baja. Basados en la linea verde y naranja debemos de decidir donde cortar los ultimos nucleotidos para disminuir el numero de errores que puedan continuar mas adelante en el pipeline. 
+
+Sin embargo, es importante notar que esto dependera de la seccion que se mando a secuenciar en el caso de que la seccion sea V3, los cortes de ambos lados pueden ser bastante amplios ya que las superposiciones entre forward y reverse reads es casi total. Sin embargo, otras regiones como V3V4 o V1V2 las secuencias no pueden ser cortadas (o se cortan muy poco) ya que mas adelante en el paso de union de lecturas no va a funcionar ya que las muestras forward y reverse no se van a poder sobrelapar para hacer la union. 
+
+__Para ello deben tener amplio conocimiento de la naturaleza de sus muestras y revisar sus graficos de calidad. Sin embargo, prueba y error al momento de la union a veces es inevitable__
+
+# Filtrar y cortar 
+
+Primero crearemos una nueva carpeta para nuestras secuencias filtradas, asi como un nombre para los archivos .fastq que obtengamos
+
+```{r}
+# Guardando el camino a nuestras muestras filtradas en un objeto nuevo
+
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+
+# Asignando los nombres de las muestras a nuestros nuevos objetos
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+```
+
+La funcion principal para esta seccion es `filterAndTrim()`. El codigo incluire los siguientes parametros:
+
+* Los objetos de Forward and reverse reads 
+
+* El camino que acabamos de crear para nuestras forward and reverse reads ya filtradas
+
+* `truncQ= 2` removera lecturas con un score menor o igual a 2
+
+* `maxN=0` removera lecturas que tenga nucleotidos no reconocidos N. Este parametro es necesario ya que el resto del codigo asume que no hay N dentro de las lecturas
+
+* `truncLen` El numero de bases que se van a mantener basados en los graficos de calidad. Si no se incluye este parametro quiere decir que los reads no se van a cortar o truncar. Esto a veces se tiene que hacer cuando se tienen regiones V3V4 que no se superponen lo suficiente para hacer el corte
+
+* `maxEE=c(2,2)` Este es el parametro mas confuso pero se refiere a expected errors o errores esperados. El parametro se requiere como un vector C(#,#) en el cual el primer numero es para las forward reads y el segundo para las reverse. Mientras mas grande el valor, menos estricto es el argumento (Es decir se permite que hayn mas errores esperados). Los valores se seleccionan tambien basados en los graficos de calidad y no necesariamente tienen que ser iguales para ambos sets de lecturas.
+
+* El resto de los parametros se mantienen en sus valores default
+
+```{r}
+out <- filterAndTrim(fnFs, filtFs, # forward reads
+                     fnRs, filtRs, # reverse reads
+                     truncLen=c(250,250), # truncado o corte
+                     maxN=0, # remover Ns NUNCA SE MODIFICA
+                     maxEE=c(2,2), # error esperado
+                     truncQ=2, # quality score
+                     rm.phix=TRUE, compress=TRUE, # defaults
+                     multithread=FALSE) # En windows multithread=FALSE
+```
+
+En realidad no es necesario guardarlo en un objeto ya que lo que el codigo hace en realidad es generar los archivos fastq con las secuencias ya filtradas. Sin embargo, a veces es conveniente ya que esta tabla muestra que tantas lecturas fueron descartadas con nuestros parametros. Si ves que demasiadas secuencias fueron descartadas probablemente seria mejor modificar varios de tus parametros. En contratste, siquieres ser un poco mas estricto con el filtrado de tus secuencias puedes reducir los valores de maxEE para que sea mas estricto pero siempre depende de cual sea tu proposito.
+
+_Especificamente con estas muestras pareceque si el proceso de cortado nos evita unir las muestras vamos a tener que modificar MaxEE y truncQ a que sean menos estrictos para no perder tantas muestras_
+
+```{r}
+# Ahora a guardar nuestro progreso
+
+write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads2.csv") # esto es para guardar una tabla en mi carpeta de materiales
+
+#### Por si queremos retomar despues de filtrar ####
+
+## Nuevo Camino
+path2 <- "~/CursoR/CursoRgit/Secuenciacion/filtered/"
+
+# Forward
+filtFs <- sort(list.files(path2,pattern="_F_filt.fastq.gz", full.names = TRUE))
+
+# Reverse
+filtRs <- sort(list.files(path2,pattern="_R_filt.fastq.gz", full.names = TRUE))
+```
+
+# Tasas de error
+
+A partir de esta seccion el codigo empezara a tardar mas en correr asi que todos los objetos resultados seran guardados como __.Rdata__. Tambien les recomiendo que de rato en rato guarden su notebook solo en caso de que su compu decida que ya se canso. Al guardar los objetos en ese formato solo necesitamos subirlos a nuestro ambiente global si R se cierra y no tenemos que empezar desde cero
+
+Las tasas de error son estimadas hasta que se llegue a una convergencia entre las muestras usando un modelo de error parametrico. El codigo basicamente estima que tan probable es que una base en realidad sea otra (es decir la probabilidad de que haya transiciones) usando la puntuacion de calidad de dicha base. Los objetos generados en este paso se necesitan para hacer la inferencia de muestras.
+
+Como con varios tipos de problemas de machine-learning (aprendizaje automatizado), el algoritmo debe empezar con una suposicion inicial para la cual el numero maximo posible de tasa de error en estos datos se prueba. En este algoritmo esta suposicion es la tasa de error en caso de que la secuencia mas abundante es correcta y el resto son errores.
+
+
+```{r}
+# Forward
+errF_intento <- learnErrors(filtFs, multithread=TRUE)
+save(errF,file = "errF.RData") # estos archivos se van a guardar en la carpeta del notebook por el momento podemo dejarlos ahi pero cuando tengan un proyecto ustedes si deben moverlos a la carpeta adecuada 
+
+# Reverse
+errR <- learnErrors(filtRs, multithread=TRUE)
+save(errR,file = "errR.RData") 
+
+# Para volver a subir los archivos nuevamente se utiliza:
+load("errF.RData")
+load("errR.RData")
+
+# Plot error rates
+plotErrors(errF, nominalQ = TRUE)
+plotErrors(errR, nominalQ = TRUE)
+
+```
+* Los graficos de error muestran las tasas de error para cada posible transicion (A→C, A→G, …). Los puntos son las tasas de error observadas para cada puntuacion de calidad. 
+
+* La linea negra muestra la tasa de error estimada despues de la convergencia basada en el algortimo de machine-learning
+ 
+* La linea roja muestra las tasas de error esperadas en la definicion nomina de un Q-score.
+
+__Basicamente se espera que la tasa errores estimada (la linea negra) tenga un buen fit a los puntos o tasas observadas y que las tasas de error disminuyan mientras la calidad se incrementa (linea roja)__
+
+# Inferencia de las muestras
+
+Este es el paso principal de todo el pipeline porque aqui es donde se retiran todos los errores de secuenciacion para dejar unicamente los miembros reales de la comunidad que fue secuenciada. Este codigo usa las lecturas ya filtradas y las tasas de error que acabamos de calcular para eliminar el ruido _(denoise)_ nuestras muestras
+
+Este paso ademas incluye de agrupamiento o _pooling_:
+
+* __pool = FALSE__ es el default quiere decir que las muestras no se agrupan de ninguna manera. Este default deben de usarlo cuando sus muestras provengan de lugares totalmente diferentes o que en teoria no deberian sobrelapar en sus comunidades bacterianas.
+
+* __pool = TRUE__ bajo este parametro todas las muestras se agrupan juntas para la inferencia. Este proceso pueden hacerlo cuando sepan que sus muestras son repeticiones de una misma parcela lugar o tratamiento. Sin embargo, tambien deberan tomar en cuenta el poder de su computadora; de todas las opciones esta es la que mas tarda y mas memoria RAM ocupa ya que hace la inferencia de todas las muestras al mismo tiempo. Por ello dependiendo de su numero de muestras es posible que su computadora no tenga el poder para correr el codigo de esa manera.
+
+* __pool = "pseudo"__ En este caso las muestras son procesadas individualmente pero se llevan acabo pasos auto-consistidos _(self consisted steps)_ los cuales incrementan la sensibilidad al usar argumentos previos de las otras muestras. Esta es una opcion intermedia ente agrupar o no basados en la velocidad de procesamiento y el numero de quimeras (cuando la agrupacion es verdadera el numero de quimeras se incrementa artificialmente). Usenla si sus muestras estan conectadas de alguna manera (mismo suelo base pero diferente tratamientos por ejemplo)
+
+__Esta es la parte del codigo que tarda mas en correr__
+
+```{r}
+# Forward
+dadaFs_nopool <- dada(filtFs, err=errF, multithread=TRUE,
+                      pool = FALSE)
+save(dadaFs_nopool, file = "dadaFs_nopool.RData")
+
+load("dadaFs_nopool.RData")
+
+# Reverse
+dadaRs_nopool <- dada(filtRs, err=errR, multithread=TRUE,
+                      pool = FALSE)
+save(dadaRs_nopool, file = "dadaRs_nopool.RData")
+load("dadaRs_nopool.RData")
+```
+
+# Uniendo las lecturas forward y reverse
+
+En este paso por fin se unen las lecturas y varios pares seran rechazados si no se superponen lo suficiente o contienen demasiados mismatches (desajustes?) en la zona de superposicion. El numero default de mismatches es >0, por lo que si se desea cambiar se tiene que agregar como argumento (no lo recomiendo). 
+
+Otros argumentos default son que el unico objeto devuelto de este codigo sea las secuencias ya unidas por al menos 12 bases. Todas estas condiciones se pueden cambiar pero yo prefiero no hacerlo. Otro parametro que se puede incluir es que se unan lecturas que no se superposicionan (pero no es recomendado) agregando el argumento _justConcatenate=TRUE_ al codigo.
+
+Desafortunadamente es hasta este paso donde se pueden dar cuenta si su proceso de truncado fue el correcto (paso 1). Si ven que al momento de unir pierden demasiadas secuencias (o de plano todas) tendran que regresar a esa parte
+
+```{r}
+mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, verbose = TRUE)
+save(mergers, file = "mergers.RData")
+
+load("mergers.RData")
+```
+
+Porque en este caso no funciono?
+
+* Corte demasiado y muchas secuencias no se pudieron unir
+
+* La zona de union tenia mismatches
+
+# Hacer Tabla de secuencias
+
+Despues de unir las lecturas con este objeto vamos a hacer una tabla de las secuencias. Esta tabla es una matriz que contiene ASVs (amplicon sequence variant) que es una version con mayor resolucion que los OTUs (Operational Taxonomic Unit). Las OTU utilizan un umbral de similitud arbitrario para agrupar lecturas, por lo que si el umbral más típico es del 3 % significa que estas unidades comparten el 97 % de la secuencia de ADN. Mientras que las ASV toman en cuenta la similitud y la abundancia de secuencias para determinar las lecturas dentro de grupos.1 De esta manera los ASV pueden encontrar las diferencias de secuencia con una variación tan pequeña como un solo nucleótido por lo tanto, los ASV representan una distinción más refinada entre secuencias.
+
+Pero bueno volviendo a la table esta va a tener nuestras muestras como filas y las secuencias o ASVs como columnas. Los datos dentro de la tabla es la abundancia de cada secuencia.
+
+```{r}
+## Sequence table
+
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab) # numero de muestras x numero de ASVs
+
+# Checar la longitud de todas las secuencias
+table(nchar(getSequences(seqtab)))
+```
+
+Otro paso importante despues de unir nuestras secuencias es checar su longitud. Dado que en teoria estas secuencias son V3 y en nuestros graficos vimos que tenian 300 bases, ninguna de nuestras muestras unidas deberia sobrepasar ese valor.
+
+# Quitar quimeras
+
+En secuenciacion las quimeras son secuencias de ADN que se originan cuando pedazos de ADN se unen cuando no deberian. Tambien durante el proceso de amplificación por PCR se pueden producir secuencias quiméricas, secuencias que no son productos reales de la amplificación del gen 16S. Dado que estas uniones y productos son artificales y no representan secuencias biologicas reales deben ser eliminadas.
+
+Hasta este momento el pipeline de DADA ya corrigio por sustitucion y otros tipos de errores pero las quimeras se mantienen.Afortunadamente despues del demoising es muy sencillo identificar las quimeras de las secuencias ya que el codigo las identifica si las secuencias pueden ser reconstruidas combinando segmentos izquierdos y derechos de las secuencias "madre" mas abundantes
+
+```{r}
+seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
+                                    multithread = TRUE, verbose = TRUE)
+save(seqtab.nochim, file = "seq_conteos.RData")
+
+# Identified 7421 bimeras out of 9127 input sequences. ANADIR al reporte
+
+# Basados en esto 81% de mis secuencias son quimeras
+
+## Comparar esta tabla con la original que incluye quimeras
+dim(seqtab.nochim)
+sum(seqtab.nochim)/sum(seqtab) # porcentaje de secuencias no quimericas que se mantuvieron
+
+```
+
+Al dividir la suma de ambas tablas obtenemos el porcentaje de secuencias no quimericas que mantuvimos tomando en cuenta la abundancia
+
+La frecuencia de secuencias quimericas varia sustancialmente entre tipos de datos y depende de factores como procesamiento experimental de las muestras e incluso la complejidad de la mismas. Como les mencione antes las quimeras pueden salir como resultado de procesos experimentales o al momento de procesar las secuencias.
+
+En este caso para ver el porcentaje de quimeras comparamos las dimensiones de la tabla original con la tabla sin quimeras. Sin embargo, con nuestro ultimo codigo ya tomamos en cuenta abundancia y ahi vemos cual es el porcentaje verdadero
+
+En futuros analisis deben considerar que la mayor parte de sus lecturas (tomando en cuenta abundancia) deberia mantenerse despues de remover quimeras. Aunque tampoco es tan raro que la mayor parte de los ASVs sean removidos (a mi no me ha tocado y esperemos que a ustedes tampoco). Si la mayor parte de sus lecturas se quitan ya que estan consideradas como quimeras modifiquen alguna parte del pipeline para minimizar esos errores. Como recomendacion esto ocurre en la mayoria de los casos esto ocurre porque las secuencias de los primers tienen nucleotidos ambiguos que no fueron removidos antes de empezar 
+el DADA2 pipeline.
+
+Recuerden siempre preguntar si sus muestras vienen sin primers!!!
+
+# Seguimiento del proceso
+
+Antes de terminar y asignar taxonomia a nuestra tabla final, es bueno hacer un recuento del proceso de filtrado. Sin duda ustedes deberan de incluir esta tabla en sus reportes y tener justificacion para cada paso de filtrado.
+
+Recuerdan que guardamos el archivo de out? Lo vamos a usar en esta parte:
+
+```{r}
+out <- read.csv("~/CursoR/CursoRgit/Materiales/Conteo_reads2.csv")
+
+# Primero crearemos una funcion
+getN <- function(x) sum(getUniques(x))
+# esta funcion va a sumar el numero de valores unicos dentro de x (x son nuestros objetos de R creados en cada paso)
+
+# Creamos una nueva tabla llamada track
+
+track <- cbind(out, # Paso 1: filtrado y corte
+               sapply(dadaFs_nopool, getN), 
+               sapply(dadaRs_nopool, getN), # Paso 3: denoising
+               sapply(mergers, getN), # Paso 4: unir muestras
+               rowSums(seqtab.nochim)) # Paso 5: quitar quimeras
+
+# Nombramos nuestras filas y columnas
+colnames(track) <- c("Sample_names","input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+
+rownames(track) <- sample.names # no siempre es necesario
+
+#Guardamos esta tabla
+write.csv(track, "~/CursoR/CursoRgit/Materiales/Seguimiento_dada.csv")
+```
+
+# Asignar taxonomia
+
+Si bien ya con estos pasos contamos cuantos microbios estan en nuestras muestras ahora toca saber CUALES son estos microbios. El paquete DADA2 implementa un metodo Bayesiano de clasificacion (naive Bayesian classifier method).
+
+La funcion _assignTaxonomy_ tomara nuestra tabla de conteos con las secuencias y un set de secuencias de referencia con taxonomia ya conocida (bases de datos) y nos dara como resultado la asignacion taxonomica con un intervalo de confianza de bootstrap _(minBoot)_. Yo este valor siempre lo dejo con el valor default pero sepan que se puede cambiar.
+
+Con DADA2 se pueden usar las bases de datos RDP, GreenGenes (97%) y Silva; aunque tambien hay otras bases de datos especificas para protistas y ambientes especificos si alguna vez llegaran a ocuparlas. La seleccion de base de datos afecta en gran medida la identificacion de taxonomia. En esta clase vamos a comparar RDP y Silva ya que son las mas comunes para usarse. En un futuro tendran que ponerse de acuerdo para usar la misma base de datos para TODOS sus analisis ya que busca consistencia.
+
+En un analisis previo que yo hice con mis muestras para comporar ambas bases de datos Silva identificaba mas taxa en los niveles taxonomicos superiores (menos no identificados) pero ya al llegar a genero porcentaje de identificacion era casi igual con RPD. Asimismo hice una revision de literatura super rapida basada en asignacion de taxonomia en ecologia de suelos por lo que YO decidi usar __Silva v138__ Ademas por si tenian la duda NO no se puede combinar la asignacion de dos bases de datos no es una practica comun y seria complicadisimo.
+
+Bases de datos 
+
+* [Silva](https://zenodo.org/records/4587955)
+
+* [RDP](https://zenodo.org/records/4310151)
+
+```{r}
+taxa <- assignTaxonomy(seqtab.nochim, "~/CursoR/CursoRgit/Secuenciacion/RDP/rdp_train_set_18.fa.gz", multithread = TRUE)
+```
+
+Si inspeccionan la taxonomia asignada y ven que existen muchos errores. Por ejemplo que las secuencias sean asignadas como EuKaryota NA NA NA NA NA, las lecturas pueden estar en sentido opuesto a los de la base de referencia. Pueden intentar asignar taxonomia usando la orientacio opuesta agregando assignTaxonomy(..., tryRC=TRUE)
+
+## Añadir especies
+
+Aunque al nivel que van a trabajar no va a ser tan necesario, DADA2 tambien implementea un metodo de asignacion de especies basado en alineacion exacta entre nuestros ASVs y las secuencias de referencia, basado en analisis previos. Sin embargo es importante notar que esta funcion solo funciona con Silva y RDP
+
+```{r}
+taxa <- addSpecies(taxa, "~/CursoR/CursoRgit/Secuenciacion/RDP/rdp_species_assignment_18.fa.gz")
+
+save(taxa, file = "taxa_ch.RData")
+```
+
+Como es de esperarse casi no van haber identificaciones de especies pero tomen en cuenta que es una opcion posible.
+
+
