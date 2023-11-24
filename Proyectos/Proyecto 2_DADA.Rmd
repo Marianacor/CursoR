@@ -9,6 +9,7 @@ library(tidyverse)
 library(dplyr)
 ```
 
+# Secuenciacion de la muestra de vid S85
 
 ```{r}
 # Determinar el camino al directorio donde estan las muestras:
@@ -16,6 +17,7 @@ library(dplyr)
 path <- "~/CursoR/CursoRgit/Secuenciacion_proyecto"
 
 # Ahora se separan las muestras en objetos entre forward y reverse reads:
+
 # Forward
 fnFs <- sort(list.files(path,pattern="_R1.fastq.gz", full.names = TRUE))
 
@@ -25,7 +27,7 @@ fnRs <- sort(list.files(path,pattern="_R2.fastq.gz", full.names = TRUE))
 sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`,1) 
 ```
 
-# Revision de los perfiles de calidad
+### Revision de los perfiles de calidad
 
 ```{r}
 # forward
@@ -35,9 +37,9 @@ plotQualityProfile(fnFs[1])
 plotQualityProfile(fnRs[1])
 ```
 
-# Filtrar y cortar 
+### Filtrar y cortar 
 
-Primero crearemos una nueva carpeta para nuestras secuencias filtradas, asi como un nombre para los archivos .fastq que obtengamos
+Primero crearemos una nueva carpeta para nuestras secuencias filtradas, asi como un nombre para los archivos .fastq que obtengamos.
 
 ```{r}
 # Guardando el camino a nuestras muestras filtradas en un objeto nuevo
@@ -49,10 +51,18 @@ filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
 # Asignando los nombres de las muestras a nuestros nuevos objetos
 names(filtFs) <- sample.names
 names(filtRs) <- sample.names
+```
 
+__Explicacion de los parametros de filtrado y corte__
+
+Se revisaron los perfiles de calidad y se decidio cortar para la secuencia forward en la base 240 y para el reverse en 210, con el objetivo de ser lo mas estricto posible en cuanto al perfil de calidad, ya que lo ideal es que sea arriba del 40%. Sin embargo, se perdían muchas muestras por lo que se decidio que para la secuencia forward se cortara en la base 270 y para el reverse en 210. Para ambas secuencias se eligio un puntaje de calidad justo en el 30%.
+
+En cuanto al error esperado maxEE se opto por elegir (5,5), con el objetivo de ser menos estrictos en cuanto a los errores esperados y asi evitar perder muchas muestras.
+
+```{r}
 out <- filterAndTrim(fnFs, filtFs, # forward reads
                      fnRs, filtRs, # reverse reads
-                     truncLen=c(240,210), # truncado o corte
+                     truncLen=c(270,210), # truncado o corte
                      maxN=0, # remover Ns NUNCA SE MODIFICA
                      maxEE=c(5,5), # error esperado
                      truncQ=2, # quality score
@@ -63,7 +73,7 @@ out <- filterAndTrim(fnFs, filtFs, # forward reads
 ```{r}
 # Se guarda el progreso:
 
-write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads4_proyecto.csv") 
+write.csv(out, "~/CursoR/CursoRgit/Materiales/Conteo_reads5_proyecto.csv") 
 
 #### Por si queremos retomar despues de filtrar ####
 
@@ -77,53 +87,54 @@ filtFs <- sort(list.files(path2,pattern="_F_filt.fastq.gz", full.names = TRUE))
 filtRs <- sort(list.files(path2,pattern="_R_filt.fastq.gz", full.names = TRUE))
 ```
 
-# Tasas de error
+### Tasas de error
 
 ```{r}
 # Forward
 errF <- learnErrors(filtFs, multithread=TRUE)
-save(errF,file = "errFproyecto.RData")
+save(errF,file = "errFproyecto2.RData")
 
 # Reverse
 errR <- learnErrors(filtRs, multithread=TRUE)
-save(errR,file = "errRproyecto.RData") 
+save(errR,file = "errRproyecto2.RData") 
 
 # Para volver a subir los archivos nuevamente se utiliza:
-load("errFproyecto.RData")
-load("errRproyecto.RData")
+load("errFproyecto2.RData")
+load("errRproyecto2.RData")
 
 # Plot error rates
 plotErrors(errF, nominalQ = TRUE)
 plotErrors(errR, nominalQ = TRUE)
 ```
-# Inferencia de las muestras
+
+### Inferencia de las muestras
 
 ```{r}
 # Forward
 dadaFs_nopool <- dada(filtFs, err=errF, multithread=TRUE,
                       pool = FALSE)
-save(dadaFs_nopool, file = "dadaFs_nopool_proyecto.RData")
+save(dadaFs_nopool, file = "dadaFs_nopool_proyecto2.RData")
 
-load("dadaFs_nopool_proyecto.RData")
+load("dadaFs_nopool_proyecto2.RData")
 
 # Reverse
 dadaRs_nopool <- dada(filtRs, err=errR, multithread=TRUE,
                       pool = FALSE)
-save(dadaRs_nopool, file = "dadaRs_nopool_proyecto.RData")
+save(dadaRs_nopool, file = "dadaRs_nopool_proyecto2.RData")
 
-load("dadaRs_nopool_proyecto.RData")
+load("dadaRs_nopool_proyecto2.RData")
 ```
 
-# Uniendo las lecturas forward y reverse
+### Uniendo las lecturas forward y reverse
 
 ```{r}
 mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, verbose = TRUE)
-save(mergers, file = "mergers_proyecto.RData")
+save(mergers, file = "mergers_proyecto2.RData")
 
-load("mergers_proyecto.RData")
+load("mergers_proyecto2.RData")
 ```
 
-# Hacer tablas de secuencias
+### Hacer tablas de secuencias
 
 ```{r}
 ## Sequence table
@@ -135,20 +146,58 @@ dim(seqtab) # numero de muestras x numero de ASVs
 table(nchar(getSequences(seqtab)))
 ```
 
-# Quitar quimeras
+### Quitar quimeras
 
 ```{r}
 seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
                                     multithread = TRUE, verbose = TRUE)
-save(seqtab.nochim, file = "seq_conteos.RData")
+save(seqtab.nochim, file = "seq_conteos_proyecto.RData")
 
-# Identified 7421 bimeras out of 9127 input sequences. ANADIR al reporte
+# Se identificaron 5249 bimeras de 7392 secuencias.
 
-# Basados en esto 81% de mis secuencias son quimeras
+# Basados en esto el 71% de mis secuencias son quimeras
 
 ## Comparar esta tabla con la original que incluye quimeras
 dim(seqtab.nochim)
-sum(seqtab.nochim)/sum(seqtab) # porcentaje de secuencias no quimericas que se mantuvieron
+sum(seqtab.nochim)/sum(seqtab) # se mantuvieron un 53% de secuencias no quimericas
+
+load("seq_conteos_proyecto.RData")
+
 ```
 
+### Seguimiento del proceso
 
+```{r}
+out <- read.csv("~/CursoR/CursoRgit/Materiales/Conteo_reads5_proyecto.csv")
+
+# Primero crearemos una funcion
+getN <- function(x) sum(getUniques(x))
+
+# Creamos una nueva tabla llamada track
+track <- cbind(out, # Paso 1: filtrado y corte
+               getN(dadaFs_nopool), 
+               getN(dadaRs_nopool), # Paso 3: denoising
+               getN(mergers), # Paso 4: unir muestras
+               rowSums(seqtab.nochim)) # Paso 5: quitar quimeras
+
+# Nombramos nuestras filas y columnas
+colnames(track) <- c("Sample_names","input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+
+#Guardamos esta tabla
+write.csv(track, "~/CursoR/CursoRgit/Materiales/Abundancias_proyecto_Mariana.csv")
+```
+
+### Asignar taxonomia
+
+```{r}
+# Se crea la tabla de taxonomia
+taxa <- assignTaxonomy(seqtab.nochim, "~/CursoR/CursoRgit/Secuenciacion/SILVA/silva_nr99_v138.1_train_set.fa.gz", multithread = TRUE)
+
+# Se añaden especies a la tabla
+taxa <- addSpecies(taxa, "~/CursoR/CursoRgit/Secuenciacion/SILVA/silva_species_assignment_v138.1.fa.gz")
+
+save(taxa, file = "taxa_proyecto.RData")
+
+write.csv(taxa, "~/CursoR/CursoRgit/Materiales/taxa_proyecto_Mariana.csv")
+
+```
