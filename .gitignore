@@ -47,3 +47,16 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# jpg files
+*.jpg
+
+# csv files
+*.csv
+
+# Folders
+Secuenciacion/
+Secuenciacion_proyecto/
+Materiales/
+Secuencicion_ITS/
+
