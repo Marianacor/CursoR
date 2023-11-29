@@ -63,7 +63,7 @@ load("Vid_S85.RData") # siempre se empieza con el objeto de phyloseq
 
 ```{r}
 # Redes de como estan interactuando las muestras
-net <- make_network(vid_bio, "samples", max.dist=0.3)
+net <- make_network(vid_bio, "samples", max.dist=2)
 plot_network(net, vid_bio, color = "Tratamiento", shape="Suelo",
              line_weight = 0.3, label=NULL)
 
@@ -129,8 +129,6 @@ merge_phyloseq(Actino)
 load("VidS81.RData")
 V1 <- vid_bio
 
-V5 <- vid_bio
-
 load("VS82.RData")
 V2<- vid_bio
 
@@ -143,5 +141,46 @@ V5 <- vid_bio
 vid_bio <- merge_phyloseq(V1, V2, V3, V5)
 
 save(vid_bio, file = "vid_ejemplos.RData")
+
+load("vid_ejemplos.RData") # al usar merge fijarse que los datos coincidan
+
+# Modificando la tabla de metadatos
+
+vid_bio@sam_data$Suelo[is.na(vid_bio@sam_data$Suelo)] <- "Salino"
+vid_bio@sam_data$Tratamiento[vid_bio@sam_data$Tratamiento == "Sin bioestimulante"] <- "Control"
+vid_bio@sam_data <- vid_bio@sam_data[,1:2] # [filas,columnas]
+
+save(vid_bio, file = "vid_ejemplos.RData")
 ```
+
+```{r}
+load("phylo_soil.RData")
+```
+
+## Abundancia relativa
+
+DADA2 nos da abundancias absolutas las cuales pasamos a nuestro objeto de phyloseq. La abundancia abdoluta es el conteo TOTAL de las especies e individuos dentro de cada especie
+
+La abundancia relativa en cambio normaliza nuestras muestras para poder compararlas entre si. Para ello usa proporciones siendo 1 el 100% de nuestro conteo por muestras. De esta manera podemos comparar la composicion de nuestras muestras aunque no tengamos valores totales o absolutos iguales.
+
+Para transformar de abundancia absoluta a relativa o cualquier otro tipo de calculo para nuestras muestras se usa la siguiente funcion en phyloseq:
+
+```{r}
+Psoil_rel <- transform_sample_counts(PS_filtered, # objeto a transformar
+                                     function(x) x/sum(x)) # x es mi conteo
+```
+
+# Reexploramos graficos
+
+```{r}
+# 1. Graficos
+Top_phyla <- tax_glom(Psoil_rel,taxrank = "Phylum", NArm = FALSE)
+Top_phyla <- prune_taxa(names(sort(taxa_sums(Top_phyla), TRUE)[1:10]), #cond
+                        Top_phyla) # objeto que voy a modificar
+
+plot_bar(Top_phyla, fill = "Phylum")
+plot_heatmap(Top_phyla, taxa.label = "Phylum")
+
+```
+
 
