@@ -17,6 +17,7 @@ library(dplyr)
 library(car)
 library(breakaway) # chao-bunge
 library(microbiome)
+library(agricolae)
 
 BiocManager::install("microbiome")
 
@@ -125,5 +126,122 @@ for(i in 3:16){
   normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
   print(c(i,normal))
 }
+
+# histogramas si es que no eran normales
 ```
+
+Dado que 
+
+```{r}
+# Revisar homogeneidad de varianza
+for(i in 3:ncol(alphadiv)){ # empiezan en columna que terminan metadatos
+  Lev_ex <- leveneTest(alphadiv[,i] ~ Suelo * Tratamiento,# var.indep
+                       data = alphadiv)
+  levene <- ifelse(Lev_ex[["Pr(>F)"]]>0.05, "YES", "NO")
+  print(c(i,levene))
+}
+
+# Como solo tenemos una muestra no hay varianza por lo que no se puede calcular el test levene
+
+# Observed
+
+##ANOVA
+ad_anova <- aov(Observed ~ Suelo * Tratamiento,
+                data = alphadiv)
+Anova(ad_anova)
+# sale error porque estamos usando una sola muestra, si hubieran salido diferencias se procede con un tukey
+
+ad_Tukey <- TukeyHSD(ad_anova)
+```
+
+Dado que solo tenemos " 1 muestra" por tratamiento no es correcto calcular un ANOVA ya que la ANOVA usa _grupos_. Lo ideal en este caso seria tratar de agrupar nuestras muestras por variables y llevar a cabo una T de student:
+
+```{r}
+t.test(Observed ~ Tratamiento, data = alphadiv) # no significativo
+t.test(Chao1 ~ Tratamiento, data = alphadiv) # no significativo
+t.test(Shannon ~ Tratamiento, data = alphadiv) # no significativo
+t.test(pielou ~ Tratamiento, data = alphadiv) # no significativo
+t.test(Simpson ~ Tratamiento, data = alphadiv) # salio significativo
+
+# si hay diferencia en la diversidad de alfa segun el test de simpson, por lo que si hay diferencia en el suelo al usar el bioestimulante
+
+```
+
+Ya que esperamos que la aplicacion de nuestro bioestimulante mejor la diversidad alfa sin importar el tipo de suelo y basados en simpson si son diferentes
+
+```{r}
+# Pero comprobamos que no hay diferencias en tipo de suelo
+t.test(Observed ~ Suelo, data = alphadiv) # NS
+t.test(Chao1 ~ Suelo, data = alphadiv) # NS
+t.test(Shannon ~ Suelo, data = alphadiv) # NS
+t.test(pielou ~ Suelo, data = alphadiv) # NS
+t.test(Simpson ~ Suelo, data = alphadiv) # NS
+
+# Es bueno que no hayan diferencias en el suelo porque al descartalos como variable no afectamos el analisis
+```
+
+# Ejercicio final
+
+```{r}
+data("GlobalPatterns")
+```
+
+Van a usar los datos de "GlobalPatterns" que comparan las comunidades microbianas de 25 muestras ambientales y tres "comunidades simuladas" conocidas (un total de 9 tipos de muestras) a una profundidad promedio de 3.1 millones de lecturas por muestra. Con estos datos seguiran el flujo de trabajo que acabamos de ver y para el analisis estadistico compararan _"SampleType". Para este ejercicio solo analicen y grafiquen Chao1 y Shannon.
+
+```{r}
+# funcion de phyloseq
+alphadiv <- estimate_richness(GlobalPatterns, 
+                              split= TRUE, 
+                              measures = c("Chao1","Shannon")) 
+
+# Separar metdatos para ponerlos en la tabla de div alfa
+samplemeta <- as.data.frame(GlobalPatterns@sam_data)
+alphadiv <- cbind(samplemeta,alphadiv)
+
+estimate_richness(GlobalPatterns, split = TRUE,
+                  measures = c("Chao1","Shannon"))
+
+# Grafico usando la funcion de phyloseq
+graf_alfa <- plot_richness(GlobalPatterns, x= "SampleType", 
+                            measures = c("Chao1","Shannon"),
+                                         color = "SampleType")+
+  scale_color_manual(values = c("#8B0A50", "maroon2","darkorange1", "#A020F0", "#00BFFF", "#CDCD00", "#008B45", "#00CD00", "#436EEE"),
+                     name = "SampleType")+
+                             theme_bw()
+graf_alfa
+
+## Primero revisamos normalidad ##
+
+# shapiro test
+for(i in 8:10){
+  shapiro <- shapiro.test(alphadiv[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+# Histograma
+hist(alphadiv$Chao1)
+hist(log(alphadiv$Chao1)) # no se puede normalizar por lo que se debe usar un test no parametrico Kruskal Wallis
+
+hist(alphadiv$Shannon)
+hist(sqrt(alphadiv$Shannon)) # si se normalizo por lo que se procede con anova
+
+# Revisar homogeneidad de varianza
+leveneTest(sqrt(Shannon) ~ SampleType, data = alphadiv) # pvalue= 0.048
+
+##ANOVA
+ad_anova <- aov(sqrt(Shannon) ~ SampleType,
+                data = alphadiv)
+Anova(ad_anova) # si hay diferencias significativas
+
+
+ad_Tukey <- TukeyHSD(ad_anova)
+
+# usando agricolae
+summary(ad_anova)
+rtout <- HSD.test(ad_anova, trt = "SampleType", alpha = 0.05)
+
+
+```
+
 

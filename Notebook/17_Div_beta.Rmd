@@ -1,0 +1,129 @@
+---
+title: "Diversidad Beta"
+output: html_notebook
+---
+
+```{r}
+# Librerias
+library(phyloseq)
+library(ggplot2)
+library(vegan) # analisis de diversidad beta
+library(ggforce)
+
+# Data
+load("vid_ejemplos.RData")
+load("Psoil_filt.RData")
+```
+
+# Introduccion
+
+Mientras que la diversidad alfa representa la diversidad dentro de un ecosistema o una muestra, la diversidad beta representa la diferencia entre dos ecosistemas/muestras. En otras palabras, ¿qué tan similares o diferentes son dos ecosistemas o muestras? Entonces, la diversidad beta es una distancia entre dos muestras.
+
+El análisis basado en distancia de la diversidad beta para microbiomas puede ser una herramienta poderosa para descubrir nuevas asociaciones entre la composición microbiana y una amplia variedad de fenotipos. 
+
+Las medidas ecológicas de la diversidad beta tienen como objetivo capturar la diferencia global entre dos comunidades ecológicas. En el contexto del análisis de datos del microbioma, esto corresponde a diferencias entre sujetos en la composición microbiana. El análisis basado en la distancia o “a nivel de comunidad” luego compara estas diferencias por pares entre sujetos con diferencias por pares con respecto a algún fenotipo.
+
+Estadisticamente, el analisis usando disimilitudes es mejor ya que evita la necesidad de realizar ajustes para una gran cantidad de comparaciones múltiples. Asimismo, los taxones no existen de forma aislada sino que tienen relaciones filogenéticas conocidas las cuales se pueden incluir en el analis. Otras características estructurales, como la similitud funcional, están bajo investigación y es posible que se puedan incorporar en el futuro.
+
+# Tipos de distancias
+
+Si creian que existen muchos metodos para analizar diversidad alfa, las cosas se complican aun mas con la diversidad beta. Phyloseq tiene integrados 44 tipos de distancias que se pueden calcular provenientes del paquete vegan (y ademas uno puede crear su propia formula):
+
+```{r}
+dist_methods <- unlist(distanceMethodList)
+print(dist_methods)
+```
+
+__¿Pero entonces cual metodo elegimos para realizar nuestro analisis?__
+
+Los ecologistas microbianos no utilizan distancias euclidianas, pero suelen utilizar distancias de Bray-Curtis, Jaccard o Unifrac de peso o sin peso para estimar la betadiversidad.
+
+La disimilitud de _Bray-Curtis_ se basa en datos de ocurrencia (abundancia), mientras que la distancia de _Jaccard_ se basa en datos de presencia/ausencia (no incluye información de abundancia). Las distancias _UniFrac_ tienen en cuenta la tabla de ocurrencia y la diversidad de filogenia (distancia de secuencia). Distancias UniFrac ponderadas o no ponderadas dependiendo de si se tiene en cuenta la abundancia relativa o sólo la presencia/ausencia.
+Las métricas de distancias están entre 0 y 1: 0 significa comunidades idénticas en ambas muestras y 1 significa comunidades diferentes en ambas muestras.
+
+Top:
+
+1. Bray-Curtis
+
+2. Jaccard (no toma en cuenta abundancia)
+
+3. Unifrac (solo si se tienen arboles filogeneticos)
+
+¿Por qué las distancias de Bray-Curtis o Unifrac serían mejores para los datos de microbiota que la distancia euclidiana?
+
+Los datos de microbiota son escasos y distancias específicas, como Bray-Curtis, Jaccard o las distancias Unifrac de peso/no peso, abordan mejor el problema de la presencia de muchos dobles ceros en los conjuntos de datos.
+
+# Calcular distancias
+
+```{r}
+# Modificar phyloseq
+Vid2 <- vid_bio
+
+Vid2@sam_data <- Vid2@sam_data[,1]
+#### Bray ####
+
+bray_bdiv <- phyloseq::distance(Psoil_filt, # especificamos que es la funcion distance del paquete de phyloseq ya que hay otra funcion con ese nombre
+                                method = "bray",
+                                type = "sample") # sample es el default para que se calcule las distancias entre muestras y taxa es la otra opcion pero no la vamos a usar
+```
+
+## Mini ejercicio
+
+Calculen las distancias con jaccard: Psoil y Vid2
+
+```{r}
+bray_bdiv <- phyloseq::distance(Psoil_filt,
+                                method = "jaccard",
+                                type = "sample")
+
+bray_bdiv <- phyloseq::distance(Vid2,
+                                method = "jaccard",
+                                type = "sample")
+```
+
+# Ordinacion
+
+Las medidas de diversidad beta se pueden visualizar utilizando varios métodos de ordinación. La ordinación es la técnicas para resumir y proyectar datos multidimensionales en un espacio de dimensiones inferiores (2-3d).
+
+__Como el analisis de PCA__
+
+## Metodos de ordinacion
+
+Los metodos incluidos en phyloseq: c("DCA", "CCA", "RDA", "CAP", "DPCoA", "NMDS", "MDS", "PCoA")
+
+1. DCA (el default): Performs detrended correspondence analysis usingdecorana
+
+2. CCA Analisis de correspondencia (a.k.a. canonical correspondence analysis).
+
+3. RDA Analisis de Redundancia (equivalente al PCA)
+
+4. CAP Constrained Analysis of Principal Coordinates or distance-based RDA
+
+5. DPCoA Doble Analisis de coordenadas principales usa distancia filogenetica como correcion
+
+6. __NMDS__ Escalamiento multidimensional no métrico. NMDS maximiza la correlación de orden de clasificación entre muestras y tambien puede usarse con datos no parametricos. La mejor manera de visualizar la diversidad beta, o cuán diferentes son las muestras entre sí, es mediante escalamiento multidimensional no métrico (nMDS). Esto es similar al análisis de coordenadas principales o PCA/PCoA si ha oído hablar de eso, solo que nMDS es más robusto estadísticamente con múltiples iteraciones en la forma de la parte trymax del comando.
+
+7. __MDS/PCoA__ Realiza un análisis de coordenadas principales (también llamado descomposición de coordenadas principales, escalamiento multidimensional (MDS) o escalamiento clásico) de una matriz de distancias 
+
+```{r}
+bray_ord <- ordinate(Psoil_filt, # objeto
+                     method = "NMDS", # metodo
+                     distance = bray_bdiv)
+```
+
+Entonces cual elegir?
+
+Se debe elegir PCoA si las distancias entres muestras son tan cercanas que una transformacion lineal seria suficiente. Mientras tanto, se recomiend NMDS para resaltar la estructura de gradiente dentro de los datos. Otro metodo de ordenacion comun es el PCA, que es simplemente un tipo de PCoA que utiliza la distancia euclidiana. 
+
+_NMDS_ > _PCoA_
+
+La mejor manera de visualizar la diversidad beta, o cuan diferentes son las muestras entre si, es mediante escalamiento multidimensional no metrico (nMDS). Esto es similar al analisis de coordenadas principales o PCA/PCoA si ha oido hablar de eso, solo que NMDS es mas robusto estadisticamente con multiples iteraciones.
+
+## Mini ejercicio
+
+Calculen la ordinacion con PCoA y tambien calculenla para las distancias jaccard que teniamos.
+
+```{r}
+
+```
+
