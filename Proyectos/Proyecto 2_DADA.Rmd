@@ -128,7 +128,16 @@ load("dadaRs_nopool_proyecto2.RData")
 ### Uniendo las lecturas forward y reverse
 
 ```{r}
-mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, verbose = TRUE)
+# parametros opcionales
+mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, 
+                      verbose = TRUE,
+                      minOverlap = 10, # tratar para ver si se incrementan las uniones
+                      maxMismatch = 2, # el parametro default es 0, por lo que tiene que ser una union perfecta, no poner mas de 5 
+                      justConcatenate = TRUE, # une forward y pone NNNNX10 y luego une al reverse
+                      returnRejects = TRUE) # nos muestra una tabla de reads rechazadas al momento de union, para ver si salen muchos mismatches incrementar el mismatch o si se estan uniendo muy poco cambiar en overlap. Se comenzaria con usar este parametro para ver que estamos perdiendo luego usamos mismatch, overlap y al final concatenate.
+
+# Podemos estar perdiendo muchas muestras porque no estan limpias las muestras y tienen mala calidad o pueden venir con primers.
+
 save(mergers, file = "mergers_proyecto2.RData")
 
 load("mergers_proyecto2.RData")
