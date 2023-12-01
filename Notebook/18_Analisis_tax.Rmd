@@ -1,0 +1,194 @@
+---
+title: "Análisis de composición taxonómica"
+output: html_notebook
+---
+
+# Introducción 
+
+
+Hasta este momento hemos estado contando CUANTO hay dentro de nuestras muestras pero lo verdaderamente útil es saber QUË hay dentro de las muestras. Esto es a lo que se le llama _analisis taxonómico._
+
+__¿Por qué es importante?__
+
+Como les comentaba las comunidades microbianas en suelos son muy dinamicas y muchas veces (como con mis datos) no ves cambios en las cantidades totales de microorganismos. Sin embargo, al ver la taxonomia las abundancias relativas de algunos grupos pueden ser modificados ya sea aumentado o disminuido. 
+
+De esta manera se espera que cualquier producto o tratamiento que apliquemos al suelo, no tenga un efecto detrimental en grupos taxonomicos que son buenos para la planta. Dado que todas estos hongos y microbios interactuan constantemente en este microecosistema estos cambios en abundancia pueden darnos pista de como interactuan.
+
+```{r}
+
+## Librarías ##
+
+library(phyloseq)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(pheatmap) # Heatmaps
+library(microbiome)
+library(ggsignif)
+library(scales) # Modificar escalas
+library(car)
+library(wesanderson)
+
+# DATA 
+
+load("ITS_filt.Rdata")
+load("vid_ejemplos.RData")
+
+```
+
+Este analisis no cumple con un proceso en específico y en realidad es exploratorio. Para ello necesitamos visualizar nuestros datos, o sea, hacer variedad de gráficos y de ahí se elige a cuales grupos vale la pena hacer análisis taxonómico 
+
+# 1. Visualizar a nivel de Phylum
+
+## Heatmap
+
+```{r}
+
+Phyla_fun <- tax_glom(vid_bio, taxrank = "Phylum", NArm = FALSE)
+
+## Extraer datos del objeto phyloseq
+
+OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
+Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
+
+# Renombramos las columnas de nuestras abundancias con el phylum de la tabla taxa
+
+colnames(OTU_matrix) <- Tax_matrix$Phylum 
+
+# Quitar phylum desconocido (SOLO DATOS DE VID). Se quitaron las columnas con datos NA
+
+OTU_matrix <- OTU_matrix[, -c(10,21)]
+
+# crear matriz a partir de OTU siempre se debe usar en vez de tabla porque solo necesitamos valores numericos
+Phyla_matrix <- as.matrix(t(OTU_matrix))
+
+```
+
+# Procesamiento de datos 
+
+Este proceso es específico para cada set de datos. Usualmente los heatmaps siempre van de mayor a menor, así que ese paso siempre se realiza, pero el resto consta de de ordenar las muestras y renombrar variables.
+
+```{r}
+
+Phyla_matrix <- Phyla_matrix[order(Phyla_matrix[,1], # se escoge la columna 1para que me empiece a ordenar de mayor a menor
+                                   decreasing = TRUE),] # Ordenar de mayor a menor 
+
+# Cambiar el orden de las muestras
+
+sorder <- c("S81", "S85", "S82", "S83")
+
+Phyla_matrix <- Phyla_matrix[,sorder]
+
+row.names(Phyla_matrix)[16] <- "SAR324 Clade" # Con este le cambiamos el nombre a una fila que tenía un nombre muy largo 
+
+
+```
+
+## Usando el paquete Pheatmap para realizar heatmaps de análisis taxonómico 
+
+```{r}
+
+pheatmap(Phyla_matrix) # El objeto siempre debe de estar en formato de matriz y los valores como numéricos
+
+```
+
+### _Notan algo en el orden de nuestras filas y columnas? Clusters_
+
+La funcion default de pheatmap es que automaticamente te reacomoda (cluster) tus filas y columnas de acuerdo a como cree que estan mas relacionadas las variables; es decir las agrupa. Esta funcion suele ser util cuando haces heatmaps de genes ya que te permite ver como se activan o apagan en conjunto y si hay "clusters" de genes relacionados. Pero en nuestro caso arruino todo el pre-procesamiento previo que nosotros le dimos por lo que tenemos que quitarle ese default.
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE) # quitar clusters
+
+```
+
+### _El siguiente problema? La escala_
+
+Si se fijan los colores en este heatmap son cero utiles. Solo tenemos cambios graduales en una columna y el resto se ven todas horribles. Esto ocurre porque nuestros datos se puede arreglar de varias maneras y la funcion de pheatmap tiene el argumento de scale para tratar de solucionarlo. El default siempre es _none_ pero vamos tambien puede modificarlo por filas y columnas:
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none") # es el default
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "column") # transforma los valores usando de escala las muestras. Casi nunca lo vamos a usar al menos que tengamos muchas muestras de una sola
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "row") # transforma los valores usando de escala los phylum y muestra las diferencias entre las muestras y un phylum no entre los phylums
+```
+
+Cual creen que es mas util?
+
+Desafortunadamente ninguno de ellos es muy util. El de columnas no hizo nada porque el problema recae en que tenemos phylums con muuucha abundancia y otros que casi estan llenos de ceros mientras; pero eso pasa en todas las muestras por lo que al tratar de escalarlo se ve asi. 
+
+En el caso de la transformacion por filas nos va un poco mejor porque trata de normalizar las abundancias de todos los phylums a una escala. Sin embargo, por el mismo problema anterior lo unico que nos resalta es si alguna de las muestras tiene numeros extranamente altos o bajos DENTRO de ese mismo phylum. Es decir nos compara dentro de phylums pero no entre ellos. Asi que les voy a compartir el codigo que me tomo literalmente 1 semana encontrar y basicamente salvo mi tesis.
+
+```{r}
+## Funcion especificamente para separar nuestros datos en secciones
+
+quantile_breaks <- function(xs, n = 10) {
+  breaks <- quantile(xs, probs = seq(0, 1, length.out = n))
+  breaks[!duplicated(breaks)]
+} # recuerden que la funcion nunca se cambia de nombre(copien y peguen siempre entre documentos)
+
+mat_breaks <- quantile_breaks(Phyla_matrix, # es la matriz
+                              n = 10) # el default es 10 pero se puede poner el numero de cortes que quiero a mis datos
+
+# Volvemos al heatmap
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", # regresamos a que no nos ponga escala
+         breaks = mat_breaks) # aqui ponemos el objeto con cortes que creamos
+```
+
+### _¿Porque no se ven bien los colores?_
+
+Aunque ya pueden ver mejor en nuestra escala el problema ahora es que la funcion no tiene la cantidad adecuada de colores para representar nuestros datos. Por ello nosotros le vamos a dar otros colores:
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", # regresamos a que no nos ponga escala
+         breaks = mat_breaks,
+         color = colorRampPalette(c("#EEEEE0", "slategray3", "#8B668B", "#551A8B"))(9)) # este numero debe ser mas pequeño que n de la funcion
+```
+
+#### Mini ejercicio
+
+Cda quien va a poner un numero diferentes en los breaks como cambia el grafico
+
+```{r}
+mat_breaks <- quantile_breaks(Phyla_matrix, 
+                              n = 30)
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         breaks = mat_breaks,
+         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(25))
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         breaks = mat_breaks,
+         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(25))
+
+# No hubo diferencia al aumentar mas breaks
+```
+
+```{r}
+# a partir de aqui va a ser diferente para cada heatmap
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(25),
+         breaks = mat_breaks,
+         fontsize = 10, # tamaño de letra
+         gaps_col = c(2), # separaciones entre columnas de bioestimulantes y control
+         labels_col = c("Balox salino", "Balox no salino","Control salino", "Control no salino")) # nombres de columnas
+```
+
