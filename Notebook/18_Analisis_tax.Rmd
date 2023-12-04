@@ -60,7 +60,7 @@ colnames(OTU_matrix) <- Tax_matrix$Phylum
 OTU_matrix <- OTU_matrix[, -c(10,21)]
 
 # crear matriz a partir de OTU siempre se debe usar en vez de tabla porque solo necesitamos valores numericos
-Phyla_matrix <- as.matrix(t(OTU_matrix))
+Phyla_matrix <- as.matrix(t(OTU_matrix)) # las muestras deben quedar como columnas y las filas como phylum por eso se utiliza transpose(t)
 
 ```
 
@@ -190,5 +190,215 @@ pheatmap(Phyla_matrix,
          fontsize = 10, # tamaño de letra
          gaps_col = c(2), # separaciones entre columnas de bioestimulantes y control
          labels_col = c("Balox salino", "Balox no salino","Control salino", "Control no salino")) # nombres de columnas
+```
+
+Otros posibles cambios que le podemos hacer a nuestro heatmap:
+
+* border_color: colores de las celdas
+
+* cellwidth/celheight: ancho/alto de celda en puntos; si no se pone los valores depende del tamano de la ventana.
+
+* clustering_distance_rows o columns: la distancia para clusterizar
+
+* clustering_method: metodos en hclust
+
+* cutree_rows/cols: numero de clusters en el que los datos se van a dividir
+
+* treeheight_row/col: altura de los arboles de clusters default es 50 puntos
+
+* legend: true or false
+
+* legend_breaks: vector con los cortes de la leyenda (colores de leyenda)
+
+* legend_labels: vector con los nombres de los cortes para a leyenda
+
+* annotation_row/col: filas de colores extra para demostrar los metadatos en el heatmap.
+
+* annotation_colors: colores manuales de las anotaciones
+
+* annotation_legend: true or false
+
+* annotation_names_row/col: true or false se veran los nombres de las anotaciones o no
+
+* show_rownames/colnames: true or false
+
+* main: titulo del grafico
+
+* fontsize_row/col: cambiar el tamano de letra por separado
+
+* angle_col: angulo del texto. Solo se pueden elegir de estas opciones: (0, 45, 90, 270 and 315)
+
+* display_numbers: true or false. Poner los espacios en el heatmap.
+
+* number_format/color
+
+* fontsize_number
+
+* gaps_row/col: vector de donde poner los espacios en el heatmap
+
+* filename: camino para guardar el heatmap como imagen
+
+* width/height: en pulgadas
+
+* na_col: especificar el color de las celdas sin color
+
+### Mini ejercicio:
+
+Agreguenle o modifiquen 2 o mas de estos argumentos en su grafico
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(25),
+         breaks = mat_breaks,
+         fontsize = 10, 
+         gaps_col = c(2), 
+         labels_col = c("Balox salino", "Balox no salino","Control salino", "Control no salino"),
+         angle_col = 0,
+         fontsize_col = 10,
+         fontsize_row = 8,
+         main = "Análisis taxonómico por phylum")
+```
+
+### Ejercicio final
+
+Usando global patterns creen un heatmap de los phylums enontrados
+
+```{r}
+data("GlobalPatterns")
+
+Phyla_fun <- tax_glom(GlobalPatterns, taxrank = "Phylum", NArm = FALSE)
+
+OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
+Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
+
+Tax_matrix[54,2] <- "Unknown"
+row.names(OTU_matrix) <- Tax_matrix$Phylum 
+
+Phyla_matrix <- as.matrix(OTU_matrix)
+
+class(Phyla_matrix) <- "numeric" # para usar la funcion los datos siempre deben ser numericos o sea estar en una matriz
+
+Phyla_matrix <- Phyla_matrix[order(Phyla_matrix[,1], 
+                                   decreasing = TRUE),]
+
+quantile_breaks <- function(xs, n = 10) {
+  breaks <- quantile(xs, probs = seq(0, 1, length.out = n))
+  breaks[!duplicated(breaks)]
+}
+
+Phyla_matrix <- Phyla_matrix[-38,] # para eliminar una columna que tiene NA
+
+mat_breaks <- quantile_breaks(Phyla_matrix,
+                              n = 10)
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(7),
+         breaks = mat_breaks,
+         fontsize = 10,
+         angle_col = 315,
+         fontsize_col = 8,
+         fontsize_row = 6,
+         main = "Análisis taxonómico por phylum")
+```
+
+## Grafico de Barras
+
+Se acuerdan que al ver las funciones que nos daba phyloseq vimos como hacer graficos de barras? Pues bueno ahora vamos a aprender a hacerlos bonitos:
+
+### Pre-procesamiento de datos
+
+```{r}
+# Recuerden que este tipo de graficos siempre se hacen con abundancias relativas.
+
+Psoil_rel <- transform_sample_counts(vid_bio, # objeto a transformar
+                                   function(x) x/sum(x)) # x es mi conteo
+
+# Otra vez juntar phylums
+Top_phyla <- tax_glom(Psoil_rel, taxrank = "Phylum", NArm = FALSE)
+
+# Seleccionar solo los valores top
+Top_phyla <- prune_taxa(names(sort(taxa_sums(Top_phyla), TRUE)[1:10]),
+                        Top_phyla)
+```
+
+### El grafico
+
+Usando la funcion plot_composition del paquete microbiome
+
+```{r}
+# Grafico base
+plot_composition(Top_phyla, # objeto en valores relativos
+                 plot.type = "barplot", # tipo de grafico tambien hace heatmap
+                 )
+
+# Ahora mas bonito
+
+plot_composition(Top_phyla,plot.type = "barplot")+
+  theme_bw()+
+  scale_fill_brewer(palette = "RdYlGn", name = "Phylum",
+                    labels=c("Actinobacteriota", "Chloroflexi","Proteobacteria", "Acidobacteriota", "Verrumcomicrobiota", "Bacteroidota", "Cyanobacteria","Patescibacteria", "Planctomycetota","Firmicutes"))+
+  guides(x=guide_axis(angle=90))+
+  scale_x_discrete(labels=c("Balox No Salino", "Control No Salino", "Control Salino","Balox Salino"))
+```
+
+Si bien este grafico ya es hermoso, la forma mas simple de representar abundancia relativa es con porcentajes. Asi que les voy a ensenar la formula de scales te modifica etso facilmente
+
+```{r}
+plot_composition(Top_phyla,plot.type = "barplot")+
+  theme_bw()+
+  scale_fill_brewer(palette = "RdYlGn", name = "Phylum",
+                    labels=c("Actinobacteriota", "Chloroflexi","Proteobacteria", "Acidobacteriota", "Verrumcomicrobiota", "Bacteroidota", "Cyanobacteria","Patescibacteria", "Planctomycetota","Firmicutes"))+
+  guides(x=guide_axis(angle=0))+
+  scale_x_discrete(labels=c("Balox No Salino", "Control No Salino", "Control Salino","Balox Salino"))+
+  scale_y_continuous(breaks = pretty_breaks(n = 10),# numero de separaciones
+                     labels = scales::percent)# representadas en %
+```
+
+Usando estos dos graficos que pueden conclur de sus datos?
+Hay algun phylum que crean que vale la pena revisar a detalle? 
+
+Proteocateria y actinobacteriota por abundancias
+Cyanobacteria por diferencias entre tratamientos
+
+Si bien ya les ensene a presentar graficos bonitos y definitivamente cualquiera de estos graficos podrian incluirlo en un reporte, la visualizacion tambien nos permite darnos cuenta si existen ciertos patrones en abundancia. De esta manera podemos seleccionar alguno de estos grupos y verlos en la lupa de una manera mas minuciosa.
+
+Por ejemplo, yo de mis datos podria decir que dada la dominancia que tiene Ascomycota tal vez vale la pena revisarla minuciosamente. Sin embargo, el heatmap no nos mostro si habian diferencias entre plantas o tratamientos (porque tal vez no las hay?) por lo que hacer varios loops de analisis estadistico seria muy util para elegirlos
+
+# Analizar estadisticamente a nivel de phylum
+
+El ejemplo va a ser con ANOVA y por eso estamos usando los datos de ITS
+Para los graficos ya habiamos extraido nuestras tablas de conteos y taxa, pero ahora tambien necesitamos nuestros metadatos:
+
+## Preprocesamiento:
+```{r}
+Phyla_fun <- tax_glom(ITS_filtered, taxrank = "Phylum", NArm = FALSE)
+
+## Extraer datos del objeto phyloseq
+
+OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
+Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
+
+## Extract metadata
+metadata <- as.data.frame(Phyla_fun@sam_data)
+
+## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
+colnames(OTU_matrix) <- Tax_matrix$Phylum 
+
+Fungi_phyla <- cbind(metadata,OTU_matrix)
+```
+
+## Normalizacion
+
+```{r}
+## shapiro test
+for(i in 5:ncol(Fungi_phyla)){
+  shapiro <- shapiro.test(Fungi_phyla[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
 ```
 
