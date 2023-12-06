@@ -581,7 +581,8 @@ write.csv(phyla_pvalues, "~/CursoR/CursoRgit/Materiales/vid_phyla_pvalues.csv")
 
 Despues de todos estos graficos y analisis estadisticos ustedes deberian tener unos 5 phylums tops que quieran analizar mas a profundidad. En mi caso me voy a enfocar en Ascomycota y Mucoromycota.
 
-En el caso de vid: Cyanobacteria y Proteobacteria basados en graficos y basados en analisis estadistico tenemos Chloroflexi y Actinobacteriota
+En el caso de vid: 
+Cyanobacteria y Proteobacteria basados en graficos y basados en analisis estadistico tenemos Chloroflexi y Actinobacteriota
 
 ```{r}
 Cyano <- subset_taxa(vid_bio, Phylum == "Cyanobacteria")
@@ -612,9 +613,237 @@ Primero vamos a ver el barplot default sin arreglar nada en los datos:
 ```{r}
 plot_composition(Chloro_ord, plot.type = "barplot")+
   theme_bw()
-# Nos fuimo por el grupo mas abundante
-# UWGSU03061
+# Nos fuimos por el grupo mas abundante
+
+# IQHNW1012T
 # IJISH7931T
 # VPLBK6313M
 ```
 
+Anteriormente les habia dicho que la funcion plot_composition de microbiome tiene tambien una opcion de heatmap. El problema es que es mucho mas tardado de correr y los graficos no quedan tan bien. L otra opcion es la de phyloseq que aunque corre mejor en mi opinion no es tan sensible a cambios como pheatmap.
+
+Sin embargo, en este caso no vamos a pasar por todo el proceso de extraer tablas y hacer un "buen" heatmap por una simple razon: A pesar de que si nos estamos tomando el tiempo de analizar orden yo lo veo mas como un nivel de transicion. Es decir nos ayuda a dirigir nuestro analisis a el o a los generos que podrian llegar a ser interesantes asi que les voy a ensenar dos opciones de heatmap rapidas pero feas:
+
+```{r}
+# Heatmap con microbiome
+plot_composition(Chloro_ord, plot.type = "heatmap")+
+  theme_bw()+
+  coord_flip()
+# Si tenemos muhas muestras es mejor usar barplot porque pude morir la compu
+
+# Usando la funcion de phyloseq
+plot_heatmap(Chloro_ord, 
+             low = "darkslategray3", high = "darkslategray",
+             na.value = "snow2")
+
+```
+
+Los graficos a nivel de orden son exploraorios y por lo mismo decidi solo mostrarles como se verian con funciones basicas.
+
+Aunque en mi caso es trampa(porque yo ya se como se comportan mis datos), de ambos graficos yo podria concluir que el rden de mayor interes es Hypocreales ya que tiene mucha mas abundancia que el resto. Sin embargo i no ven un patron exacto o hay mucha variacion en sus datos si podrian meter sus datos en uno de los forloop que ya hemos creado.
+
+Conclusiones de vid a nivel de orden:
+
+1. Chloroflexi: por diferencias
+
+* Thermomicrobiales: 
+* Chloroflexales: 
+* SBR1031: 
+
+Por analisis estadistico
+
+* Thermomicrobiales: esta al margen de diferencias estadisticas
+* SBR1031: si presento diferencias estadisticas
+
+2. Proteobacteria: por abundancia
+
+* Rhizobiales
+
+Por analisis estadistico:
+
+* Caulobacterales, Sphingomonadales: presentaron diferencias estadisticas
+
+3. Actinobacteria: casi uniforme
+
+* Micromonosporales (por abundancia)
+* Propionibacteriales 
+* Micrococcales 
+* Streptomycetales
+
+Por analisis estadistico:
+
+* Corynecbacteriales: si presento dif estadisticas
+
+4. Cyanobacteria: por abundancia
+
+* Chloroplast
+
+Por analisis estadistico:
+No hubieron diferencias estadisticas
+
+## Ejercicio: Analisis estadistico
+
+Usando sus datos de vid pasen los valores de orden para determinar el camino de analisis adaptando los forloops de t. test que creamos para phylum.
+
+```{r}
+
+OTU_matrix <- as.data.frame(Chloro_ord@otu_table)
+Tax_matrix <- as.data.frame(Chloro_ord@tax_table)
+
+metadata <- as.data.frame(Chloro_ord@sam_data)
+
+## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
+colnames(OTU_matrix) <- Tax_matrix$Order 
+
+vid_phyla <- cbind(metadata,OTU_matrix)
+
+## Revisar normalizacion:
+
+for(i in 3:ncol(vid_phyla)){
+  shapiro <- shapiro.test(vid_phyla[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+order_pvalues <- data.frame(Tratamiento = rep(NA,23),
+                            Suelo = rep(NA,23))
+
+# for loop
+for(i in 3:ncol(vid_phyla)){
+  T_trat <- t.test(vid_phyla[,i]~Tratamiento, data=vid_phyla)
+  S_trat <- t.test(vid_phyla[,i]~Suelo, data=vid_phyla)
+  j <- i-2 # esto es para que empiece a llenar desde la fila 1 
+  order_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  order_pvalues$Suelo[j] <- S_trat[["p.value"]]
+}
+
+row.names(order_pvalues) <- c( "NA1", "S085","SBR1031","Ardenticatenales","Anaerolineales", "NA2","SAR202 clade","NA4", "RBG-13-54-9","NA5","NA6","C0119","NA7","Chloroflexales","NA8", "NA9","Caldilineales","NA10","Thermomicrobiales","Kallotenuales", "NA11",        "Ktedonobacterales","NA12")
+
+write.csv(order_pvalues, "~/CursoR/CursoRgit/Materiales/vid_order_pvalues.csv")
+```
+
+Dentro del orden u ordenes que eleigieron se puede seguir el proceso de flitrado y aglomeracion anterior para ir eligiendo un genero (en el caso de bacterias) o algunas especies en el caso de hongos (para analisis).
+
+Si bien a mi como ecologa de suelo se me hace interesante ver si realmente hay esta clase de cambios a niveles mas bajos y luego como estos se traducen a cambios funcionales a estas alturas su reporte va a ser del largo de mi tesis. Por ello en esta seccion solo nos vamos a enfocar en ciertos generos y especies que son importantes reportar ya que son conocidos por su importancia tanto buena como mala.
+
+A menos que les pidan un analisis super minucioso, yo les recomiendo que hagan el analisis de phylum para darse una idea global de los datos y de ahi se enfoquen en las siguientes especies como marcadores de salud de suelo:
+
+__Bacterias:__
+
+* Pseudomonas 67
+
+* Rhizobium 0
+
+* Rubrobacter (opcional) 7
+
+* Rhizobacter 0
+
+* Clavibacter 0
+
+* Streptomyces 132
+
+* Bacillus 41
+
+__Hongos:__
+
+* Trichoderma           
+
+* Glomus
+
+* Fusarium
+
+* Apophysomyces 
+
+En my caso solo veremos los graficos de Fusarium y Apophysomyces
+
+```{r}
+Rubro <- subset_taxa(vid_bio, Genus == "Rubrobacter")
+```
+
+Si estan a nivel de genero(es decir con bacteria) ustedes juntarian todos los conteos de dicho genero graficarian y verian si vale la pena o no hacer el analisis estadistico
+
+En el caso de hongos(es decir el ejemplo a continuacion) primero tengo que juntar por especie ya que la mayoria fueron identificadas. De ahi lo que yo hice fue repetir los for loops de analisis estadistico para ver si alguna o todas las especies mostraban diferencias estadisticas. Este proceso es un poco mas tardado pero ya tenemos todas las herramientas para hacerlo.
+
+## Pre-procesamiento de datos
+
+```{r}
+Fusarium <- tax_glom(Fusa, taxrank = "Species", NArm= FALSE)
+
+# Extraer matriz
+OTU_matrix <- as.data.frame(Fusarium@otu_table)
+Tax_matrix <- as.data.frame(Fusarium@tax_table)
+
+# Renombrar las columnas de otumatrix con el phylum de taxmatrix
+colnames(OTU_matrix) <- Tax_matrix$Species 
+
+metadata <- as.data.frame(Fusarium@sam_data)
+
+# Unir phyla con metadata
+Fusarium <- cbind(metadata,OTU_matrix)
+
+# Suma total de Fusarium
+Sum_fus <- rowSums(Fusarium[,5:14])
+Sum_fus <- cbind(metadata,Sum_fus)
+
+# Shapiro test
+shapiro.test(Sum_fus$Sum_fus) # normal
+
+# Levene test
+leveneTest(Sum_fus ~ Plant_Type * Treatment,
+           data = Sum_fus) # si lo paso el test
+
+# ANOVA
+Anova(aov(Sum_fus ~ Plant_Type * Treatment,
+          data = Sum_fus)) # no significativo
+
+```
+
+# Especies especificas
+
+Despues de hacer el analisis anterior para cada una de las especies descubri 2
+coas _F. tricinctum_ mostraba diferencias estadisticas entre tipos de planta (1ue no se los voy a mostrar) mientras que _F. verticillioides_ mostraba diferencia por tratamiento:
+
+```{r}
+ggplot(Fusarium, aes(x = Treatment, y =s_verticillioides, col = Plant_Type))+
+  geom_boxplot(fill = "snow2", lwd = 0.7)+
+  theme_bw(base_size=15)+
+  scale_color_manual(name = "Plant Type",
+                     values =c("steelblue", "lightpink","burlywood3"))+
+  xlab("Treatment") +
+  ylab("Abundance")+
+  geom_signif(y_position = 880, xmin=0.6, xmax=3.4, annotation="A", tip_length = 0.01, col=1)+
+  geom_signif(y_position = 1100, xmin=3.6, xmax=4.4, annotation="B", tip_length = 0.01, col=1)
+```
+
+### Ejercicio 
+
+Graficar su genero en especifico
+
+```{r}
+Rubro <- subset_taxa(vid_bio, Genus == "Rubrobacter")
+
+# Extraer matriz
+OTU_matrix <- as.data.frame(Rubro@otu_table)
+metadata <- as.data.frame(Rubro@sam_data)
+
+Rubrobacter <- cbind(metadata,OTU_matrix)
+
+# Opcion 1 para grafico de barras (no lo vamos hacer)
+Sum_rb <- rowSums(Rubrobacter[,3:9])
+Sum_rubro <- cbind(metadata,Sum_rb)
+
+# para boxplot
+Rubrobacter_m <- reshape2::melt(Rubrobacter)
+
+ggplot(Rubrobacter_m, aes(x = Tratamiento, y =value, col = Suelo))+
+  geom_boxplot(fill = "snow2", lwd = 0.7)+
+  theme_bw(base_size=15)+
+  scale_color_manual(name = "Tipo de suelo",
+                     values =c("#5D478B", "#43CD80"))+
+  xlab("Tratamiento") +
+  ylab("Abundancia")+
+  ylim(0,20)
+```
+ # Conclusiones de analisis taxonomico
+ 
+ Como pueden ver el analisis taxonomico es muy exploratorio, se pueden tardar 1 semana o una hora dependiendo el nivel de profundidad que le quieran dar. De cajon les recomiendo que chequen phylum y nivel de genero analizar los grupos que les mostre para todos sus reportes. Muchas veces el analisis a niveles taxonomicos altos los puede llevar a analizar otro generos que tambien son de relevancia agricola pero como pueden ver ir de gran a pequeña escala es un proceso un poco tardado aunque no es dificil. La ventaja de que lo hagan entre todos es que cada quien 
