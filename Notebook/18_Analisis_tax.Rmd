@@ -844,6 +844,7 @@ ggplot(Rubrobacter_m, aes(x = Tratamiento, y =value, col = Suelo))+
   ylab("Abundancia")+
   ylim(0,20)
 ```
+
  # Conclusiones de analisis taxonomico
  
  Como pueden ver el analisis taxonomico es muy exploratorio, se pueden tardar 1 semana o una hora dependiendo el nivel de profundidad que le quieran dar. De cajon les recomiendo que chequen phylum y nivel de genero analizar los grupos que les mostre para todos sus reportes. Muchas veces el analisis a niveles taxonomicos altos los puede llevar a analizar otro generos que tambien son de relevancia agricola pero como pueden ver ir de gran a pequeña escala es un proceso un poco tardado aunque no es dificil. La ventaja de que lo hagan entre todos es que cada quien 
