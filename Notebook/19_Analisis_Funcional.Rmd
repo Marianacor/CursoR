@@ -160,7 +160,7 @@ pheatmap(metabolismo,
          cluster_rows = FALSE, cluster_cols = FALSE,
          scale = "none", 
          breaks = mat_breaks,
-         color = colorRampPalette(c("snow2","slategray2","#CD96CD","maroon","#5D478B", "#0E021A"))(19),
+         color = colorRampPalette(c("snow2","slategray2","#CD96CD","maroon","#5D478B", "#0E0A"))(19),
          gaps_col = c(2),
          fontsize = 12)
 
@@ -184,7 +184,7 @@ metadata <- data.frame(Tratamiento= c("Bioestimulante", "Bioestimulante",
 metab_stats <- cbind(metadata,metab_stats)
 
 # Checamos normalidad
-for(i in 3:ncol(metab_stats)){data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==
+for(i in 3:ncol(metab_stats)){
   shapiro <- shapiro.test(metab_stats[,i])
   normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
   print(c(i,normal))
