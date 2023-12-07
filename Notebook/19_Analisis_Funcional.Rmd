@@ -1,0 +1,216 @@
+---
+title: "Analisis funcional para bacterias"
+output: html_notebook
+---
+
+# Introduccion
+
+El analisis funcional de los datos consiste en transformar nuestros datos de taxonomia identificados a grupos que "hacen" cosas en el suelo es decir descubrir sus funciones. Para ello vamos a usar el software METAGENassist que es un pipeline online que se usa para estudios metagenomicos comparativos. Ademas de otras caracterisitcas, este software realiza un mapeo automatico de taxonomia a fenotipo usando casi 20 categorias fenotipicas diferentes usando la informacion fenotipica de especies bacterianas listadas en la base de datos NCBI. De aqui obtienen informacion como metabolismo o fuente de energia basado en taxonomia al nivel de genero.
+
+```{r}
+# Librerias
+library(phyloseq)
+library(pheatmap)
+library(RColorBrewer)
+library(car)
+
+# Data
+load("vid_ejemplos.RData")
+```
+
+# Pre-procesamiento de datos
+
+Antes que nada tenemos que preparar los daos para subirlo al servidor:
+
+1. Primero que nada tenemos que alomerar los datos por genero porque el software no acepta identificacacion taxonomica repetida
+
+```{r}
+Phyla_fun <- tax_glom(vid_bio, taxrank = "Genus", NArm = FALSE)
+
+# Extraer
+OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
+Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
+metadata <- as.data.frame(Phyla_fun@sam_data)
+
+# Invalid objec error: no lo lee como tabla por eso lo cambiamos asi
+metadata <- as.matrix(metadata) 
+metadata <- as.data.frame(metadata)
+# se convirtio en matriz luego en tabla para que guardara como tabla
+
+
+# Guardar en materiales
+write.csv(OTU_matrix, "~/CursoR/CursoRgit/Materiales/vid_OTUs.csv")
+write.csv(Tax_matrix, "~/CursoR/CursoRgit/Materiales/vid_taxa.csv")
+write.csv(metadata, "~/CursoR/CursoRgit/Materiales/vid_meta.csv")
+```
+
+2. Ahora en excel vamos a unir las tablas en un solo archivo csv en el que las filas son las muestras y las columnas son los perfiles taxonomicos. Para ello vamos a juntar cada nivel taxonomico en una sola celda separados por punto y coma.
+
+Para ello vamos a usar la funcion concatenate(A1,";",B1) en Excel
+
+# Flujo de trabajo en Metagenassist
+
+1. Subir datos 
+
+Después de subir sus datos, aparece la pantalla de Verificación de integridad de datos. Si hay algún problema con los archivos de entrada, se anotarán aquí. El informe enumera el número de muestras y el número de variables (taxones) en el perfil taxonómico presentado, y puede indicar que algunos taxones se eliminaron porque tenían una abundancia constante en todas las muestras (por ejemplo, todos ceros).
+
+Más abajo en la página se le pedirá que elija si desea combinar OTU con el mismo asignación taxonómica o mantenerlos separados. Eso lo dejamos en DEFAULT.
+
+2. Filtrar datos
+
+A continuación aparece la página de Filtrado de datos. Este es un paso importante para eliminar materiales de baja calidad o datos poco informativos. La primera opción es excluir lecturas no asignadas y no asignadas. Algunos conjuntos de datos puede incluir una etiqueta "no asignado", que puede tener un gran efecto sesgado en ciertas estadísticas pruebas (por ejemplo, PCA). Las tablas de muestra por fenotipo derivadas internamente también incluyen recuentos de lecturas que no se pudo asignar a un fenotipo, que también se puede excluir. La segunda opción es eliminar variables (por ejemplo, taxones) con abundancia cero en un cierto porcentaje de muestras que podrían de lo contrario causará problemas para pruebas como SVM. Finalmente, se utilizan varios métodos de filtrado de datos para eliminar valores muy bajos o valores que son casi constantes en todas las muestras
+
+El unico cambio al default fue quitar la de "Remover muestras con 0" para evitar que nos quite taxones que solo aparecen en S85. Cuando tengamos mas muestras se recomienda usar el 90%. 25*.10=2.5 se usa un 90 para que si me salgan en 3
+
+Aparece la página Resultados del filtrado de datos, que ofrece un desglose de las variables (por ejemplo, taxones) que fueron eliminados de los datos. 
+
+Comparamos filtrado IQR y none y no hubo una reduccion extrema de datos, por lo que nos quedamos con IQR
+
+3. Normalizar datos 
+
+Luego llegamos a la página de Normalización de datos. La estructura de datos interna se transforma ahora a una tabla en la que cada fila representa una muestra y cada columna representa una característica (taxón). Con los datos estructurados en este formato, se pueden utilizar dos tipos de protocolos de normalización de datos, por filas. Se puede utilizar la normalización y la normalización por columnas. La normalización por filas tiene como objetivo
+normalice cada muestra (fila) para que sean comparables entre sí. En cuanto a columnas La normalización tiene como objetivo hacer que las características (columnas) sean más comparables en magnitud entre sí. La normalización de datos es un paso importante porque muchas pruebas estadísticas comunes suponen
+datos distribuidos aproximadamente normalmente, pero este no suele ser el caso con el perfil taxonómico bruto distribuciones.
+
+En "Normalización por filas", seleccione "Normalización por suma". Esto se ajustará según las variaciones secuenciar la cobertura entre muestras normalizando a la misma abundancia total para cada muestra. En "Normalización por columnas", seleccione "Escalado de Pareto" y haga clic en Procesar. botón en la parte inferior de la página.
+
+Como resultado, se muestran las curvas de densidad antes y después de la normalización para los principales datos taxonómicos.
+en la página siguiente.
+
+4. Elegir tests estadisticos
+
+Después del procesamiento inicial de datos, se muestra una lista de pruebas estadísticas disponibles. También puedes seleccionar
+los diferentes análisis de la barra lateral.
+
+Sin embargo, dependiendo de nuestras variables es que se podran elegir los tests. En este caso elegiremos T test y veremos si se el software nos lo permite
+
+5. Explorando resultados
+
+El software procesa nuestras muestras y dentro de la pagina podemos visualizar muchos graficos que se hicieron con los datos
+
+6. Descargar los datos 
+
+Click en el enlace "Descargar" . “Descargar”. zip” que incluye todos los datos procesados e imágenes que vimos. Un archivo readme en el paquete de descarga describe los distintos atascos de tráfico. Los datos permanecerán en el servidor durante 72 horas antes de ser eliminados automáticamente.
+
+# Checando los datos descargados
+
+Nuestro archivo zip contiene todas las imagenes que generamos dentro del software asi como las tablas con las cuales se generaron esas imagenes. Si bien los graficos que genera el software estan medianamente decentes (y ustedes podrian presentarlos si no tienen tiempo) siempre hay posibilidad de mejorarlos en R. Ademas muchos de los datos se pueden presentar de otras maneras por lo que lo que vamos a ocupar de aqui son las tablas que nos arroja el software.
+
+Si se fijan el software nos categorizo de muchas maneras nuestros datos desde patogenicidad, esporulacion hasta tipo de metabolismo. Dado que ahorita nuestro enfoque es en suelo, el grupo funcional mas importante que pueden reportar es tipo de metabolismo seguido de fuente de energia.
+
+Por un lado tipo de metabolismo nos dice que estan "comiendo" las bacterias dentro del suelo y por ende que nichos ocupan en nuestro suelo. 
+
+Por el otro lado fuente de energia nos dice la cantidad de autotrofos, heterotrofos y otros tipos de bacterias mas raras que forman parte de ciclos de nutrientes.
+
+# Trabajando con los datos descargados
+
+## Subir datos
+
+```{r}
+metabolismo <- read.csv("~/CursoR/CursoRgit/Materiales/METABOLISM.filtered.csv")
+
+energia <- read.csv("~/CursoR/CursoRgit/Materiales/ENERGYSOURCE.filtered.csv")
+```
+
+# Preprocesamiento de datos
+
+```{r}
+# renombrar filas y quitar sample id
+row.names(metabolismo) <- metabolismo[,1]
+metabolismo <- metabolismo[,-1] # no correr este dos veces
+
+# Siempre cambiar a matriz
+metabolismo <- data.matrix(t(metabolismo)) # anadir transpose para cambiar las filas y columnas, porque las muestras deben quedar como columna
+
+# Cambiar el orden
+metabolismo <- metabolismo[order(metabolismo[,1],
+                                 decreasing = TRUE),] # la ultima como significa filas
+
+sorder <- c("S81","S85","S82","S83")
+metabolismo <- metabolismo[ , sorder] # este grafico es importante para el grafico para que salieran juntos los grupos de tratamiento
+
+# Cambiar nombres
+row.names(metabolismo) <- c("Ammonia Oxidizer", "Sulfate Reducer",
+                           "Dehalogenation","Nitrite Reducer",
+                           "Sulfide Oxidizer", "Nitrogen Fixation",
+                           "Xylan Degrader", "Chitin degradation",
+                           "Chlorophenol degrading","Streptomycin Producer",
+                           "Arom. Hydrocarb. Degrader", "Ligning degrader",
+                           "Atrazine Metabolism", "Sulfur Oxidizer",
+                           "Sulfur Metabolizer","Carbon Fixation",
+                           "Stores Polyhydroxybutyrate",
+                           "Gramicidin Producer", "Dinitrogen Fixing",
+                           "Sulfur Reducer","Carbon Monoxide Oxidizer")
+
+```
+
+## Heatmap
+
+```{r}
+# Funcion para breaks
+quantile_breaks <- function(xs, n = 10) {
+  breaks <- quantile(xs, probs = seq(0, 1, length.out = n))
+  breaks[!duplicated(breaks)]
+}
+
+mat_breaks <- quantile_breaks(metabolismo, n = 21)
+
+# Heatmap
+pheatmap(metabolismo,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         breaks = mat_breaks,
+         color = colorRampPalette(c("snow2","slategray2","#CD96CD","maroon","#5D478B", "#0E021A"))(19),
+         gaps_col = c(2),
+         fontsize = 12)
+
+```
+
+# Analisis estadistico
+
+El proceso de analisis es exactamente igual al que usamos para el analisis taxonomico
+
+```{r}
+# poner los grupos como columnas
+metab_stats <- t(metabolismo)
+
+# unir metadatos
+metadata <- data.frame(Tratamiento= c("Bioestimulante", "Bioestimulante",
+                                      "Control","Control"),
+                       Suelo= c("No Salino","Salino","No Salino","Salino"))
+
+# Los cambiamos de orden basados en el objeto de sorder para que mis muestras y metadatos coincidan
+
+metab_stats <- cbind(metadata,metab_stats)
+
+# Checamos normalidad
+for(i in 3:ncol(metab_stats)){data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==
+  shapiro <- shapiro.test(metab_stats[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+phyla_pvalues <- data.frame(Tratamiento = rep(NA,21), 
+                            Suelo = rep(NA,21))
+
+for(i in 3:ncol(metab_stats)){
+  T_trat <- t.test(metab_stats[,i]~Tratamiento, data=metab_stats)
+  S_trat <- t.test(metab_stats[,i]~Suelo, data=metab_stats)
+  j <- i-2  
+  phyla_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  phyla_pvalues$Suelo[j] <- S_trat[["p.value"]]
+}
+
+row.names(phyla_pvalues) <- colnames(metab_stats[3:23])
+
+# Pueden guardar esta tabla
+write.csv(phyla_pvalues, "~/CursoR/CursoRgit/Materiales/vid_metab_pvalues.csv")
+```
+
+### Ejercicio
+
+Realizar el analisis estadistico con fuente de energia
+
+# Conclusiones funcionales
+
+Se puede conectar con analisis taxonomico?
