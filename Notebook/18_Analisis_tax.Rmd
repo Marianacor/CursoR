@@ -29,6 +29,7 @@ library(scales) # Modificar escalas
 library(car)
 library(wesanderson)
 
+
 # DATA 
 
 load("ITS_filt.Rdata")
@@ -185,11 +186,11 @@ pheatmap(Phyla_matrix,
 pheatmap(Phyla_matrix,
          cluster_rows = FALSE, cluster_cols = FALSE,
          scale = "none", 
-         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(25),
+        color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(25),
          breaks = mat_breaks,
          fontsize = 10, # tamaño de letra
          gaps_col = c(2), # separaciones entre columnas de bioestimulantes y control
-         labels_col = c("Balox salino", "Balox no salino","Control salino", "Control no salino")) # nombres de columnas
+         labels_col = c("Tratamiento salino", "Tratamiento no salino","Control salino", "Control no salino")) # nombres de columnas
 ```
 
 Otros posibles cambios que le podemos hacer a nuestro heatmap:
@@ -250,15 +251,15 @@ Agreguenle o modifiquen 2 o mas de estos argumentos en su grafico
 pheatmap(Phyla_matrix,
          cluster_rows = FALSE, cluster_cols = FALSE,
          scale = "none", 
-         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(25),
+         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(25),
          breaks = mat_breaks,
          fontsize = 10, 
          gaps_col = c(2), 
-         labels_col = c("Balox salino", "Balox no salino","Control salino", "Control no salino"),
+         labels_col = c("S85", "S81","S83", "S82"),
          angle_col = 0,
          fontsize_col = 10,
          fontsize_row = 8,
-         main = "Análisis taxonómico por phylum")
+         main = "Análisis taxonómico por Phylum")
 ```
 
 ### Ejercicio final
@@ -342,7 +343,7 @@ plot_composition(Top_phyla,plot.type = "barplot")+
   scale_fill_brewer(palette = "RdYlGn", name = "Phylum",
                     labels=c("Actinobacteriota", "Chloroflexi","Proteobacteria", "Acidobacteriota", "Verrumcomicrobiota", "Bacteroidota", "Cyanobacteria","Patescibacteria", "Planctomycetota","Firmicutes"))+
   guides(x=guide_axis(angle=90))+
-  scale_x_discrete(labels=c("Balox No Salino", "Control No Salino", "Control Salino","Balox Salino"))
+  scale_x_discrete(labels=c("Tratamiento salino", "Control no salino", "Control salino","Tratamiento salino"))
 ```
 
 Si bien este grafico ya es hermoso, la forma mas simple de representar abundancia relativa es con porcentajes. Asi que les voy a ensenar la formula de scales te modifica etso facilmente
@@ -350,10 +351,14 @@ Si bien este grafico ya es hermoso, la forma mas simple de representar abundanci
 ```{r}
 plot_composition(Top_phyla,plot.type = "barplot")+
   theme_bw()+
-  scale_fill_brewer(palette = "RdYlGn", name = "Phylum",
+  ggtitle("Abundancias relativas a nivel Phylum")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")+
+  scale_fill_brewer(palette = "Spectral", name = "Phylum",
                     labels=c("Actinobacteriota", "Chloroflexi","Proteobacteria", "Acidobacteriota", "Verrumcomicrobiota", "Bacteroidota", "Cyanobacteria","Patescibacteria", "Planctomycetota","Firmicutes"))+
   guides(x=guide_axis(angle=0))+
-  scale_x_discrete(labels=c("Balox No Salino", "Control No Salino", "Control Salino","Balox Salino"))+
+  scale_x_discrete(labels=c("S81", "S82", "S83","S85"))+
   scale_y_continuous(breaks = pretty_breaks(n = 10),# numero de separaciones
                      labels = scales::percent)# representadas en %
 ```
@@ -492,7 +497,7 @@ TukeyHSD(aov(p__Zoopagomycota ~ Plant_Type * Treatment,
              data = Fungi_stats))
 ```
 
-El siguiente paso seria graficar algunas de estas relacines interesantes
+El siguiente paso seria graficar algunas de estas relaciones interesantes
 
 ## Ejercicio
 
@@ -586,7 +591,9 @@ Cyanobacteria y Proteobacteria basados en graficos y basados en analisis estadis
 
 ```{r}
 Cyano <- subset_taxa(vid_bio, Phylum == "Cyanobacteria")
+
 Chloro <- subset_taxa(vid_bio, Phylum == "Chloroflexi")
+Proteo <- subset_taxa(vid_bio, Phylum == "Proteobacteria")
 ```
 
 # 2. Visualiar a nivel de orden
@@ -595,7 +602,9 @@ Si bien despues de phylum viene clase, por razones de tiemppo(tanto de la clase 
 
 ```{r}
 Cyano_ord <- tax_glom(Cyano,taxrank = "Order", NArm = FALSE) # juntar orden
+
 Chloro_ord <- tax_glom(Chloro,taxrank = "Order", NArm = FALSE)
+Proteo_ord <- tax_glom(Proteo,taxrank = "Order", NArm = FALSE)
 ```
 
 En este caso no lo hice para Mucoromycota tambien porque si se fijan solo tiene un orden. Aglomerar todos nuestros datos por orden no nos serviria de nada por lo que les vuelvo a reiterar que aqui depende de cada caso para que sigan su flujo de analisis. A partir de aqui yo tendria 2 opciones: 
@@ -611,13 +620,24 @@ Nuevamente al ver los datos (sin graficar) me doy cuenta que las familias y los 
 Primero vamos a ver el barplot default sin arreglar nada en los datos:
 
 ```{r}
-plot_composition(Chloro_ord, plot.type = "barplot")+
-  theme_bw()
+plot_composition(Chloro_ord, plot.type = "barplot")+ 
+  theme_bw()+
+  ggtitle("Abundancias de Chloroflexi a nivel Orden")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")
 # Nos fuimos por el grupo mas abundante
 
 # IQHNW1012T
 # IJISH7931T
 # VPLBK6313M
+
+plot_composition(Proteo_ord, plot.type = "barplot")+ 
+  theme_bw()+
+  ggtitle("Abundancias de Proteobacteria a nivel Orden")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")
 ```
 
 Anteriormente les habia dicho que la funcion plot_composition de microbiome tiene tambien una opcion de heatmap. El problema es que es mucho mas tardado de correr y los graficos no quedan tan bien. L otra opcion es la de phyloseq que aunque corre mejor en mi opinion no es tan sensible a cambios como pheatmap.
@@ -633,8 +653,13 @@ plot_composition(Chloro_ord, plot.type = "heatmap")+
 
 # Usando la funcion de phyloseq
 plot_heatmap(Chloro_ord, 
-             low = "darkslategray3", high = "darkslategray",
+             low = "#D8AFFF", high = "#320743",
              na.value = "snow2")
+
+plot_heatmap(Proteo_ord, 
+             low = "lightskyblue", high = "midnightblue",
+             na.value = "snow2")
+
 
 ```
 
@@ -720,9 +745,45 @@ for(i in 3:ncol(vid_phyla)){
 row.names(order_pvalues) <- c( "NA1", "S085","SBR1031","Ardenticatenales","Anaerolineales", "NA2","SAR202 clade","NA4", "RBG-13-54-9","NA5","NA6","C0119","NA7","Chloroflexales","NA8", "NA9","Caldilineales","NA10","Thermomicrobiales","Kallotenuales", "NA11",        "Ktedonobacterales","NA12")
 
 write.csv(order_pvalues, "~/CursoR/CursoRgit/Materiales/vid_order_pvalues.csv")
+
+
+
+OTU_matrix <- as.data.frame(Proteo_ord@otu_table)
+Tax_matrix <- as.data.frame(Proteo_ord@tax_table)
+
+metadata <- as.data.frame(Proteo_ord@sam_data)
+
+## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
+colnames(OTU_matrix) <- Tax_matrix$Order 
+
+vid_phyla <- cbind(metadata,OTU_matrix)
+
+## Revisar normalizacion:
+
+for(i in 3:ncol(vid_phyla)){
+  shapiro <- shapiro.test(vid_phyla[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+order_pvalues <- data.frame(Tratamiento = rep(NA,23),
+                            Suelo = rep(NA,23))
+
+# for loop
+for(i in 3:ncol(vid_phyla)){
+  T_trat <- t.test(vid_phyla[,i]~Tratamiento, data=vid_phyla)
+  S_trat <- t.test(vid_phyla[,i]~Suelo, data=vid_phyla)
+  j <- i-2 # esto es para que empiece a llenar desde la fila 1 
+  order_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  order_pvalues$Suelo[j] <- S_trat[["p.value"]]
+}
+
+row.names(order_pvalues) <- c( "NA1", "S085","SBR1031","Ardenticatenales","Anaerolineales", "NA2","SAR202 clade","NA4", "RBG-13-54-9","NA5","NA6","C0119","NA7","Chloroflexales","NA8", "NA9","Caldilineales","NA10","Thermomicrobiales","Kallotenuales", "NA11",        "Ktedonobacterales","NA12")
+
+write.csv(order_pvalues, "~/CursoR/CursoRgit/Materiales/vid_order_pvalues.csv")
 ```
 
-Dentro del orden u ordenes que eleigieron se puede seguir el proceso de flitrado y aglomeracion anterior para ir eligiendo un genero (en el caso de bacterias) o algunas especies en el caso de hongos (para analisis).
+Dentro del orden u ordenes que eleigieron se puede seguir el proceso de filtrado y aglomeracion anterior para ir eligiendo un genero (en el caso de bacterias) o algunas especies en el caso de hongos (para analisis).
 
 Si bien a mi como ecologa de suelo se me hace interesante ver si realmente hay esta clase de cambios a niveles mas bajos y luego como estos se traducen a cambios funcionales a estas alturas su reporte va a ser del largo de mi tesis. Por ello en esta seccion solo nos vamos a enfocar en ciertos generos y especies que son importantes reportar ya que son conocidos por su importancia tanto buena como mala.
 
@@ -820,29 +881,53 @@ ggplot(Fusarium, aes(x = Treatment, y =s_verticillioides, col = Plant_Type))+
 Graficar su genero en especifico
 
 ```{r}
-Rubro <- subset_taxa(vid_bio, Genus == "Rubrobacter")
+Bacillus <- subset_taxa(vid_bio, Genus == "Bacillus")
 
 # Extraer matriz
-OTU_matrix <- as.data.frame(Rubro@otu_table)
-metadata <- as.data.frame(Rubro@sam_data)
+OTU_matrix <- as.data.frame(Bacillus@otu_table)
+metadata <- as.data.frame(Bacillus@sam_data)
 
-Rubrobacter <- cbind(metadata,OTU_matrix)
+Bacillus <- cbind(metadata,OTU_matrix)
 
 # Opcion 1 para grafico de barras (no lo vamos hacer)
-Sum_rb <- rowSums(Rubrobacter[,3:9])
-Sum_rubro <- cbind(metadata,Sum_rb)
+Sum_b <- rowSums(Bacillus[,3:9])
+Sum_bac <- cbind(metadata,Sum_b)
 
 # para boxplot
-Rubrobacter_m <- reshape2::melt(Rubrobacter)
+Bacillus_m <- reshape2::melt(Bacillus)
 
-ggplot(Rubrobacter_m, aes(x = Tratamiento, y =value, col = Suelo))+
-  geom_boxplot(fill = "snow2", lwd = 0.7)+
+ggplot(Bacillus_m, aes(x = Tratamiento, y =value))+
+  geom_boxplot(lwd = 0.7)+
   theme_bw(base_size=15)+
-  scale_color_manual(name = "Tipo de suelo",
-                     values =c("#5D478B", "#43CD80"))+
+  ggtitle("Abundancia en el suelo de Bacillus")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  scale_fill_manual(values =c("#00CD66", "steelblue4"))+
   xlab("Tratamiento") +
-  ylab("Abundancia")+
-  ylim(0,20)
+  ylab("Abundancia")
+
+
+Streptomyces <- subset_taxa(vid_bio, Genus == "Streptomyces")
+
+# Extraer matriz
+OTU_matrix <- as.data.frame(Streptomyces@otu_table)
+metadata <- as.data.frame(Streptomyces@sam_data)
+
+Streptomyces <- cbind(metadata,OTU_matrix)
+
+# Opcion 1 para grafico de barras (no lo vamos hacer)
+Sum_s <- rowSums(Streptomyces[,3:9])
+Sum_st <- cbind(metadata,Sum_s)
+
+# para boxplot
+St_m <- reshape2::melt(Streptomyces)
+
+ggplot(St_m, aes(x = Tratamiento, y =value, col = Suelo))+
+  geom_boxplot(lwd = 0.7)+
+  theme_bw(base_size=15)+
+  xlab("Tratamiento") +
+  ylab("Abundancia")
+  
+  
 ```
 
  # Conclusiones de analisis taxonomico

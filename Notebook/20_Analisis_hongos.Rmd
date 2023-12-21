@@ -202,7 +202,7 @@ ggplot(Root_cat, aes(x = Treatment, y = Root_sums, fill = Plant_Type))+
                 annotation = "NS", tip_length = 0.01,
                 col=1)+
   geom_signif(y_position = 5000, xmin=3.6, xmax=4.4,
-                annotation = "ns", tip_length = 0.01,
+                annotation = "NS", tip_length = 0.01,
                 col=1)+
   scale_y_continuous(breaks=pretty_breaks(n=6))
   
