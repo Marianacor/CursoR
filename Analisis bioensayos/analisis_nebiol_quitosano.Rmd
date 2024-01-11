@@ -22,11 +22,14 @@ library(ggsignif)
 library(paletteer)
 
 # DATA
-Quitosano <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/nebiol_quitosano.csv")
-Quitosano2 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/nebiolyquitosano.csv")
+Quitosano2 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/nebiol_quitosano.csv")
+Quitosano <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano.csv")
 Nebiol <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Nebiol.csv")
 ```
 
+# NEBIOL
+
+### Análisis para la variable longitud de raíz:
 ```{r}
 par(mfrow=c(1,2))
 hist(Nebiol$Longitud)
@@ -41,19 +44,22 @@ hist(sqrt(Nebiol$Longitud))
 qqnorm(sqrt(Nebiol$Longitud))
 
 # Shapiro-Wilk normality test
-shapiro.test(sqrt(Nebiol$Longitud))
+shapiro.test(sqrt(Nebiol$Longitud)) # no se puede normalizar por lo que se debe anamilizar con un test no parametrico
 
 # Checar si estan balanceados
 Nebiol %>%
   group_by(Tratamiento)%>%
   summarise(n())
 
-kruskal.test(Longitud ~ Tratamiento, data = Nebiol)
+kruskal.test(Longitud ~ Tratamiento, data = Nebiol) # p value es menor a 0.05, por que si hay diferencias significativas entre los tratamientos
 
 pairwise.wilcox.test(Nebiol$Longitud,
                      Nebiol$Tratamiento,
                      p.adjust.method = "bonferroni")
+```
 
+### Análisis para la variable raíces laterales:
+```{r}
 par(mfrow=c(1,2))
 hist(Nebiol$Laterales)
 qqnorm(Nebiol$Laterales)
@@ -63,12 +69,67 @@ shapiro.test(Nebiol$Laterales)
 
 # Normalizar
 par(mfrow=c(1,2))
-hist(sqrt(Nebiol$Longitud))
-qqnorm(sqrt(Nebiol$Longitud))
+hist(sqrt(Nebiol$Laterales+1))
+qqnorm(sqrt(Nebiol$Laterales+1))
 
 # Shapiro-Wilk normality test
-shapiro.test(sqrt(Nebiol$Longitud))
+shapiro.test(sqrt(Nebiol$Laterales+1)) # no se puede normalizar por lo que se debe analizar por un test no parametrico
+
+kruskal.test(Laterales ~ Tratamiento, data= Nebiol) # pvalue es menor a 0.05 por lo que si ha diferencias significativas entre los tratamientos
+
+pairwise.wilcox.test(Nebiol$Laterales,
+                     Nebiol$Tratamiento,
+                     p.adjust.method = "bonferroni")
 ```
+
+# QUITOSANO
+
+### Análisis para la variable longitud de raíz:
+```{r}
+par(mfrow=c(1,2))
+hist(Quitosano$Longitud)
+qqnorm(Quitosano$Longitud)
+
+# Shapiro-Wilk normality test
+shapiro.test(Quitosano$Longitud)
+
+# Normalizar
+par(mfrow=c(1,2))
+hist(sqrt(Quitosano$Longitud))
+qqnorm(sqrt(Quitosano$Longitud))
+
+shapiro.test(log(Quitosano$Longitud)) # no se puede normalizar por lo que se debe analizar con un test no parametrico
+
+kruskal.test(Longitud ~ Tratamiento, data = Quitosano) # pvalue es menor a 0.05 por lo que si existen diferencias entre los tratamientos
+
+pairwise.wilcox.test(Quitosano$Longitud,
+                     Quitosano$Tratamiento,
+                     p.adjust.method = "bonferroni")
+
+```
+
+### Análisis para la variable de raíces laterales:
+```{r}
+par(mfrow=c(1,2))
+hist(Quitosano$Laterales)
+qqnorm(Quitosano$Laterales)
+
+shapiro.test(Quitosano$Laterales)
+
+# Normalizar
+par(mfrow=c(1,2))
+hist(sqrt(Quitosano$Laterales+1))
+qqnorm(sqrt(Quitosano$Laterales+1))
+
+shapiro.test(log(Quitosano$Laterales+1)) # No se puede normalizar por lo que se debe analizar con un test no parametrico
+
+kruskal.test(Laterales ~ Tratamiento, data = Quitosano) # pvalue es menor a 0.05 por lo que si existen diferencias significativas entre los tratamientos
+
+pairwise.wilcox.test(Quitosano$Laterales,
+                     Quitosano$Laterales,
+                     p.adjust.method = "bonferroni")
+```
+
 
 ## Graficos del promedio de la longitud de raiz y raices laterales para Nebiol
 ```{r}
@@ -169,7 +230,7 @@ ggplot(Quitosano_tabla)+
   ylab("Raíces laterales")+
   scale_fill_manual(values=c("#6551CC","#8F7EE5","#BFB2FF", "#7EC3E5", "#7EC3E5", "#7EC3E5","#0F6B99", "#0F6B99","#0F6B99","#C3E57E", "#C3E57E", "#C3E57E" ,"#6B990F","#6B990F","#6B990F"))+
   theme(legend.position = "none")
-
+  
 
 ```
 
@@ -188,25 +249,16 @@ ggplot(Quitosano_tabla, aes(x= Tratamiento, y = Media_longitud_raiz, fill=Tratam
   theme(axis.text.y=element_text(vjust = 3))+
   geom_text(aes(label = (Media_laterales)))
 
-ggplot(Quitosano_tabla, aes(x=Tratamiento, group=1)) +
-  
-  geom_col( aes(y=Media_longitud_raiz, fill="blue", position="dodge2")) + 
-  geom_col( aes(y=Media_laterales))+
-  theme(axis.title.y = element_blank())
-
-ggplot(data=Quitosano_tabla, aes(x=Tratamiento, y=Media_longitud_raiz, fill=Tratamiento)) +
-        geom_bar(stat="identity", color="black", position="dodge2") +
-  geom_bar(data=Quitosano_tabla, aes(x=Tratamiento, y=Media_laterales, fill=Tratamiento)) +
-  geom_bar(stat="identity", color="black", position="dodge2") +
-        theme_minimal()
 
 # Grafico donde se incluyan ambas variables de longitud y laterales
-ggplot(Quitosano2,aes(x=Tratamiento, y = Resultado,fill= Tipo)) + 
-  geom_col(position="dodge") 
-  
-  
-levels(Quitosano2$Tratamiento)
-Quitosano2$Tratamiento=factor(Quitosano2$Tratamiento,levels=c(rep("Control","NAA","GA3","M1 250 uL", "M1 1:10", "M1 1:20", "M2 250 uL", "M2 1:10", "M2 1:20", "M3 250 uL","M3 1:10", "M3 1:20", "M4 250 uL","M4 1:10", "M4 1:20", 680)))
-levels(Quitosano2$Tratamiento)
- 
+ggplot(Quitosano2,aes(x=Tratamiento, y = Resultado,fill= Tipo))+ 
+  theme_bw()+
+  geom_bar(stat= "summary", fun="mean", position="dodge")+
+  scale_fill_discrete(name = "Tipo de variable", 
+                      labels = c("Promedio raíces laterales", "Promedio longitud de raíz"))+ 
+  theme(axis.title.y = element_blank())+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  scale_x_discrete(limits = c("Control","NAA","GA3","M1 250 uL", "M1 1:10","M1 1:20","M2 250 uL", "M2 1:10","M2 1:20","M3 250 uL","M3 1:10","M3 1:20", "M4 250 uL","M4 1:10","M4 1:20"))+
+  scale_fill_manual(name = "Tipo de variable", values = c("#6B990F", "#6551CC"))
+
 ```
