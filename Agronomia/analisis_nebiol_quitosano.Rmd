@@ -49,7 +49,7 @@ shapiro.test(sqrt(Nebiol$Longitud)) # no se puede normalizar por lo que se debe 
 
 # Checar si estan balanceados
 Nebiol %>%
-  group_by(Tratamiento)%>%
+  group_by(Tratamiento)%>% 
   summarise(n())
 
 kruskal.test(Longitud ~ Tratamiento, data = Nebiol) # p value es menor a 0.05, por que si hay diferencias significativas entre los tratamientos
