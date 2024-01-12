@@ -22,10 +22,10 @@ library(ggsignif)
 library(paletteer)
 
 # DATA
-Quitosano2 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano_lateral_long.csv")
-Quitosano3 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano_promedios.csv")
-Quitosano <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano.csv")
-Nebiol <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Nebiol.csv")
+Quitosano2 <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Quitosano_lateral_long.csv")
+Quitosano3 <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Quitosano_promedios.csv")
+Quitosano <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Quitosano.csv")
+Nebiol <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Nebiol.csv")
 ```
 
 # NEBIOL
