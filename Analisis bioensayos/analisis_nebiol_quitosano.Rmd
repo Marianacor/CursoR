@@ -22,7 +22,8 @@ library(ggsignif)
 library(paletteer)
 
 # DATA
-Quitosano2 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/nebiol_quitosano.csv")
+Quitosano2 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano_lateral_long.csv")
+Quitosano3 <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano_promedios.csv")
 Quitosano <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Quitosano.csv")
 Nebiol <- read.csv("~/CursoR/CursoRgit/Analisis bioensayos/Materiales/Nebiol.csv")
 ```
@@ -224,12 +225,14 @@ ggplot(Quitosano_tabla)+
 ggplot(Quitosano_tabla)+
   theme_classic()+
   geom_col(aes(y = Media_laterales, x = Tratamiento, fill= Tratamiento))+
-  ggtitle("Bioensayo de muestras de Nebiol")+
+  ggtitle("Bioensayo de muestras de Quitosano")+
   theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  theme(plot.caption = element_text(color = "red", hjust = 0, vjust=-2, size = 12))+
   theme(axis.text.x = element_text(angle=45,hjust=1, size=8))+
   ylab("Raíces laterales")+
   scale_fill_manual(values=c("#6551CC","#8F7EE5","#BFB2FF", "#7EC3E5", "#7EC3E5", "#7EC3E5","#0F6B99", "#0F6B99","#0F6B99","#C3E57E", "#C3E57E", "#C3E57E" ,"#6B990F","#6B990F","#6B990F"))+
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  labs(caption="*No se realizó conteo de raíces laterales del tratamiento NAA por alta abundancia.")
   
 
 ```
@@ -251,7 +254,7 @@ ggplot(Quitosano_tabla, aes(x= Tratamiento, y = Media_longitud_raiz, fill=Tratam
 
 
 # Grafico donde se incluyan ambas variables de longitud y laterales
-ggplot(Quitosano2,aes(x=Tratamiento, y = Resultado,fill= Tipo))+ 
+ggplot(Quitosano3,aes(x=Tratamiento, y = Resultado,fill= Tipo))+ 
   theme_bw()+
   geom_bar(stat= "summary", fun="mean", position="dodge")+
   scale_fill_discrete(name = "Tipo de variable", 
@@ -259,6 +262,7 @@ ggplot(Quitosano2,aes(x=Tratamiento, y = Resultado,fill= Tipo))+
   theme(axis.title.y = element_blank())+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
   scale_x_discrete(limits = c("Control","NAA","GA3","M1 250 uL", "M1 1:10","M1 1:20","M2 250 uL", "M2 1:10","M2 1:20","M3 250 uL","M3 1:10","M3 1:20", "M4 250 uL","M4 1:10","M4 1:20"))+
-  scale_fill_manual(name = "Tipo de variable", values = c("#6B990F", "#6551CC"))
+  scale_fill_manual(name = "Tipo de variable", values = c("#6B990F", "#6551CC"))+
+  geom_text(aes(label = Resultado))
 
 ```
