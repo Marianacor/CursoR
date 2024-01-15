@@ -169,7 +169,7 @@ ggplot(Nebiol_tabla)+
   ylab("Longitud de raíz")+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
   theme(axis.title.y=element_text(vjust = 3))+
-  scale_fill_paletteer_d("colorBlindness::SteppedSequential5Steps", -1)+
+  scale_fill_manual(values=c("#6551CC","#8F7EE5","#BFB2FF", "#7EC3E5", "#7EC3E5", "#7EC3E5","#7EC3E5", "#0F6B99","#0F6B99","#6B990F" ,"#6B990F","#6B990F"))
   theme(legend.position = "none")
 
 ggplot(Nebiol_tabla)+
@@ -177,11 +177,14 @@ ggplot(Nebiol_tabla)+
   geom_col(aes(y = Media_laterales, x = Tratamiento, fill= Tratamiento))+
   ggtitle("Bioensayo de muestras de Nebiol")+
   theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  theme(plot.caption = element_text(color = "red", hjust = 0, vjust = -2, size = 12))+
+  labs(caption = "*No se realizó conteo de raíces laterales del tratamiento NAA por alta abundanica.")+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
   ylab("Raíces laterales")+
-  scale_fill_paletteer_d("colorBlindness::SteppedSequential5Steps", -1)+
+  scale_fill_manual(values=c("#6551CC","#8F7EE5","#BFB2FF", "#7EC3E5", "#7EC3E5", "#7EC3E5","#7EC3E5", "#0F6B99","#0F6B99","#6B990F" ,"#6B990F","#6B990F"))+ 
   theme(legend.position = "none")
 
+# Nebiol_tabla <- Nebiol_tabla[-c(12),] se utiliza para eliminar la fila del tratamiento NAA para que no se muestre en a tabla debido a que no se contaron las raíces laterales de NAA por su alta abundancia.
 ```
 
 ## Graficos del promedio de la longitud de raiz y raices laterales para Quitosano
@@ -234,7 +237,7 @@ ggplot(Quitosano_tabla)+
   theme(legend.position = "none")+
   labs(caption="*No se realizó conteo de raíces laterales del tratamiento NAA por alta abundancia.")
   
-
+# Quitosano_tabla <- Quitosano_tabla[-c(15),] para eliminar la fila correspondiente al tratamiento NAA, ya que no se contaron las raíces laterales debido a una alta abundancia
 ```
 
 ```{r}
