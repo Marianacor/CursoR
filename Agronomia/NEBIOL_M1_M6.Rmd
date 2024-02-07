@@ -26,8 +26,6 @@ Longitud <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Longitud nebiol M1
 
 Laterales <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Laterales nebiol M1-M6.csv")
 
-Lotes <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Long_Lateral_Nebiol M1-M6.csv")
-
 Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo M1-M6_long_lateral.csv")
 
 ```
@@ -137,9 +135,9 @@ Promedios <- Bioensayo %>%
             Lat_lote1 = mean(ifelse(Laterales.Lote.1==0, NA, Laterales.Lote.1), na.rm = TRUE),
             Desv_lat_L1 = sd(ifelse(Laterales.Lote.1==0, NA, Laterales.Lote.1), na.rm = TRUE),
             Error_desv_lat_L1 = std.error(ifelse(Laterales.Lote.1==0, NA, Laterales.Lote.1), na.rm = TRUE),
-            Lat_lote2 = mean(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.1), na.rm = TRUE),
-            Desv_lat_L2 = sd(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.1), na.rm = TRUE),
-            Error_desv_lat_L2 = std.error(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.1), na.rm = TRUE))
+            Lat_lote2 = mean(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.2), na.rm = TRUE),
+            Desv_lat_L2 = sd(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.2), na.rm = TRUE),
+            Error_desv_lat_L2 = std.error(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.2), na.rm = TRUE))
 
 # Se acomodan los datos:
 
@@ -164,7 +162,7 @@ ggplot(Promedios)+
 ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2")+
   theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
@@ -172,7 +170,30 @@ ggplot(Promedios)+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 
+# Grafico de la longitud de raíz lote 2:
 
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long_lote2, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  theme(axis.title.y=element_text(vjust = 3))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  theme(legend.position = "none")
+
+# Grafico raices laterales para el lote 2:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  theme(axis.title.y=element_text(vjust = 3))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  theme(legend.position = "none")
 
 ```
 
@@ -201,7 +222,7 @@ ggplot(Prom, aes(x = Tratamiento, y = Longitud, fill = Lote))+
   scale_x_discrete(limits = c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
   theme(axis.title.y = element_text(vjust = 3))+
-  scale_fill_manual(name = "# Lote", values = c("#00688B", "seagreen3"))
+  scale_fill_manual(name = "# Lote",values = c("#00688B", "seagreen3"))
 ```
 
 ```{r}
