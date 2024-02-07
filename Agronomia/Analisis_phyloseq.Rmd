@@ -1,0 +1,229 @@
+---
+title: "Análisis de secuenciacion de práctica (Phyloseq)"
+output: html_notebook
+---
+
+# Librerias y datos
+
+```{r}
+library(phyloseq)
+
+load("taxa.RData") # identificacion taxonomica
+load("seq_conteos.RData") # abundancia ASVs
+
+# Metadatos: nosotros haremos la tabla
+
+metadatos <- data.frame(Tratamiento = c(rep("Tratamiento", 5),"Testigo"),
+                        Tipo_suelo = c(rep("Rizosfera", 5),"Suelo"))
+
+row.names(metadatos) <- sample_names
+```
+
+### Abundancia de ASVs
+```{r}
+sample_names <- c("M1", "M12", "M15", "M16", "M5", "M7")
+row.names(seqtab.nochim) <- sample_names
+```
+
+Sin embargo nuestras columnas se siguen llamando . Por ello les voy a enseñar 2 metodos para modificar los nombres de sus secuencias:
+
+```{r}
+rando <- function(n = 5000) {
+  a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+  paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
+}
+
+dim(seqtab.nochim)
+seqnames <- rando(636)
+
+# Guardar las secuencias en otro objeto antes de borrarlas
+
+Secuencias <- colnames(seqtab.nochim)
+write.csv(Secuencias, "~/CursoR/CursoRgit/Agronomia/Materiales/Secuencias.csv")
+
+# Cambiando nombre con codigo
+colnames(seqtab.nochim) <- seqnames
+
+### o nombrarlas de manera ordinal
+colnames(seqtab.nochim) <- c(paste0("Seq_",as.character(1:1706)))
+
+# Guardar la tabla
+write.csv(seqtab.nochim, "~/CursoR/CursoRgit/Agronomia/Materiales/Tabla_ASVs.csv")
+```
+
+### Tabla de asignacion taxonomica
+
+Para que nuestra tablas se puedan "unir" y analizarse juntas dentro del objeto de phyloseq necesitamos tener los mismos nombres para nuestras variables. Por ello ahora tenemos que cambiar los nombres de las filas de nuestra tabla de taxa (que son las secuencias que acabamos de quitar) al codigo o nombre que le dimos en la parte de arriba
+
+```{r}
+row.names(taxa) <- seqnames # si tenemos codigo
+
+row.names(taxa) <- c(paste0("Seq_",as.character(1:636))) # si usamos numeros
+# Guardar la tabla
+write.csv(taxa, "~/CursoR/CursoRgit/Agronomia/Materiales/taxa.csv")
+
+```
+
+Ahora si todo listo para armar nuestro objeto y usarlo para todo tipo de analisis:
+
+```{r}
+suelo_ch <- phyloseq(otu_table(seqtab.nochim,
+                               taxa_are_rows = FALSE), 
+                     sample_data(metadatos),
+                     tax_table(taxa))
+
+# y no se olviden de guardarlo
+save(suelo_ch, file = "Suelo.RData")
+```
+
+# HERRAMIENTAS DE PHYLOSEQ
+
+```{r}
+# Paso 1: Subir tablas de dada
+load("taxa.RData") # identficacion taxonomica
+load("seq_conteos.RData") # abundancia ASVs
+
+# Paso 2: metadatos
+metadatos <- data.frame(Tratamiento = c(rep("Bioestimulante", 2),rep("Control",2), rep("Fertilizante", 2)), Suelo = c("Salino", "No Salino", "Salino", "No Salino", "Salino", "No Salino"))
+
+sample_names <- c("M1", "M12", "M15", "M16", "M5", "M7")
+row.names(metadatos) <- sample_names
+
+# Paso 3: Renombrar muestras
+row.names(seqtab.nochim) <- c("M1", "M12", "M15", "M16", "M5", "M7")
+
+# Paso 4: Cambiar nombres de secuencias
+rando <- function(n = 5000) {
+  a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+  paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
+}
+
+dim(seqtab.nochim) # 636
+seqnames <- rando(636) # entre parentesis va el resultado de la funcion anterior
+
+# Guardar las secuencias en otro objeto antes de borrarlas
+Secuencias <- colnames(seqtab.nochim)
+write.csv(Secuencias, "~/CursoR/CursoRgit/Agronomia/Materiales/Secuencias_bio.csv")
+
+# Cambiando nombre con codigo
+colnames(seqtab.nochim) <- seqnames
+
+# Paso 5: Cambiar el nombre a las secuencias en taxa
+row.names(taxa) <- seqnames
+
+# Paso 6: PASO FINAL
+
+Bio <- phyloseq(otu_table(seqtab.nochim,
+                               taxa_are_rows = FALSE), 
+                     sample_data(metadatos),
+                     tax_table(taxa))
+
+# y no se olviden de guardarlo
+save(Bio, file = "Bio.RData")
+
+```
+
+# Introduccion
+
+Como vimos antes de irnos phyloseq nos ayuda a integrar todos nuestros datos en un objeto para poder analizarlo. La clase de hoy vamos a ver como phyloseq nos deja modificar estos objetos para visualizarlos mejor y seguir con los diferentes tipo de analisis usando los datos de vid.
+ 
+```{r}
+load("Bio.RData") # siempre se empieza con el objeto de phyloseq
+
+```
+
+# Las primeras visualizaciones de nuestros datos
+
+```{r}
+# Redes de como estan interactuando las muestras
+net <- make_network(Bio, "samples", max.dist=2)
+plot_network(net, Bio, color = "Tratamiento", shape="Suelo",
+             line_weight = 0.3, label=NULL)
+
+plot_bar(Bio, fill = "Phylum")
+
+plot_heatmap(Bio, taxa.label = "Phylum")
+```
+
+Si bien con estos datos ya podemos realizar grafico que nos acercan mas al analisis el hecho es de que siempre es comvenenientre pre-procesar los datos antes de cualquier grafico. Para ello phyloseq nos ofrece varias herramientas:
+
+# Preproccesamiento de datos
+
+## Filtraado
+
+```{r}
+# Porque tres muestras?
+
+PS_filtered <- filter_taxa(Bio, # objeto 
+                           function(OTU) sum(OTU) > 2, # condicion o funcion
+                           TRUE) # cortar
+# este es un proceso de filtrado por numero de muestras 
+# de 636 me dejo con 635
+
+# Remover taxa no identificada
+PS_filtered <- subset_taxa(PS_filtered, # objeto 
+                           !is.na(Phylum)) # condicion que se aplica para que de los que no tengan nada en phylum me los quite
+# me dejo con 625
+```
+
+### Prune vs subset
+
+```{r}
+# usando datos de la tabla de taxa
+Actino <- subset_taxa(Bio, # objeto
+                      Phylum=="Actinobacteriota") # la condicion puede ser cualquier nivel de la jerarquia taxonomica
+
+# usando abundancias quitar muestras
+Actino <- prune_samples(sample_sums(Actino)>=50, # condicion que las que sean menor a 50 me las va a quitar
+                        Actino) # objeto
+```
+
+# Union o merge
+
+```{r}
+# Uniendo muestras
+Tratamientos <- merge_samples(Bio, # objeto
+                              "Tratamiento") # condicion de metadatos
+
+## Uniendo taxa
+Actino_m <- merge_taxa(Actino, taxa_names(Actino)[1:5]) # Por numero
+
+# Por jerarquia
+PS_glom <- tax_glom(PS_filtered, # objeto
+                     taxrank = "Genus", # nivel de la jerarquia
+                     NArm=FALSE) # que no me quite los valores falsos
+# uniendo phyloseqs
+merge_phyloseq(Actino)
+```
+
+### Ejercicio unir las muestras de todos
+
+
+```{r}
+load("phylo_soil.RData")
+```
+
+## Abundancia relativa
+
+DADA2 nos da abundancias absolutas las cuales pasamos a nuestro objeto de phyloseq. La abundancia abdoluta es el conteo TOTAL de las especies e individuos dentro de cada especie
+
+La abundancia relativa en cambio normaliza nuestras muestras para poder compararlas entre si. Para ello usa proporciones siendo 1 el 100% de nuestro conteo por muestras. De esta manera podemos comparar la composicion de nuestras muestras aunque no tengamos valores totales o absolutos iguales.
+
+Para transformar de abundancia absoluta a relativa o cualquier otro tipo de calculo para nuestras muestras se usa la siguiente funcion en phyloseq:
+
+```{r}
+Psoil_rel <- transform_sample_counts(PS_filtered, # objeto a transformar
+                                     function(x) x/sum(x)) # x es mi conteo
+```
+
+# Reexploramos graficos
+
+```{r}
+# 1. Graficos
+Top_phyla <- tax_glom(Psoil_rel,taxrank = "Phylum", NArm = FALSE)
+Top_phyla <- prune_taxa(names(sort(taxa_sums(Top_phyla), TRUE)[1:10]), #cond
+                        Top_phyla) # objeto que voy a modificar
+
+plot_bar(Top_phyla, fill = "Phylum")
+plot_heatmap(Top_phyla, taxa.label = "Phylum")
+```
