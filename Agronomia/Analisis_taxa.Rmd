@@ -1,18 +1,7 @@
 ---
-title: "Análisis de composición taxonómica"
+title: "Análisis taxonomico del ejercicio de practica de secuenciación"
 output: html_notebook
 ---
-
-# Introducción 
-
-
-Hasta este momento hemos estado contando CUANTO hay dentro de nuestras muestras pero lo verdaderamente útil es saber QUË hay dentro de las muestras. Esto es a lo que se le llama _analisis taxonómico._
-
-__¿Por qué es importante?__
-
-Como les comentaba las comunidades microbianas en suelos son muy dinamicas y muchas veces (como con mis datos) no ves cambios en las cantidades totales de microorganismos. Sin embargo, al ver la taxonomia las abundancias relativas de algunos grupos pueden ser modificados ya sea aumentado o disminuido. 
-
-De esta manera se espera que cualquier producto o tratamiento que apliquemos al suelo, no tenga un efecto detrimental en grupos taxonomicos que son buenos para la planta. Dado que todas estos hongos y microbios interactuan constantemente en este microecosistema estos cambios en abundancia pueden darnos pista de como interactuan.
 
 ```{r}
 
@@ -29,11 +18,8 @@ library(scales) # Modificar escalas
 library(car)
 library(wesanderson)
 
-
 # DATA 
-
-load("ITS_filt.Rdata")
-load("vid_ejemplos.RData")
+load("Bio.RData")
 
 ```
 
@@ -45,7 +31,7 @@ Este analisis no cumple con un proceso en específico y en realidad es explorato
 
 ```{r}
 
-Phyla_fun <- tax_glom(vid_bio, taxrank = "Phylum", NArm = FALSE)
+Phyla_fun <- tax_glom(Bio, taxrank = "Phylum", NArm = FALSE)
 
 ## Extraer datos del objeto phyloseq
 
@@ -929,7 +915,3 @@ ggplot(St_m, aes(x = Tratamiento, y =value, col = Suelo))+
   
   
 ```
-
- # Conclusiones de analisis taxonomico
- 
- Como pueden ver el analisis taxonomico es muy exploratorio, se pueden tardar 1 semana o una hora dependiendo el nivel de profundidad que le quieran dar. De cajon les recomiendo que chequen phylum y nivel de genero analizar los grupos que les mostre para todos sus reportes. Muchas veces el analisis a niveles taxonomicos altos los puede llevar a analizar otro generos que tambien son de relevancia agricola pero como pueden ver ir de gran a pequeña escala es un proceso un poco tardado aunque no es dificil. La ventaja de que lo hagan entre todos es que cada quien 

@@ -227,3 +227,6 @@ Top_phyla <- prune_taxa(names(sort(taxa_sums(Top_phyla), TRUE)[1:10]), #cond
 plot_bar(Top_phyla, fill = "Phylum")
 plot_heatmap(Top_phyla, taxa.label = "Phylum")
 ```
+
+
+

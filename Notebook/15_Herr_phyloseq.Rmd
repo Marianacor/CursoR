@@ -151,6 +151,7 @@ vid_bio@sam_data$Tratamiento[vid_bio@sam_data$Tratamiento == "Sin bioestimulante
 vid_bio@sam_data <- vid_bio@sam_data[,1:2] # [filas,columnas]
 
 save(vid_bio, file = "vid_ejemplos.RData")
+load("vid_ejemplos.RData")
 ```
 
 ```{r}

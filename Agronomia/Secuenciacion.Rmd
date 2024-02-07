@@ -1,5 +1,5 @@
 ---
-title: "Secuenciacion"
+title: "Análisis de secuenciacion de practica (DADA)"
 output: html_notebook
 ---
 

@@ -162,7 +162,7 @@ ggplot(Promedios)+
 ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2")+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
   theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
@@ -175,7 +175,7 @@ ggplot(Promedios)+
 ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2")+
   theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
