@@ -82,7 +82,6 @@ Phyla_matrix <- Phyla_matrix[,sorder]
 
 row.names(Phyla_matrix)[16] <- "SAR324 Clade" # Con este le cambiamos el nombre a una fila que tenía un nombre muy largo 
 
-
 ```
 
 ## Usando el paquete Pheatmap para realizar heatmaps de análisis taxonómico 

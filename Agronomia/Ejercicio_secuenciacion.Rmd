@@ -1,0 +1,646 @@
+---
+title: "Análisis de secuenciacion de practica"
+output: html_notebook
+---
+
+# SECUENCIACIÓN METAGENOMICA DADA2
+```{r}
+library(dada2)
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+# Determinar el camino al directorio donde estan las muestras:
+
+path <- "~/CursoR/CursoRgit/Agronomia/Secuenciacion_agro"
+
+list.files(path)
+
+# Ahora se separan las muestras en objetos entre forward y reverse reads:
+
+# Forward
+fnFs <- sort(list.files(path,pattern="_R1.fastq.gz", full.names = TRUE))
+
+# Reverse
+fnRs <- sort(list.files(path,pattern="_R2.fastq.gz", full.names = TRUE))
+
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`,1) 
+```
+
+### Revision de los perfiles de calidad
+
+```{r}
+# forward
+plotQualityProfile(fnFs[1:6]) 
+
+# reverse
+plotQualityProfile(fnRs[1:6])
+```
+
+### Filtrar y cortar 
+
+Primero crearemos una nueva carpeta para nuestras secuencias filtradas, asi como un nombre para los archivos .fastq que obtengamos.
+
+```{r}
+# Guardando el camino a nuestras muestras filtradas en un objeto nuevo
+
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+
+# Asignando los nombres de las muestras a nuestros nuevos objetos
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+```
+
+__Explicacion de los parametros de filtrado y corte__
+
+En cuanto al error esperado maxEE se opto por elegir (5,5), con el objetivo de ser menos estrictos en cuanto a los errores esperados y asi evitar perder muchas muestras.
+
+```{r}
+out <- filterAndTrim(fnFs, filtFs, # forward reads
+                     fnRs, filtRs, # reverse reads
+                     truncLen=c(150,140), # truncado o corte
+                     maxN=0, # remover Ns NUNCA SE MODIFICA
+                     maxEE=c(5,5), # error esperado
+                     truncQ=2, # quality score
+                     rm.phix=TRUE, compress=TRUE, # defaults
+                     multithread=FALSE) # En windows multithread=FALSE
+```
+
+```{r}
+# Se guarda el progreso:
+
+write.csv(out, "~/CursoR/CursoRgit/Agronomia/Materiales/Conteo_reads1.csv") 
+
+#### Por si queremos retomar despues de filtrar ####
+
+## Nuevo Camino
+path2 <- "~/CursoR/CursoRgit/Agronomia/Secuenciacion_agro/filtered/"
+
+# Forward
+filtFs <- sort(list.files(path2,pattern="_F_filt.fastq.gz", full.names = TRUE))
+
+# Reverse
+filtRs <- sort(list.files(path2,pattern="_R_filt.fastq.gz", full.names = TRUE))
+```
+
+### Tasas de error
+
+```{r}
+# Forward
+errF <- learnErrors(filtFs, multithread=TRUE)
+save(errF,file = "errF_sec.RData")
+
+# Reverse
+errR <- learnErrors(filtRs, multithread=TRUE)
+save(errR,file = "errR_sec.RData") 
+
+# Para volver a subir los archivos nuevamente se utiliza:
+load("errF_sec.RData")
+load("errR_sec.RData")
+
+# Plot error rates
+plotErrors(errF, nominalQ = TRUE)
+plotErrors(errR, nominalQ = TRUE)
+```
+
+### Inferencia de las muestras
+
+```{r}
+# Forward
+dadaFs_nopool <- dada(filtFs, err=errF, multithread=TRUE,
+                      pool = FALSE)
+save(dadaFs_nopool, file = "dadaFs_nopool.RData")
+
+load("dadaFs_nopool.RData")
+
+# Reverse
+dadaRs_nopool <- dada(filtRs, err=errR, multithread=TRUE,
+                      pool = FALSE)
+save(dadaRs_nopool, file = "dadaRs_nopool.RData")
+
+load("dadaRs_nopool.RData")
+```
+
+### Uniendo las lecturas forward y reverse
+
+```{r}
+mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, verbose = TRUE)
+save(mergers, file = "mergers.RData")
+
+# parametros opcionales
+mergers <- mergePairs(dadaFs_nopool, filtFs, dadaRs_nopool, filtRs, 
+                      verbose = TRUE,
+                      minOverlap = 10, # tratar para ver si se incrementan las uniones
+                      maxMismatch = 2, # el parametro default es 0, por lo que tiene que ser una union perfecta, no poner mas de 5 
+                      justConcatenate = TRUE, # une forward y pone NNNNX10 y luego une al reverse
+                      returnRejects = TRUE) # nos muestra una tabla de reads rechazadas al momento de union, para ver si salen muchos mismatches incrementar el mismatch o si se estan uniendo muy poco cambiar en overlap. Se comenzaria con usar este parametro para ver que estamos perdiendo luego usamos mismatch, overlap y al final concatenate.
+
+# Podemos estar perdiendo muchas muestras porque no estan limpias las muestras y tienen mala calidad o pueden venir con primers.
+
+load("mergers.RData")
+```
+
+### Hacer tablas de secuencias
+
+```{r}
+## Sequence table
+
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab) # numero de muestras x numero de ASVs
+
+# Checar la longitud de todas las secuencias
+table(nchar(getSequences(seqtab)))
+```
+
+### Quitar quimeras
+
+```{r}
+seqtab.nochim <- removeBimeraDenovo(seqtab, method = "consensus",
+                                    multithread = TRUE, verbose = TRUE)
+save(seqtab.nochim, file = "seq_conteos.RData")
+
+# Se identificaron 166 bimeras de 802 secuencias.
+
+# Basados en esto el 20% de mis secuencias son quimeras
+
+## Comparar esta tabla con la original que incluye quimeras
+dim(seqtab.nochim)
+sum(seqtab.nochim)/sum(seqtab) # se mantuvieron un 83% de secuencias no quimericas
+
+load("seq_conteos.RData")
+
+```
+
+### Seguimiento del proceso
+
+```{r}
+out <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Conteo_reads1.csv")
+
+# Primero crearemos una funcion
+getN <- function(x) sum(getUniques(x))
+
+# Creamos una nueva tabla llamada track
+track <- cbind(out, # Paso 1: filtrado y corte
+               sapply(dadaFs_nopool, getN), 
+               sapply(dadaRs_nopool, getN), # Paso 3: denoising
+               sapply(mergers, getN), # Paso 4: unir muestras
+               rowSums(seqtab.nochim)) # Paso 5: quitar quimeras
+
+# Nombramos nuestras filas y columnas
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+
+#Guardamos esta tabla
+write.csv(track, "~/CursoR/CursoRgit/Agronomia/Materiales/Abundancias.csv")
+```
+
+### Asignar taxonomia
+
+```{r}
+# Se crea la tabla de taxonomia
+taxa <- assignTaxonomy(seqtab.nochim, "~/CursoR/CursoRgit/Secuenciacion/SILVA/silva_nr99_v138.1_train_set.fa.gz", multithread = TRUE)
+
+# Se añaden especies a la tabla
+taxa <- addSpecies(taxa, "~/CursoR/CursoRgit/Secuenciacion/SILVA/silva_species_assignment_v138.1.fa.gz")
+
+save(taxa, file = "taxa.RData")
+
+write.csv(taxa, "~/CursoR/CursoRgit/Agronomia/Materiales/taxa.csv")
+``` 
+
+# ANÁLISIS DE PHYLOSEQ
+
+## Librerias y datos
+```{r}
+library(phyloseq)
+
+load("taxa.RData") # identificacion taxonomica
+load("seq_conteos.RData") # abundancia ASVs
+```
+
+### Abundancia de ASVs
+```{r}
+sample_names <- c("M1", "M12", "M15", "M16", "M5", "M7")
+row.names(seqtab.nochim) <- sample_names
+```
+
+Sin embargo nuestras columnas se siguen llamando . Por ello les voy a enseñar 2 metodos para modificar los nombres de sus secuencias:
+
+```{r}
+rando <- function(n = 5000) {
+  a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+  paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
+}
+
+dim(seqtab.nochim)
+seqnames <- rando(636)
+
+# Guardar las secuencias en otro objeto antes de borrarlas
+
+Secuencias <- colnames(seqtab.nochim)
+write.csv(Secuencias, "~/CursoR/CursoRgit/Agronomia/Materiales/Secuencias.csv")
+
+# Cambiando nombre con codigo
+colnames(seqtab.nochim) <- seqnames
+
+### o nombrarlas de manera ordinal
+colnames(seqtab.nochim) <- c(paste0("Seq_",as.character(1:1706)))
+
+# Guardar la tabla
+write.csv(seqtab.nochim, "~/CursoR/CursoRgit/Agronomia/Materiales/Tabla_ASVs.csv")
+```
+
+### Tabla de asignacion taxonomica
+
+Para que nuestra tablas se puedan "unir" y analizarse juntas dentro del objeto de phyloseq necesitamos tener los mismos nombres para nuestras variables. Por ello ahora tenemos que cambiar los nombres de las filas de nuestra tabla de taxa (que son las secuencias que acabamos de quitar) al codigo o nombre que le dimos en la parte de arriba
+
+```{r}
+row.names(taxa) <- seqnames # si tenemos codigo
+
+row.names(taxa) <- c(paste0("Seq_",as.character(1:636))) # si usamos numeros
+# Guardar la tabla
+write.csv(taxa, "~/CursoR/CursoRgit/Agronomia/Materiales/taxa.csv")
+
+```
+
+Ahora si todo listo para armar nuestro objeto y usarlo para todo tipo de analisis:
+
+```{r}
+suelo_ch <- phyloseq(otu_table(seqtab.nochim,
+                               taxa_are_rows = FALSE),
+                     tax_table(taxa))
+
+# y no se olviden de guardarlo
+save(suelo_ch, file = "Suelo.RData")
+```
+
+# HERRAMIENTAS DE PHYLOSEQ
+
+```{r}
+# Paso 1: Subir tablas de dada
+load("taxa.RData") # identficacion taxonomica
+load("seq_conteos.RData") # abundancia ASVs
+
+# Paso 2: metadatos
+metadatos <- data.frame(Tratamiento = c(rep("Bioestimulante", 2),rep("Control",2), rep("Fertilizante", 2)), Suelo = c("Salino", "No Salino", "Salino", "No Salino", "Salino", "No Salino"))
+
+sample_names <- c("M1", "M12", "M15", "M16", "M5", "M7")
+row.names(metadatos) <- sample_names
+
+# Paso 3: Renombrar muestras
+row.names(seqtab.nochim) <- c("M1", "M12", "M15", "M16", "M5", "M7")
+
+# Paso 4: Cambiar nombres de secuencias
+rando <- function(n = 5000) {
+  a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+  paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
+}
+
+dim(seqtab.nochim) # 636
+seqnames <- rando(636) # entre parentesis va el resultado de la funcion anterior
+
+# Guardar las secuencias en otro objeto antes de borrarlas
+Secuencias <- colnames(seqtab.nochim)
+write.csv(Secuencias, "~/CursoR/CursoRgit/Agronomia/Materiales/Secuencias_bio.csv")
+
+# Cambiando nombre con codigo
+colnames(seqtab.nochim) <- seqnames
+
+# Paso 5: Cambiar el nombre a las secuencias en taxa
+row.names(taxa) <- seqnames
+
+# Paso 6: PASO FINAL
+
+Bio <- phyloseq(otu_table(seqtab.nochim,
+                               taxa_are_rows = FALSE), 
+                     sample_data(metadatos),
+                     tax_table(taxa))
+
+# y no se olviden de guardarlo
+save(Bio, file = "Bio.RData")
+
+```
+
+# Introduccion
+
+Como vimos antes de irnos phyloseq nos ayuda a integrar todos nuestros datos en un objeto para poder analizarlo. La clase de hoy vamos a ver como phyloseq nos deja modificar estos objetos para visualizarlos mejor y seguir con los diferentes tipo de analisis usando los datos de vid.
+ 
+```{r}
+load("Bio.RData") # siempre se empieza con el objeto de phyloseq
+
+```
+
+# Las primeras visualizaciones de nuestros datos
+
+```{r}
+# Redes de como estan interactuando las muestras
+net <- make_network(Bio, "samples", max.dist=2)
+plot_network(net, Bio, color = "Tratamiento", shape="Suelo",
+             line_weight = 0.3, label=NULL)
+
+plot_bar(Bio, fill = "Phylum")
+
+plot_heatmap(Bio, taxa.label = "Phylum")
+```
+
+Si bien con estos datos ya podemos realizar grafico que nos acercan mas al analisis el hecho es de que siempre es comvenenientre pre-procesar los datos antes de cualquier grafico. Para ello phyloseq nos ofrece varias herramientas:
+
+# Preproccesamiento de datos
+
+## Filtraado
+
+```{r}
+# Porque tres muestras?
+
+PS_filtered <- filter_taxa(Bio, # objeto 
+                           function(OTU) sum(OTU) > 2, # condicion o funcion
+                           TRUE) # cortar
+# este es un proceso de filtrado por numero de muestras 
+# de 636 me dejo con 635
+
+# Remover taxa no identificada
+PS_filtered <- subset_taxa(PS_filtered, # objeto 
+                           !is.na(Phylum)) # condicion que se aplica para que de los que no tengan nada en phylum me los quite
+# me dejo con 625
+```
+
+### Prune vs subset
+
+```{r}
+# usando datos de la tabla de taxa
+Actino <- subset_taxa(Bio, # objeto
+                      Phylum=="Actinobacteriota") # la condicion puede ser cualquier nivel de la jerarquia taxonomica
+
+# usando abundancias quitar muestras
+Actino <- prune_samples(sample_sums(Actino)>=50, # condicion que las que sean menor a 50 me las va a quitar
+                        Actino) # objeto
+```
+
+# Union o merge
+
+```{r}
+# Uniendo muestras
+Tratamientos <- merge_samples(Bio, # objeto
+                              "Tratamiento") # condicion de metadatos
+
+## Uniendo taxa
+Actino_m <- merge_taxa(Actino, taxa_names(Actino)[1:5]) # Por numero
+
+# Por jerarquia
+PS_glom <- tax_glom(PS_filtered, # objeto
+                     taxrank = "Genus", # nivel de la jerarquia
+                     NArm=FALSE) # que no me quite los valores falsos
+# uniendo phyloseqs
+merge_phyloseq(Actino)
+```
+
+# ANÁLISIS TAXA
+
+```{r}
+## Librerías ##
+
+library(phyloseq)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(pheatmap) # Heatmaps
+library(microbiome)
+library(ggsignif)
+library(scales) # Modificar escalas
+library(car)
+library(wesanderson)
+
+# DATA 
+load("Bio.RData")
+
+```
+
+Este analisis no cumple con un proceso en específico y en realidad es exploratorio. Para ello necesitamos visualizar nuestros datos, o sea, hacer variedad de gráficos y de ahí se elige a cuales grupos vale la pena hacer análisis taxonómico 
+
+# 1. Visualizar a nivel de Phylum
+
+## Heatmap
+
+```{r}
+
+Phyla_fun <- tax_glom(Bio, taxrank = "Phylum", NArm = FALSE)
+
+## Extraer datos del objeto phyloseq
+
+OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
+Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
+
+# Renombramos las columnas de nuestras abundancias con el phylum de la tabla taxa
+
+colnames(OTU_matrix) <- Tax_matrix$Phylum 
+
+# Quitar phylum desconocido (SOLO DATOS DE VID). Se quitaron las columnas con datos NA
+
+OTU_matrix <- OTU_matrix[, -c(8)]
+
+# crear matriz a partir de OTU siempre se debe usar en vez de tabla porque solo necesitamos valores numericos
+Phyla_matrix <- as.matrix(t(OTU_matrix)) # las muestras deben quedar como columnas y las filas como phylum por eso se utiliza transpose(t)
+
+```
+
+# Procesamiento de datos 
+
+Este proceso es específico para cada set de datos. Usualmente los heatmaps siempre van de mayor a menor, así que ese paso siempre se realiza, pero el resto consta de de ordenar las muestras y renombrar variables.
+
+```{r}
+
+Phyla_matrix <- Phyla_matrix[order(Phyla_matrix[,1], # se escoge la columna 1para que me empiece a ordenar de mayor a menor
+                                   decreasing = TRUE),] # Ordenar de mayor a menor 
+
+# Cambiar el orden de las muestras
+
+sorder <- c("M1", "M12", "M15", "M16", "M5","M7")
+
+Phyla_matrix <- Phyla_matrix[,sorder]
+
+```
+
+## Usando el paquete Pheatmap para realizar heatmaps de análisis taxonómico 
+
+```{r}
+
+pheatmap(Phyla_matrix) # El objeto siempre debe de estar en formato de matriz y los valores como numéricos
+
+```
+
+### _Notan algo en el orden de nuestras filas y columnas? Clusters_
+
+La funcion default de pheatmap es que automaticamente te reacomoda (cluster) tus filas y columnas de acuerdo a como cree que estan mas relacionadas las variables; es decir las agrupa. Esta funcion suele ser util cuando haces heatmaps de genes ya que te permite ver como se activan o apagan en conjunto y si hay "clusters" de genes relacionados. Pero en nuestro caso arruino todo el pre-procesamiento previo que nosotros le dimos por lo que tenemos que quitarle ese default.
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE) # quitar clusters
+
+```
+
+### _El siguiente problema? La escala_
+
+Si se fijan los colores en este heatmap son cero utiles. Solo tenemos cambios graduales en una columna y el resto se ven todas horribles. Esto ocurre porque nuestros datos se puede arreglar de varias maneras y la funcion de pheatmap tiene el argumento de scale para tratar de solucionarlo. El default siempre es _none_ pero vamos tambien puede modificarlo por filas y columnas:
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none") # es el default
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "column") # transforma los valores usando de escala las muestras. Casi nunca lo vamos a usar al menos que tengamos muchas muestras de una sola
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "row") # transforma los valores usando de escala los phylum y muestra las diferencias entre las muestras y un phylum no entre los phylums
+```
+
+Cual creen que es mas util?
+
+Desafortunadamente ninguno de ellos es muy util. El de columnas no hizo nada porque el problema recae en que tenemos phylums con muuucha abundancia y otros que casi estan llenos de ceros mientras; pero eso pasa en todas las muestras por lo que al tratar de escalarlo se ve asi. 
+
+En el caso de la transformacion por filas nos va un poco mejor porque trata de normalizar las abundancias de todos los phylums a una escala. Sin embargo, por el mismo problema anterior lo unico que nos resalta es si alguna de las muestras tiene numeros extranamente altos o bajos DENTRO de ese mismo phylum. Es decir nos compara dentro de phylums pero no entre ellos. Asi que les voy a compartir el codigo que me tomo literalmente 1 semana encontrar y basicamente salvo mi tesis.
+
+```{r}
+## Funcion especificamente para separar nuestros datos en secciones
+
+quantile_breaks <- function(xs, n = 10) {
+  breaks <- quantile(xs, probs = seq(0, 1, length.out = n))
+  breaks[!duplicated(breaks)]
+} # recuerden que la funcion nunca se cambia de nombre(copien y peguen siempre entre documentos)
+
+mat_breaks <- quantile_breaks(Phyla_matrix, # es la matriz
+                              n = 10) # el default es 10 pero se puede poner el numero de cortes que quiero a mis datos
+
+# Volvemos al heatmap
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", # regresamos a que no nos ponga escala
+         breaks = mat_breaks) # aqui ponemos el objeto con cortes que creamos
+```
+
+### _¿Porque no se ven bien los colores?_
+
+Aunque ya pueden ver mejor en nuestra escala el problema ahora es que la funcion no tiene la cantidad adecuada de colores para representar nuestros datos. Por ello nosotros le vamos a dar otros colores:
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", # regresamos a que no nos ponga escala
+         breaks = mat_breaks,
+         color = colorRampPalette(c("#EEEEE0", "slategray3", "#8B668B", "#551A8B"))(6)) # este numero debe ser mas pequeño que n de la funcion
+```
+
+#### Mini ejercicio
+
+Cda quien va a poner un numero diferentes en los breaks como cambia el grafico
+
+```{r}
+mat_breaks <- quantile_breaks(Phyla_matrix, 
+                              n = 30)
+
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         breaks = mat_breaks,
+         color = colorRampPalette(c("snow2", "#B6AAE1", "mediumpurple3", "#0E021A"))(20))
+
+# No hubo diferencia al aumentar mas breaks
+```
+
+```{r}
+# a partir de aqui va a ser diferente para cada heatmap
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+        color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(20),
+         breaks = mat_breaks,
+         fontsize = 10) # tamaño de letra
+```
+
+### Mini ejercicio:
+
+Agreguenle o modifiquen 2 o mas de estos argumentos en su grafico
+
+```{r}
+pheatmap(Phyla_matrix,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(20),
+         breaks = mat_breaks,
+         fontsize = 10, 
+         angle_col = 0,
+         fontsize_col = 10,
+         fontsize_row = 8,
+         main = "Análisis taxonómico por Phylum")
+```
+
+## Grafico de Barras
+
+Se acuerdan que al ver las funciones que nos daba phyloseq vimos como hacer graficos de barras? Pues bueno ahora vamos a aprender a hacerlos bonitos:
+
+### Pre-procesamiento de datos
+
+```{r}
+# Recuerden que este tipo de graficos siempre se hacen con abundancias relativas.
+
+Psoil_rel <- transform_sample_counts(Bio, # objeto a transformar
+                                   function(x) x/sum(x)) # x es mi conteo
+
+# Otra vez juntar phylums
+Top_phyla <- tax_glom(Psoil_rel, taxrank = "Phylum", NArm = FALSE)
+
+# Seleccionar solo los valores top
+Top_phyla <- prune_taxa(names(sort(taxa_sums(Top_phyla), TRUE)[1:10]),
+                        Top_phyla)
+```
+
+### El grafico
+
+Usando la funcion plot_composition del paquete microbiome
+
+```{r}
+# Grafico base
+plot_composition(Top_phyla, # objeto en valores relativos
+                 plot.type = "barplot", # tipo de grafico tambien hace heatmap
+                 )
+
+# Ahora mas bonito
+
+plot_composition(Top_phyla,plot.type = "barplot")+
+  theme_bw()+
+  scale_fill_brewer(palette = "Spectral", name = "Phylum",
+                    labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","Planctomycetota", "NA","Nitrospirota","Gemmatimonadota"))+
+  guides(x=guide_axis(angle=90))
+  
+```
+
+Si bien este grafico ya es hermoso, la forma mas simple de representar abundancia relativa es con porcentajes. Asi que les voy a ensenar la formula de scales te modifica etso facilmente
+
+```{r}
+plot_composition(Top_phyla,plot.type = "barplot")+
+  theme_bw()+
+  ggtitle("Abundancias relativas a nivel Phylum")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")+
+  scale_fill_brewer(palette = "Spectral", name = "Phylum",
+                    labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","Planctomycetota", "NA","Nitrospirota","Gemmatimonadota"))+
+  guides(x=guide_axis(angle=0))+
+  scale_y_continuous(breaks = pretty_breaks(n = 10),# numero de separaciones
+                     labels = scales::percent)# representadas en %
+```
+
+Usando estos dos graficos que pueden conclur de sus datos?
+Hay algun phylum que crean que vale la pena revisar a detalle? 
+
+Proteocateria y actinobacteriota por abundancias
+Cyanobacteria por diferencias entre tratamientos
+
+Si bien ya les ensene a presentar graficos bonitos y definitivamente cualquiera de estos graficos podrian incluirlo en un reporte, la visualizacion tambien nos permite darnos cuenta si existen ciertos patrones en abundancia. De esta manera podemos seleccionar alguno de estos grupos y verlos en la lupa de una manera mas minuciosa.
+
+Por ejemplo, yo de mis datos podria decir que dada la dominancia que tiene Ascomycota tal vez vale la pena revisarla minuciosamente. Sin embargo, el heatmap no nos mostro si habian diferencias entre plantas o tratamientos (porque tal vez no las hay?) por lo que hacer varios loops de analisis estadistico seria muy util para elegirlos
