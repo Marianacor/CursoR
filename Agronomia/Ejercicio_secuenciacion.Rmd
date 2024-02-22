@@ -422,7 +422,7 @@ Phyla_matrix <- Phyla_matrix[order(Phyla_matrix[,1], # se escoge la columna 1par
 
 # Cambiar el orden de las muestras
 
-sorder <- c("M1", "M5", "M7", "M12", "M15","M16")
+sorder <- c("M1", "M5", "M12", "M7", "M15","M16")
 
 Phyla_matrix <- Phyla_matrix[,sorder]
 
@@ -458,8 +458,10 @@ pheatmap(Phyla_matrix,
          fontsize = 10, 
          angle_col = 0,
          fontsize_col = 10,
+         gaps_col = c(2,4),
          fontsize_row = 8,
-         main = "Análisis taxonómico por Phylum")
+         main = "Análisis taxonómico por Phylum",
+         labels_col = c("Tratado 1ro", "Testigo 1ro","Tratado 2do", "Testigo 2do", "Tratado 3ro", "Testigo 3ro"))
 ```
 
 ## Grafico de Barras
@@ -497,7 +499,7 @@ plot_composition(Top_phyla, # objeto en valores relativos
 plot_composition(Top_phyla,plot.type = "barplot")+
   theme_bw()+
   scale_fill_brewer(palette = "Spectral", name = "Phylum",
-                    labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","Planctomycetota", "Cyanobacteria","Nitrospirota","Gemmatimonadota"))+
+                    labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","NA","Planctomycetota", "Nitrospirota","Gemmatimonadota"))+
   guides(x=guide_axis(angle=90))
   
 ```
@@ -512,8 +514,8 @@ plot_composition(Top_phyla,plot.type = "barplot")+
   xlab("Muestras")+
   ylab("Abundancia")+
   scale_fill_brewer(palette = "Spectral", name = "Phylum",
-                     labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","Planctomycetota", "Cyanobacteria","Nitrospirota","Gemmatimonadota"))+
-  scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro","Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
+                     labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","NA","Planctomycetota","Nitrospirota","Gemmatimonadota"))+
+  scale_x_discrete(labels=c("Tratado 1°", "Tratado 2°", "Tratado 3°","Testigo 3°", "Testigo 1°", "Testigo 2°"))+
   guides(x=guide_axis(angle=0))+
   scale_y_continuous(breaks = pretty_breaks(n = 10),# numero de separaciones
                      labels = scales::percent)# representadas en %
@@ -532,6 +534,7 @@ Por ejemplo, yo de mis datos podria decir que dada la dominancia que tiene Ascom
 
 ## Preprocesamiento
 ```{r}
+
 ## Preprocesamiento no se corre al menos que hayas corrido lo anterior de arriba
 Phyla_fun <- tax_glom(Bio, taxrank = "Phylum", NArm = FALSE)
 
@@ -545,7 +548,7 @@ metadatos <- as.data.frame(Phyla_fun@sam_data)
 
 ## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
 colnames(OTU_matrix) <- Tax_matrix$Phylum 
-OTU_matrix <- OTU_matrix[,-8]
+OTU_matrix <- OTU_matrix[,-7]
 
 # Se corre solo esto si ya tenemos lo que se corrio antes de los heatmaps
 Bio_phyla <- cbind(metadatos,OTU_matrix)
@@ -558,95 +561,275 @@ for(i in 3:ncol(Bio_phyla)){
   shapiro <- shapiro.test(Bio_phyla[,i])
   normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
   print(c(i,normal))
-}
-
-# vamos a normalizar de la 10 y de la 14 a la 21, porque no son normales
+} # vamos a quitar de la 14 a 21, porque no son normales y tienen una baja abundancia
 
 ### Normalizar phylums ###
 
-## Transformacion Log
+# Seleccionamos tabla los phylums que queremos normalizar
 
-Norm_bio  <- Bio_phyla[,c(10, 14:21)]
+# Norm_vid <- vid_phyla[,c(24:26,28,30:34,37)]
 
-for(i in 6:ncol(Norm_bio)){
-  Norm_Fungi[,i] <- abs(log10(Norm_bio[,i]+1)) # abs es valor absoluto
+# Transformamos con log
+
+# for(i in 1:ncol(Norm_vid)){
+  #Norm_vid[,i] <- abs(log10(Norm_vid[,i]+1)) 
+#}
+
+# for(i in 1:ncol(Norm_vid)){
+#  shapiro <- shapiro.test(Norm_vid[,i])
+#  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+#  print(c(i,normal))
+#}
+
+# vid_stats <- cbind(vid_phyla[,-c(10,15,24:28,30:34,37:40)],Norm_vid) # se unen las tablas
+
+
+# concluimos que casi la mitad de nuestros phylums son normales, unos no se pudieron normalizar porque tienen muchos ceros
+
+# Tabla final
+
+Norm_bio <- Bio_phyla[,-c(14:21)] # estoy quitando columna por baja abundancia
+
+for(i in 3:ncol(Norm_bio)){
+  shapiro <- shapiro.test(Norm_bio[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+} 
+
+### For loop de t.test ###
+
+# Paso 1. Tabla vacia
+phyla_pvalues <- data.frame(Tratamiento = rep(NA, 11),
+                            Muestreo = rep(NA,11)) # contar el numero de variables 
+
+# vamos hacer dos t tests uno para cada variable por eso dos columnas
+
+# Paso 1.5:
+objeto_T <- t.test(Proteobacteria ~ Tratamiento, data = Norm_bio)
+# De aqui vimos como llamar al p value
+# objeto_T[["p.value"]]
+
+# ver si se pueden meter valores por columnas:
+ prueba <- aov(Norm_bio[,3] ~ Muestreo, data = Norm_bio)
+ Anova(prueba, type = 2) 
+
+# Paso 2: for loop
+for(i in 3:ncol(Norm_bio)){
+  T_trat <- t.test(Norm_bio[,i]~Tratamiento, data=Norm_bio)
+  M_trat <- Anova(aov(Norm_bio[,i]~Muestreo, data=Norm_bio))
+  j <- i-2 # esto es para que empiece a llenar desde la fila 1 
+  phyla_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  phyla_pvalues$Muestreo[j] <- M_trat$`Pr(>F)`[1]
 }
+ 
+row.names(phyla_pvalues) <- colnames(Norm_bio[3:13])
 
-# Volvemos a correr shapiro
-for(i in 5:ncol(Norm_Fungi)){
-  shapiro <- shapiro.test(Norm_Fungi[,i])
+# Se guarda esta tabla
+write.csv(phyla_pvalues, "~/CursoR/CursoRgit/Agronomia/Materiales/phyla_pvalues.csv")
+```
+
+Basados en estos resultados se concluye que Proteobacteria si presenta marginalmente diferencias estadisticas en cuanto al tratamiento, mientras que WPS2 y bacteroidota presentan diferencias significativas para la variable de muestreo.
+
+
+```{r}
+load("Bio.RData")
+
+# Por diferencias
+Firmi <- subset_taxa(Bio, Phylum == "Firmicutes")
+
+Chloro <- subset_taxa(Bio, Phylum == "Chloroflexi")
+
+# Por abundancias
+Proteo <- subset_taxa(Bio, Phylum == "Proteobacteria")
+
+Actino <- subset_taxa(Bio, Phylum == "Actinobacteriota")
+```
+
+# 2. Visualiar a nivel de orden
+
+Si bien despues de phylum viene clase, por razones de tiempo(tanto de la clase como de su trabajo) les recomiendo que el siguiente nivel a analizar sea orden:
+
+```{r}
+# Por diferencias
+Firmi_ord <- tax_glom(Firmi,taxrank = "Order", NArm = FALSE)
+Chloro_ord <- tax_glom(Chloro,taxrank = "Order", NArm = FALSE)
+
+# Por abundancias
+Proteo_ord <- tax_glom(Proteo, taxrank = "Order", NArm = FALSE)
+Actino_ord <- tax_glom(Actino, taxrank = "Order", NArm = FALSE)
+```
+
+```{r}
+# Por diferencias:
+plot_composition(Chloro_ord, plot.type = "barplot")+ 
+  theme_bw()+
+  ggtitle("Abundancias de Chloroflexi a nivel Orden")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro","Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
+  xlab("Muestras")+
+  ylab("Abundancia")
+
+plot_composition(Firmi_ord, plot.type = "barplot")+ 
+  theme_bw()+
+  ggtitle("Abundancias de Firmicutes a nivel Orden")+
+  scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro","Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")
+
+# Por abundancias:
+plot_composition(Proteo_ord, plot.type = "barplot")+
+  theme_bw()+
+  ggtitle("Abundancias de Proteobacteria a nivel Orden")+
+  scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro", "Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")
+
+plot_composition(Actino_ord, plot.type = "barplot")+
+  theme_bw()+
+  ggtitle("Abundancias de Actinobacteriota a nivel Orden")+
+  scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro", "Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  xlab("Muestras")+
+  ylab("Abundancia")
+```
+```{r}
+# Heatmap con microbiome
+plot_composition(Chloro_ord, plot.type = "heatmap")+
+  theme_bw()+
+  coord_flip()
+# Si tenemos muhas muestras es mejor usar barplot porque pude morir la compu
+
+# Usando la funcion de phyloseq para los graficos de diferencias
+plot_heatmap(Chloro_ord, 
+             low = "lightskyblue", high = "#0F0F43",
+             na.value = "snow2",
+             taxa.order = names(sort(taxa_sums(Chloro_ord))))
+
+plot_heatmap(Firmi_ord, 
+             low = "lightskyblue", high = "#0F0F43",
+             na.value = "snow2",
+             taxa.order = names(sort(taxa_sums(Firmi_ord))))
+
+# Usando la funcion de phyloseq para los graficos de abundancia
+plot_heatmap(Actino_ord,
+             low = "lightskyblue", high = "#0F0F43",
+             na.value = "snow2",
+             taxa.order = names(sort(taxa_sums(Actino_ord))))
+
+plot_heatmap(Proteo_ord,
+             low = "lightskyblue", high = "#0F0F43",
+             na.value = "snow2",
+             taxa.order = names(sort(taxa_sums(Proteo_ord))))
+
+```
+
+## Análisis estadistico a nivel orden
+
+```{r}
+load("Bio.RData")
+
+# Analisis estadistico de Proteobacteria por abundancias
+OTU_matrix <- as.data.frame(Proteo_ord@otu_table)
+Tax_matrix <- as.data.frame(Proteo_ord@tax_table)
+
+metadata <- as.data.frame(Proteo_ord@sam_data)
+
+## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
+colnames(OTU_matrix) <- Tax_matrix$Order 
+OTU_matrix <- OTU_matrix[,-3]
+
+Bio_order <- cbind(metadata,OTU_matrix)
+
+## Revisar normalizacion:
+
+for(i in 3:ncol(Bio_order)){
+  shapiro <- shapiro.test(Bio_order[,i])
   normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
   print(c(i,normal))
 }
 
-# Checamos grupos especificos
-shapiro.test(Norm_Fungi$p__Mucoromycota) # 6
-shapiro.test(Norm_Fungi$p__Basidiomycota) # 7
+Norm_bio <- Bio_order[,c(5,7,9,14)]
 
-# concluimos que casi todos nuestros phylums son normales, unos no se pudieron normalizar porque tienen muchos ceros
-
-# Tabla final(solo para datos de isa)
-
-Norm_Fungi <- Norm_Fungi[,-c(5,13,15,18,19,20)] # estoy quitando columna
-
-# 5 y 13 eran normales
-# el resto los quitams por baja abundancia
-
-# Unir tablas
-Fungi_stats <- cbind(Fungi_phyla[,c(1:5,13)],Norm_Fungi[,5:14]) # seleccionamos las normales de Fungi phyla y lo unimos con las normalizadas de norm fungi
-
-```
-
-## ANOVA de dos vias
-
-```{r}
-## Levene test ##
-for(i in 5:ncol(Fungi_stats)){
-  Lev_ex <- leveneTest(Fungi_stats[,i] ~ Plant_Type * Treatment,
-                       data = Fungi_stats)
-  levene <- ifelse(Lev_ex[["Pr(>F)"]]>0.05, "YES", "NO")
-  print(c(i,levene))
+for(i in 1:ncol(Norm_bio)){
+  Norm_bio[,i] <- abs(log10(Norm_bio[,i]+1)) 
 }
 
-# todos pasan levene
-
-## for loop de ANOVA ##
-
-# Paso 1:Tabla vacia
-phyla_pvalues <- data.frame(Plant = rep(NA,12), 
-                            Treatment = rep(NA,12),
-                            Pl_Trt = rep(NA,12)) # el num de variables
-
-
-for(i in 5:ncol(Fungi_stats)){
-  Phyla <- Fungi_stats[,i] # objeto de columna porque Anova no lee la columna
-  AR <- Anova(aov(Phyla ~ Plant_Type * Treatment,
-                  data = Fungi_stats)) # codigo de ANOVA en un objeto
-  j <- i-4 # esto es para que empiece a llenar desde la fila 1 formula general es i-x=1
-  phyla_pvalues$Plant[j] <- AR$`Pr(>F)`[1]
-  phyla_pvalues$Treatment[j] <- AR$`Pr(>F)`[2]
-  phyla_pvalues$Pl_Trt[j] <- AR$`Pr(>F)`[3]
+for(i in 1:ncol(Norm_bio)){
+  shapiro <- shapiro.test(Norm_bio[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
 }
 
-# elementos a cambiar cada que adapten este for loop
+bio_stats <- cbind(Bio_order[,-c(5:7,9:10,12,14,15:20)],Norm_bio)
 
-# 1. Fungi_stats por su tabla de datos
-# 2. El numero (5) donde empieza a contar, el numero despues de sus metadatos
-# 3. Dentro de la ANOVA grupos o variables independientes o los tratamientos
-# 4. j es la formula general es i-x=1. Cambiar el valor de x que en este caso es 4
-# 5. Nombres de phyla_pvalues dependeran de sus datos y variables
+order_pvalues <- data.frame(Tratamiento = rep(NA,9),
+                            Muestreo = rep(NA,9))
 
-row.names(phyla_pvalues) <- colnames(Fungi_stats[5:16])
+for(i in 3:ncol(bio_stats)){
+  T_trat <- t.test(bio_stats[,i]~Tratamiento, data=bio_stats)
+  M_trat <- Anova(aov(bio_stats[,i]~Muestreo, data=bio_stats))
+  j <- i-2 # esto es para que empiece a llenar desde la fila 1 
+  order_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  order_pvalues$Muestreo[j] <- M_trat$`Pr(>F)`[1]
+}
 
-# ueden guardar esta tabla
-write.csv(phyla_pvalues, "~/CursoR/CursoRgit/Materiales/Fungi_phyla_pvalues.csv")
+row.names(order_pvalues) <- colnames(bio_stats[3:11])
+
+# Se guarda esta tabla
+write.csv(order_pvalues, "~/CursoR/CursoRgit/Agronomia/Materiales/order_pvalues.csv")
+
+
+# Analisis estadistico de Firmicutes por diferencia
+OTU_matrix <- as.data.frame(Firmi_ord@otu_table)
+Tax_matrix <- as.data.frame(Firmi_ord@tax_table)
+
+metadata <- as.data.frame(Firmi_ord@sam_data)
+
+## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
+colnames(OTU_matrix) <- Tax_matrix$Order 
+OTU_matrix <- OTU_matrix[,-1]
+
+Bio_order <- cbind(metadata,OTU_matrix)
+
+## Revisar normalizacion:
+
+for(i in 3:ncol(Bio_order)){
+  shapiro <- shapiro.test(Bio_order[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+Norm_bio <- Bio_order[,c(5,7,9,14)]
+
+for(i in 1:ncol(Norm_bio)){
+  Norm_bio[,i] <- abs(log10(Norm_bio[,i]+1)) 
+}
+
+for(i in 1:ncol(Norm_bio)){
+  shapiro <- shapiro.test(Norm_bio[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+bio_stats <- cbind(Bio_order[,-c(5:7,9:10,12,14,15:20)],Norm_bio)
+
+order_pvalues <- data.frame(Tratamiento = rep(NA,9),
+                            Muestreo = rep(NA,9))
+
+for(i in 3:ncol(bio_stats)){
+  T_trat <- t.test(bio_stats[,i]~Tratamiento, data=bio_stats)
+  M_trat <- Anova(aov(bio_stats[,i]~Muestreo, data=bio_stats))
+  j <- i-2 # esto es para que empiece a llenar desde la fila 1 
+  order_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  order_pvalues$Muestreo[j] <- M_trat$`Pr(>F)`[1]
+}
+
+row.names(order_pvalues) <- colnames(bio_stats[3:11])
+
+# Se guarda esta tabla
+write.csv(order_pvalues, "~/CursoR/CursoRgit/Agronomia/Materiales/order_pvalues.csv")
 ```
 
-Baados en estos resultados nosotros podemos elegir cual de estos phylums se puede ver a un nivel taxonomico mas bajo. Asi mismo no tenemos que sacar tukey para todos solo para los significativos:
-
-```{r}
-## Mucoromycota, Chytridiomycota y Zoopagomycota
-
-TukeyHSD(aov(p__Zoopagomycota ~ Plant_Type * Treatment,
-             data = Fungi_stats))
-```
+## Análisis a nivel de genero
