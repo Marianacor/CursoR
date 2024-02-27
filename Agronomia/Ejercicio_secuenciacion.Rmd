@@ -361,6 +361,122 @@ library(agricolae)
 load("Bio.RData")
 ```
 
+# Indices de diversidad alfa
+
+Calcular la diversidad alfaa en realidad es bastante sencillo. El reto para ustedes sera interpretar esos datos:
+
+```{r}
+# funcion de phyloseq
+alphadiv <- estimate_richness(Bio, 
+                              split= TRUE, 
+                              measures = c("Chao1","Shannon"))  # elegir el tipo de indice, el default es NULL y te da como resultado 7 indices diferentes
+
+# Separar metdatos para ponerlos en la tabla de div alfa
+samplemeta <- as.data.frame(Bio@sam_data)
+alphadiv <- cbind(samplemeta,alphadiv)
+
+
+estimate_richness(Bio, split = TRUE,
+                  measures = c("Chao1","Shannon")) # estas son las mas comunes a usarse
+
+# del paquete breakaway
+chao_bunge(Bio, cutoff = 10) # Similar a Chao1 pero mas sensible
+# cuando usarlo? cuando tenga baja abundancia y gran porcentaje de muestras raras
+
+# del paquete microbiome
+Evenness <- evenness(Bio, # objeto
+                     index = 'all', 
+                     zeroes = TRUE, detection = 0) # default
+
+# Unir y guardar nuestra tabla
+alphadiv <- cbind(alphadiv, Evenness)
+write.csv(alphadiv, "~/CursoR/CursoRgit/Materiales/Diversidad_alfa.csv")
+```
+
+# Graficando diversidad alfa
+
+```{r}
+# Grafico usando la funcion de phyloseq
+
+graf_alfa <- plot_richness(Bio, x= "Tratamiento", # var independiente 1
+                            measures = c("Simpson", "Chao1"),
+                            color = "Muestreo") + # var independiente 2
+  scale_color_manual(values = c("#8B0A50", "#43CD80", "darkblue"),
+                     name = "Muestreo")+
+  theme_bw()
+
+
+graf_alfa$layers <- graf_alfa$layers[-1]
+graf_alfa <- graf_alfa + geom_point(size=4, alpha=0.3)
+
+graf_alfa
+
+# A mano usando la tabla que creamos
+
+## Pielou
+ggplot(alphadiv, # objeto
+       aes(x=Tratamiento,
+           y=pielou, # y seria el indice
+           color= Suelo))+
+  geom_point(size=4, alpha=0.4)+
+  scale_color_manual(values = c("#8B0A50", "#43CD80"))+
+  theme_bw()
+         
+```
+# Analisis estadistico
+
+Como con los datos que vimos durante ese modulo, el analisis estadistio seguira el mismo flujo de trabajo segun la naturaleza de los datos
+
+```{r}
+## Primero revisamos normalidad ##
+
+# shapiro test
+for(i in 3:4){
+  shapiro <- shapiro.test(alphadiv[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+# histogramas si es que no eran normales
+```
+
+Dado que 
+
+```{r}
+# Revisar homogeneidad de varianza
+for(i in 3:ncol(alphadiv)){ # empiezan en columna que terminan metadatos
+  Lev_ex <- leveneTest(alphadiv[,i] ~ Muestreoa1 * Tratamiento,# var.indep
+                       data = alphadiv)
+  levene <- ifelse(Lev_ex[["Pr(>F)"]]>0.05, "YES", "NO")
+  print(c(i,levene))
+}
+
+# Como solo tenemos una muestra no hay varianza por lo que no se puede calcular el test levene
+
+# Observed
+
+##ANOVA
+ad_anova <- aov(Observed ~ Suelo * Tratamiento,
+                data = alphadiv)
+Anova(ad_anova)
+# sale error porque estamos usando una sola muestra, si hubieran salido diferencias se procede con un tukey
+
+ad_Tukey <- TukeyHSD(ad_anova)
+```
+
+Dado que solo tenemos " 1 muestra" por tratamiento no es correcto calcular un ANOVA ya que la ANOVA usa _grupos_. Lo ideal en este caso seria tratar de agrupar nuestras muestras por variables y llevar a cabo una T de student:
+
+```{r}
+t.test(Observed ~ Tratamiento, data = alphadiv) # no significativo
+t.test(Chao1 ~ Tratamiento, data = alphadiv) # no significativo
+t.test(Shannon ~ Tratamiento, data = alphadiv) # no significativo
+t.test(pielou ~ Tratamiento, data = alphadiv) # no significativo
+t.test(Simpson ~ Tratamiento, data = alphadiv) # salio significativo
+
+# si hay diferencia en la diversidad de alfa segun el test de simpson, por lo que si hay diferencia en el suelo al usar el bioestimulante
+
+```
+
 # ANÁLISIS TAXA
 
 ```{r}
@@ -779,8 +895,10 @@ row.names(order_pvalues) <- colnames(bio_stats[3:11])
 
 # Se guarda esta tabla
 write.csv(order_pvalues, "~/CursoR/CursoRgit/Agronomia/Materiales/order_pvalues.csv")
+```
 
 
+```{r}
 # Analisis estadistico de Firmicutes por diferencia
 OTU_matrix <- as.data.frame(Firmi_ord@otu_table)
 Tax_matrix <- as.data.frame(Firmi_ord@tax_table)
@@ -789,7 +907,7 @@ metadata <- as.data.frame(Firmi_ord@sam_data)
 
 ## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
 colnames(OTU_matrix) <- Tax_matrix$Order 
-OTU_matrix <- OTU_matrix[,-1]
+OTU_matrix <- OTU_matrix[,-12]
 
 Bio_order <- cbind(metadata,OTU_matrix)
 
@@ -801,7 +919,7 @@ for(i in 3:ncol(Bio_order)){
   print(c(i,normal))
 }
 
-Norm_bio <- Bio_order[,c(5,7,9,14)]
+Norm_bio <- Bio_order[,c(3,5,8)]
 
 for(i in 1:ncol(Norm_bio)){
   Norm_bio[,i] <- abs(log10(Norm_bio[,i]+1)) 
@@ -813,23 +931,315 @@ for(i in 1:ncol(Norm_bio)){
   print(c(i,normal))
 }
 
-bio_stats <- cbind(Bio_order[,-c(5:7,9:10,12,14,15:20)],Norm_bio)
+bio_stats <- cbind(Bio_order[,-c(3,5:13)],Norm_bio)
 
-order_pvalues <- data.frame(Tratamiento = rep(NA,9),
-                            Muestreo = rep(NA,9))
+order_pvalues_f <- data.frame(Tratamiento = rep(NA,4),
+                            Muestreo = rep(NA,4))
 
 for(i in 3:ncol(bio_stats)){
   T_trat <- t.test(bio_stats[,i]~Tratamiento, data=bio_stats)
   M_trat <- Anova(aov(bio_stats[,i]~Muestreo, data=bio_stats))
   j <- i-2 # esto es para que empiece a llenar desde la fila 1 
-  order_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
-  order_pvalues$Muestreo[j] <- M_trat$`Pr(>F)`[1]
+  order_pvalues_f$Tratamiento[j] <- T_trat[["p.value"]]
+  order_pvalues_f$Muestreo[j] <- M_trat$`Pr(>F)`[1]
 }
 
-row.names(order_pvalues) <- colnames(bio_stats[3:11])
+row.names(order_pvalues_f) <- colnames(bio_stats[3:6])
 
 # Se guarda esta tabla
-write.csv(order_pvalues, "~/CursoR/CursoRgit/Agronomia/Materiales/order_pvalues.csv")
+write.csv(order_pvalues_f, "~/CursoR/CursoRgit/Agronomia/Materiales/order_pvalues_firmi.csv")
+```
+
+```{r}
+# Analisis estadistico de Chloroflexi por diferencia
+OTU_matrix <- as.data.frame(Chloro_ord@otu_table)
+Tax_matrix <- as.data.frame(Chloro_ord@tax_table)
+
+metadata <- as.data.frame(Chloro_ord@sam_data)
+
+## Renombramos las columnas de nuestras abundancias con el phylum de la tabla de taxa
+colnames(OTU_matrix) <- Tax_matrix$Order 
+OTU_matrix <- OTU_matrix[,-1]
+OTU_matrix <- OTU_matrix[,-2]
+
+Bio_order <- cbind(metadata,OTU_matrix)
+
+## Revisar normalizacion:
+
+for(i in 3:ncol(Bio_order)){
+  shapiro <- shapiro.test(Bio_order[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+bio_stats <- Bio_order[,-c(5,7,9:12,14:17)]
+
+for(i in 3:ncol(bio_stats)){
+  shapiro <- shapiro.test(bio_stats[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+order_pvalues_c <- data.frame(Tratamiento = rep(NA,5),
+                            Muestreo = rep(NA,5))
+
+for(i in 3:ncol(bio_stats)){
+  T_trat <- t.test(bio_stats[,i]~Tratamiento, data=bio_stats)
+  M_trat <- Anova(aov(bio_stats[,i]~Muestreo, data=bio_stats))
+  j <- i-2 # esto es para que empiece a llenar desde la fila 1 
+  order_pvalues_c$Tratamiento[j] <- T_trat[["p.value"]]
+  order_pvalues_c$Muestreo[j] <- M_trat$`Pr(>F)`[1]
+}
+
+row.names(order_pvalues_c) <- colnames(bio_stats[3:7])
+
+# Se guarda esta tabla
+write.csv(order_pvalues_c, "~/CursoR/CursoRgit/Agronomia/Materiales/order_pvalues_chloro.csv")
 ```
 
 ## Análisis a nivel de genero
+
+```{r}
+load("Bio.RData")
+Baci <- subset_taxa(Bio, Genus == "Bacillus") # hay 18
+Strep <- subset_taxa(Bio, Genus == "Streptomyces")
+Pseudo <- subset_taxa(Bio, Genus == "Pseudomonas") # hay 1
+Rubro <- subset_taxa(Bio, Genus == "Rubrobacter")
+Rhizo <- subset_taxa(Bio, Genus == "Rhizobium")
+Clavi <- subset_taxa(Bio. Genus == "Clavibacter")
+Azo <- subset_taxa(Bio, Genus == "Azotobacter")
+Nitro <- subset_taxa(Bio, Genus == "Nitrobacter")
+```
+
+Graficar su genero en especifico
+
+```{r}
+Baci <- subset_taxa(Bio, Genus == "Bacillus")
+
+# Extraer matriz
+OTU_matrix <- as.data.frame(Baci@otu_table)
+metadata <- as.data.frame(Baci@sam_data)
+
+Bacillus <- cbind(metadata,OTU_matrix)
+
+# Opcion 1 para grafico de barras (no lo vamos hacer)
+Sum_b <- rowSums(Bacillus[,3:9])
+Sum_bac <- cbind(metadata,Sum_b)
+
+# para boxplot
+Bacillus_m <- reshape2::melt(Bacillus)
+
+ggplot(Bacillus_m, aes(x = Tratamiento, y =value, fill = Muestreo, col= Muestreo))+
+  geom_boxplot(lwd = 0.7)+
+  theme_bw(base_size=15)+
+  ylim(c(0,200))+
+  ggtitle("Abundancia en el suelo de Bacillus")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  scale_fill_manual(name = "Muestreo",
+                    values = c("#FF6347", "steelblue3", "springgreen3"))+
+  scale_color_manual(name = "Muestreo",
+                    values = c("#FF6347", "steelblue3", "springgreen3"))+
+  xlab("Tratamiento")+
+  ylab("Abundancia")
+
+
+Streptomyces <- subset_taxa(vid_bio, Genus == "Streptomyces")
+
+# Extraer matriz
+OTU_matrix <- as.data.frame(Streptomyces@otu_table)
+metadata <- as.data.frame(Streptomyces@sam_data)
+
+Streptomyces <- cbind(metadata,OTU_matrix)
+
+# Opcion 1 para grafico de barras (no lo vamos hacer)
+Sum_s <- rowSums(Streptomyces[,3:9])
+Sum_st <- cbind(metadata,Sum_s)
+
+# para boxplot
+St_m <- reshape2::melt(Streptomyces)
+
+ggplot(St_m, aes(x = Tratamiento, y =value, col = Suelo))+
+  geom_boxplot(lwd = 0.7)+
+  theme_bw(base_size=15)+
+  ylim(c(0,200))+
+  xlab("Tratamiento") +
+  ylab("Abundancia")
+```
+
+## Analisis funcional
+
+```{r}
+# Librerias
+library(phyloseq)
+library(pheatmap)
+library(RColorBrewer)
+library(car)
+
+# Data
+load("Bio.RData")
+```
+
+# Pre-procesamiento de datos
+
+Antes que nada tenemos que preparar los daos para subirlo al servidor:
+
+1. Primero que nada tenemos que alomerar los datos por genero porque el software no acepta identificacacion taxonomica repetida
+
+```{r}
+Phyla_fun <- tax_glom(Bio, taxrank = "Genus", NArm = FALSE)
+
+# Extraer
+OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
+Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
+metadata <- as.data.frame(Phyla_fun@sam_data)
+
+# Invalid objec error: no lo lee como tabla por eso lo cambiamos asi
+metadata <- as.matrix(metadata) 
+metadata <- as.data.frame(metadata)
+# se convirtio en matriz luego en tabla para que guardara como tabla
+
+
+# Guardar en materiales
+write.csv(OTU_matrix, "~/CursoR/CursoRgit/Agronomia/Materiales/OTUs_limon.csv")
+write.csv(Tax_matrix, "~/CursoR/CursoRgit/Agronomia/Materiales/taxa_limon.csv")
+write.csv(metadata, "~/CursoR/CursoRgit/Agronomia/Materiales/meta_limon.csv")
+```
+
+# Trabajando con los datos descargados
+
+## Subir datos
+
+```{r}
+metabolismo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/METABOLISM.filtered.csv")
+
+energia <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/ENERGYSOURCE.filtered.csv")
+```
+
+# Preprocesamiento de datos
+
+```{r}
+# Metabolismo
+# renombrar filas y quitar sample id
+row.names(metabolismo) <- metabolismo[,1]
+metabolismo <- metabolismo[,-1,] # no correr este dos veces
+metabolismo <- metabolismo [-c(18:99)]
+
+# Siempre cambiar a matriz
+metabolismo <- data.matrix(t(metabolismo)) # anadir transpose para cambiar las filas y columnas, porque las muestras deben quedar como columna
+
+# Cambiar el orden
+metabolismo <- metabolismo[order(metabolismo[,1],
+                                 decreasing = TRUE),] # la ultima como significa filas
+
+sorder <- c("M5","M1","M7","M12", "M16", "M15")
+metabolismo <- metabolismo[ , sorder] # este grafico es importante para el grafico para que salieran juntos los grupos de tratamiento
+
+# Fuente de energía
+# renombrar filas y quitar sample id
+row.names(energia) <- energia[,1]
+energia <- energia[,-1,] # no correr este dos veces
+energia <- energia [-c(11:27)]
+
+# Siempre cambiar a matriz
+energia <- data.matrix(t(energia)) # anadir transpose para cambiar las filas y columnas, porque las muestras deben quedar como columna
+
+# Cambiar el orden
+energia <- energia[order(energia[,1],
+                                 decreasing = TRUE),] # la ultima como significa filas
+
+sorder <- c("M5","M1","M7","M12", "M16", "M15")
+energia <- energia[ , sorder] # este grafico es importante para el grafico para que salieran juntos los grupos de tratamiento
+```
+
+## Heatmap
+
+```{r}
+# Funcion para breaks
+quantile_breaks <- function(xs, n = 10) {
+  breaks <- quantile(xs, probs = seq(0, 1, length.out = n))
+  breaks[!duplicated(breaks)]
+}
+
+mat_breaks <- quantile_breaks(energia, n = 10)
+
+# Heatmap metabolismo
+pheatmap(metabolismo,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         breaks = mat_breaks,
+         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(9),
+         gaps_col = c(2,4),
+         fontsize = 12,
+         labels_col = c("Testigo 1°", "Tratado 1°","Testigo 2°", "Tratado 2°", "Testigo 3°", "Tratado 3°"),
+         angle_col= 0,
+         main = "Análisis funcional por metabolismo")
+
+pheatmap(energia,
+         cluster_rows = FALSE, cluster_cols = FALSE,
+         scale = "none", 
+         breaks = mat_breaks,
+         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(9),
+         gaps_col = c(2,4),
+         fontsize = 12,
+         labels_col = c("Testigo 1°", "Tratado 1°","Testigo 2°", "Tratado 2°", "Testigo 3°", "Tratado 3°"),
+         angle_col= 0,
+         main = "Análisis funcional por fuente de energía")
+
+```
+
+# Analisis estadistico
+
+El proceso de analisis es exactamente igual al que usamos para el analisis taxonomico
+
+```{r}
+# poner los grupos como columnas
+metab_stats <- t(energia)
+
+# unir metadatos
+metadata <- data.frame(Tratamiento= c("Testigo", "Tratado",
+                                      "Testigo","Tratado", "Testigo", "Tratado"),
+                       Muestreo= c("Primero","Primero","Segundo","Segundo","Tercero", "Tercero"))
+
+# Los cambiamos de orden basados en el objeto de sorder para que mis muestras y metadatos coincidan
+
+metab_stats <- cbind(metadata,metab_stats)
+
+# Checamos normalidad
+for(i in 3:ncol(metab_stats)){
+  shapiro <- shapiro.test(metab_stats[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+Norm_vid <- metab_stats[,c(4,10)]
+
+# Transformamos con log
+for(i in 1:ncol(Norm_vid)){
+  Norm_vid[,i] <- abs(log10(Norm_vid[,i]+1)) 
+}
+
+for(i in 1:ncol(Norm_vid)){
+  shapiro <- shapiro.test(Norm_vid[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+stats <- cbind(metab_stats[,-c(4,10:12)],Norm_vid)
+stats <- stats[,-c(10)]
+
+phyla_pvalues <- data.frame(Tratamiento = rep(NA,7), 
+                            Muestreo = rep(NA,7))
+
+for(i in 3:ncol(stats)){
+  T_trat <- t.test(stats[,i]~Tratamiento, data=stats)
+  S_trat <- Anova(aov(stats[,i]~Muestreo, data=stats))
+  j <- i-2  
+  phyla_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  phyla_pvalues$Muestreo[j] <- S_trat$`Pr(>F)`
+}
+
+row.names(phyla_pvalues) <- colnames(stats[3:9])
+
+# Pueden guardar esta tabla
+write.csv(phyla_pvalues, "~/CursoR/CursoRgit/Materiales/vid_metab_pvalues.csv")
+```
