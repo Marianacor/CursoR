@@ -492,6 +492,8 @@ library(ggsignif)
 library(scales) # Modificar escalas
 library(car)
 library(wesanderson)
+library(hrbrthemes)
+library(paletteer)
 
 # DATA 
 load("Bio.RData")
@@ -512,7 +514,6 @@ Phyla_fun <- tax_glom(Bio, taxrank = "Phylum", NArm = FALSE)
 
 OTU_matrix <- as.data.frame(Phyla_fun@otu_table)
 Tax_matrix <- as.data.frame(Phyla_fun@tax_table)
-
 
 # Renombramos las columnas de nuestras abundancias con el phylum de la tabla taxa
 
@@ -538,7 +539,7 @@ Phyla_matrix <- Phyla_matrix[order(Phyla_matrix[,1], # se escoge la columna 1par
 
 # Cambiar el orden de las muestras
 
-sorder <- c("M1", "M5", "M12", "M7", "M15","M16")
+sorder <- c("M5", "M1", "M7", "M12", "M16","M15")
 
 Phyla_matrix <- Phyla_matrix[,sorder]
 
@@ -569,15 +570,17 @@ mat_breaks <- quantile_breaks(Phyla_matrix, # es la matriz
 pheatmap(Phyla_matrix,
          cluster_rows = FALSE, cluster_cols = FALSE,
          scale = "none", 
-         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(6),
+         color=colorRampPalette(c("snow2","#b3d9ff","#2a52a2","#193366","#990000","#4d0000"))(6),
+        # color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(6),
          breaks = mat_breaks,
-         fontsize = 10, 
+         fontsize = 15, 
          angle_col = 0,
-         fontsize_col = 10,
+         fontsize_col = 14,
          gaps_col = c(2,4),
-         fontsize_row = 8,
+         fontsize_row = 14,
          main = "Análisis taxonómico por Phylum",
-         labels_col = c("Tratado 1ro", "Testigo 1ro","Tratado 2do", "Testigo 2do", "Tratado 3ro", "Testigo 3ro"))
+         labels_col = c("Testigo 1ro", "Tratado 1ro","Testigo 2do", "Tratado 2do", "Testigo 3ro", "Tratado 3ro"))
+
 ```
 
 ## Grafico de Barras
@@ -614,8 +617,8 @@ plot_composition(Top_phyla, # objeto en valores relativos
 
 plot_composition(Top_phyla,plot.type = "barplot")+
   theme_bw()+
-  scale_fill_brewer(palette = "Spectral", name = "Phylum",
-                    labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","NA","Planctomycetota", "Nitrospirota","Gemmatimonadota"))+
+  scale_fill_manual(labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","NA","Planctomycetota", "Nitrospirota","Gemmatimonadota"),
+                    values = c("#2d2d86", "#24478f", "#80bfff", "#00994d","#006633", "#ffff00","#ffaa00","#ff8080","#ff4d4d","#e60000"))+
   guides(x=guide_axis(angle=90))
   
 ```
@@ -626,13 +629,19 @@ Si bien este grafico ya es hermoso, la forma mas simple de representar abundanci
 plot_composition(Top_phyla,plot.type = "barplot")+
   theme_bw()+
   ggtitle("Abundancias relativas a nivel Phylum")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, face = "bold"))+
   xlab("Muestras")+
   ylab("Abundancia")+
-  scale_fill_brewer(palette = "Spectral", name = "Phylum",
-                     labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","NA","Planctomycetota","Nitrospirota","Gemmatimonadota"))+
-  scale_x_discrete(labels=c("Tratado 1°", "Tratado 2°", "Tratado 3°","Testigo 3°", "Testigo 1°", "Testigo 2°"))+
+  scale_fill_manual(name= "Phylum",
+    labels=c("Acidobacteriota", "Proteobacteria", "Firmicutes", "Actinobacteriota", "Chloroflexi", "WPS-2","NA","Planctomycetota", "Nitrospirota","Gemmatimonadota"),
+                    values = c("#9f9fdf","#2d2d86", "#24478f", "#80bfff", "#00994d","#006633", "#ffff00","#ffaa00","#ff4d4d","#e60000"))+
+  scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro","Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
   guides(x=guide_axis(angle=0))+
+  theme(axis.text.x = element_text(size = 12))+
+  theme(axis.text.y = element_text(size = 12))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15))+
+  theme(legend.text = element_text(size = 14), legend.title = element_text(size = 15))+
   scale_y_continuous(breaks = pretty_breaks(n = 10),# numero de separaciones
                      labels = scales::percent)# representadas en %
 
@@ -780,10 +789,18 @@ Actino_ord <- tax_glom(Actino, taxrank = "Order", NArm = FALSE)
 plot_composition(Chloro_ord, plot.type = "barplot")+ 
   theme_bw()+
   ggtitle("Abundancias de Chloroflexi a nivel Orden")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, face = "bold"))+
   scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro","Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
   xlab("Muestras")+
-  ylab("Abundancia")
+  ylab("Abundancia")+
+  theme(axis.text.x = element_text(size = 12))+
+  theme(axis.text.y = element_text(size = 12))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15))+
+  theme(legend.text = element_text(size = 14), legend.title = element_text(size = 15))+
+  scale_fill_manual(name = "Orden", 
+                    #labels = c("NA", "Ktedonobacterales", "NA", "B10-SB3A", "NA", "Elev-1554","NA", "B12-WMSP1", "Anaerolineales", "C0119", "SBR1031","NA", "Thermomicrobiales", "Caldilineales","NA", "Chloroflexales", "NA"),
+                    values = c("#8c8cd9","#2d2d86", "#24478f", "#80bfff","#00cc66", "#00994d","#006633","#c4ff4d","#ffff80", "#ffff00","#ffaa00", "#ffbb33","#ffcc66","#ffeecc","#ff8080","#ff4d4d","#ff1a1a","#e60000", "#800000"))
 
 plot_composition(Firmi_ord, plot.type = "barplot")+ 
   theme_bw()+
@@ -797,10 +814,19 @@ plot_composition(Firmi_ord, plot.type = "barplot")+
 plot_composition(Proteo_ord, plot.type = "barplot")+
   theme_bw()+
   ggtitle("Abundancias de Proteobacteria a nivel Orden")+
+  scale_fill_brewer(palette = "Spectral", name = "Order")+
   scale_x_discrete(labels=c("Tratado 1ro", "Tratado 2do", "Tratado 3ro", "Testigo 3ro", "Testigo 1ro", "Testigo 2do"))+
   theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
   xlab("Muestras")+
-  ylab("Abundancia")
+  ylab("Abundancia")+
+  theme(axis.text.x = element_text(size = 12))+
+  theme(axis.text.y = element_text(size = 12))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15))+
+  theme(legend.text = element_text(size = 14), legend.title = element_text(size = 15))+
+  scale_fill_manual(name = "Orden", 
+                    #labels= c("Elsterales","Acetobacterales","NA","Rhizobiales","KF-JG30-C25","Xanthomonadales","Sphingomonadales","Burkholderiales", "Azospirillales", "Caulobacterales", "Tistrellales", "Micropepsales", "Gammaproteobacteria Incertae Sedis", "AT-s3-44", "Rhodobacterles","Pseudomonadales", "Enterobacterales","Diplorickettsiales","Nitrosococcales"),
+                    values = c("#8c8cd9","#2d2d86", "#24478f", "#80bfff","#00cc66", "#00994d","#006633","#c4ff4d","#ffff80", "#ffff00","#ffaa00", "#ffbb33","#ffcc66","#ffeecc","#ff8080","#ff4d4d","#ff1a1a","#e60000", "#800000"))
 
 plot_composition(Actino_ord, plot.type = "barplot")+
   theme_bw()+
@@ -810,6 +836,7 @@ plot_composition(Actino_ord, plot.type = "barplot")+
   xlab("Muestras")+
   ylab("Abundancia")
 ```
+
 ```{r}
 # Heatmap con microbiome
 plot_composition(Chloro_ord, plot.type = "heatmap")+
@@ -819,8 +846,9 @@ plot_composition(Chloro_ord, plot.type = "heatmap")+
 
 # Usando la funcion de phyloseq para los graficos de diferencias
 plot_heatmap(Chloro_ord, 
-             low = "lightskyblue", high = "#0F0F43",
+             low = "lightskyblue", high = "#4d0000",
              na.value = "snow2",
+             fontsize_row= 30,
              taxa.order = names(sort(taxa_sums(Chloro_ord))))
 
 plot_heatmap(Firmi_ord, 
@@ -1006,9 +1034,9 @@ Strep <- subset_taxa(Bio, Genus == "Streptomyces")
 Pseudo <- subset_taxa(Bio, Genus == "Pseudomonas") # hay 1
 Rubro <- subset_taxa(Bio, Genus == "Rubrobacter")
 Rhizo <- subset_taxa(Bio, Genus == "Rhizobium")
-Clavi <- subset_taxa(Bio. Genus == "Clavibacter")
+Clavi <- subset_taxa(Bio, Genus == "Clavibacter")
 Azo <- subset_taxa(Bio, Genus == "Azotobacter")
-Nitro <- subset_taxa(Bio, Genus == "Nitrobacter")
+Nitro <- subset_taxa(Bio, Genus == "Nitrospira")
 ```
 
 Graficar su genero en especifico
@@ -1138,7 +1166,7 @@ metabolismo <- metabolismo[ , sorder] # este grafico es importante para el grafi
 # renombrar filas y quitar sample id
 row.names(energia) <- energia[,1]
 energia <- energia[,-1,] # no correr este dos veces
-energia <- energia [-c(11:27)]
+energia <- energia [-c(9:27)]
 
 # Siempre cambiar a matriz
 energia <- data.matrix(t(energia)) # anadir transpose para cambiar las filas y columnas, porque las muestras deben quedar como columna
@@ -1149,6 +1177,8 @@ energia <- energia[order(energia[,1],
 
 sorder <- c("M5","M1","M7","M12", "M16", "M15")
 energia <- energia[ , sorder] # este grafico es importante para el grafico para que salieran juntos los grupos de tratamiento
+
+row.names(metabolismo) <- c("Ammonia oxidizer","Sulfate reducer","Xylan degrader","Dehalogenation","Chitin degradation","Nitrite reducer","Nitrogen fixation","Sulfide oxidizer","Lignin degrader","Streptomycin producer","Sulfur metabolizing","Cellulose degrader","Degrades aromatic hydrocarbons","Chlorophenol degrading", "Carbon fixation","Sulfur reducer", "Dinitrogen fixing")
 ```
 
 ## Heatmap
@@ -1163,16 +1193,19 @@ quantile_breaks <- function(xs, n = 10) {
 mat_breaks <- quantile_breaks(energia, n = 10)
 
 # Heatmap metabolismo
-pheatmap(metabolismo,
+pheatmap(energia,
          cluster_rows = FALSE, cluster_cols = FALSE,
          scale = "none", 
          breaks = mat_breaks,
-         color = colorRampPalette(c("snow2","lightskyblue1","plum3","magenta4","steelblue4","black"))(9),
+         color = colorRampPalette(c("snow2","#b3d9ff","#2a52a2","#193366","#e60000","#990000","#4d0000"))(9),
          gaps_col = c(2,4),
-         fontsize = 12,
-         labels_col = c("Testigo 1°", "Tratado 1°","Testigo 2°", "Tratado 2°", "Testigo 3°", "Tratado 3°"),
+         fontsize = 15,
+         labels_col = c("Testigo 1ro", "Tratado 1ro","Testigo 2do", "Tratado 2do", "Testigo 3ro", "Tratado 3ro"),
          angle_col= 0,
-         main = "Análisis funcional por metabolismo")
+         main = "Análisis funcional por energia",
+         fontsize_row = 14,
+         fontsize_col = 13)
+
 
 pheatmap(energia,
          cluster_rows = FALSE, cluster_cols = FALSE,
@@ -1192,8 +1225,9 @@ pheatmap(energia,
 El proceso de analisis es exactamente igual al que usamos para el analisis taxonomico
 
 ```{r}
+# ENERGÍA
 # poner los grupos como columnas
-metab_stats <- t(energia)
+ener_stats <- t(energia)
 
 # unir metadatos
 metadata <- data.frame(Tratamiento= c("Testigo", "Tratado",
@@ -1202,7 +1236,59 @@ metadata <- data.frame(Tratamiento= c("Testigo", "Tratado",
 
 # Los cambiamos de orden basados en el objeto de sorder para que mis muestras y metadatos coincidan
 
+ener_stats <- cbind(metadata,ener_stats)
+
+# Checamos normalidad
+for(i in 3:ncol(ener_stats)){
+  shapiro <- shapiro.test(ener_stats[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+ener_stats <- ener_stats[-c(10,11,12)]
+
+Norm_ener <- ener_stats[,c(10)]
+
+# Transformamos con log
+for(i in 1:ncol(Norm_ener)){
+  Norm_ener[,i] <- abs(log10(Norm_ener[,i]+1)) 
+}
+
+for(i in 1:ncol(Norm_ener)){
+  shapiro <- shapiro.test(Norm_ener[,i])
+  normal <- ifelse(shapiro[["p.value"]]>0.05, "YES", "NO")
+  print(c(i,normal))
+}
+
+ener_pvalues <- data.frame(Tratamiento = rep(NA,7), 
+                            Muestreo = rep(NA,7))
+
+for(i in 3:ncol(ener_stats)){
+  T_trat <- t.test(ener_stats[,i]~Tratamiento, data=ener_stats)
+  S_trat <- Anova(aov(ener_stats[,i]~Muestreo, data=ener_stats))
+  j <- i-2  
+  ener_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  ener_pvalues$Muestreo[j] <- S_trat$`Pr(>F)`
+}
+
+row.names(ener_pvalues) <- colnames(ener_stats[3:9])
+
+# Pueden guardar esta tabla
+write.csv(ener_pvalues, "~/CursoR/CursoRgit/Agronomia/Materiales/ener_pvalues.csv")
+
+# METABOLISMO
+# poner los grupos como columnas
+metab_stats <- t(metabolismo)
+
+# unir metadatos
+metadata <- data.frame(Tratamiento= c("Testigo", "Tratado",
+                                      "Testigo","Tratado", "Testigo", "Tratado"), 
+                       Muestreo= c("Primero","Primero","Segundo","Segundo","Tercero", "Tercero"))
+
+# Los cambiamos de orden basados en el objeto de sorder para que mis muestras y metadatos coincidan
+
 metab_stats <- cbind(metadata,metab_stats)
+metab_stats <- metab_stats[-c(18,19)]
 
 # Checamos normalidad
 for(i in 3:ncol(metab_stats)){
@@ -1211,7 +1297,9 @@ for(i in 3:ncol(metab_stats)){
   print(c(i,normal))
 }
 
-Norm_vid <- metab_stats[,c(4,10)]
+metab_stats <- metab_stats[-c(14,17)]
+
+Norm_vid <- metab_stats[,c(4,11,12,13,15)]
 
 # Transformamos con log
 for(i in 1:ncol(Norm_vid)){
@@ -1224,22 +1312,49 @@ for(i in 1:ncol(Norm_vid)){
   print(c(i,normal))
 }
 
-stats <- cbind(metab_stats[,-c(4,10:12)],Norm_vid)
-stats <- stats[,-c(10)]
+stats <- cbind(metab_stats[,-c(4,11,12,13,15)],Norm_vid)
 
-phyla_pvalues <- data.frame(Tratamiento = rep(NA,7), 
-                            Muestreo = rep(NA,7))
+
+metab_pvalues <- data.frame(Tratamiento = rep(NA,13), 
+                            Muestreo = rep(NA,13))
 
 for(i in 3:ncol(stats)){
   T_trat <- t.test(stats[,i]~Tratamiento, data=stats)
   S_trat <- Anova(aov(stats[,i]~Muestreo, data=stats))
   j <- i-2  
-  phyla_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
-  phyla_pvalues$Muestreo[j] <- S_trat$`Pr(>F)`
+  metab_pvalues$Tratamiento[j] <- T_trat[["p.value"]]
+  metab_pvalues$Muestreo[j] <- S_trat$`Pr(>F)`
 }
 
-row.names(phyla_pvalues) <- colnames(stats[3:9])
+row.names(metab_pvalues) <- colnames(stats[3:15]) 
 
 # Pueden guardar esta tabla
-write.csv(phyla_pvalues, "~/CursoR/CursoRgit/Materiales/vid_metab_pvalues.csv")
+write.csv(metab_pvalues, "~/CursoR/CursoRgit/Materiales/metab_pvalues.csv")
 ```
+
+```{r}
+genus <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/genus_filtered.csv")
+
+
+ggplot(genus, aes(x = Muestra, y = Abundancia, fill = Genero))+
+  geom_bar(stat = "summary", fun = "mean")+
+  theme_classic()+
+  scale_x_discrete(labels=c("Tratado 1ro","Tratado 2do","Tratado 3ro","Testigo 3ro","Testigo 1ro","Testigo 2do"))+
+  ggtitle("Abundancia a nivel Género")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
+  theme(axis.text.x = element_text(size = 12))+
+  theme(axis.text.y = element_text(size = 12))+
+  theme(axis.title.x = element_text(size = 15,vjust = 0.5))+
+  theme(axis.title.y = element_text(size = 15, vjust = 1.5))+
+  theme(legend.text = element_text(size = 13), legend.title = element_text(size = 15))+
+  scale_fill_manual(name = "Tipo", values = c("#b3b3e6","#9f9fdf", "#8c8cd9", "#7979d2","#6666cc", "#5353c6", "#4040bf", "#3939ac","#2d2d86", "#193366", "#1f3d7a","#24478f", "#004d99", "#0066cc","#0073e6", "#1a8cff", 
+                                              
+                                              "#4da6ff", "#80bfff", "#99ccff", "#b3d9ff", "#ccebff", "#b3ffd9","#99ffcc", "#80ffbf", "#4dffa6", "#1aff8c","#00e673","#00cc66","#00b359","#00994d", "#008040","#006633",
+                                              
+                                              "#446600", "#669900", "#99e600", "#bbff33","#c4ff4d", "#ccff66", "#dfff80", "#ffff80", "#ffff66", "#ffff4d", "#ffff33" ,"#ffff00","#ffaa00","#ffb31a","#ffbb33", "#ffc34d",
+                                              
+                                              "#ffcc66","#ffd480","#ffdd99", "#ffeecc","#ff9999", "#ff8080", "#ff6666", "#ff4d4d", "#ff3333","#ff1a1a", "#ff0000", "#e60000","#cc0000", "#b30000", "#990000", "#800000"))
+  
+
+```
+
