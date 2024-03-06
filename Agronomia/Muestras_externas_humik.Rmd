@@ -1,0 +1,100 @@
+---
+title: "Muestras externas 15Feb24"
+output: html_notebook
+---
+
+```{r}
+# Librerias
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+
+# DATA
+
+# Archivos para ambos lotes:
+Muestras <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas_humik.csv")
+
+Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas_humik_ambasvariables.csv")
+```
+
+### Graficos del promedio de la longitud de raiz y raices laterales para Nebiol y extractos M1-M6
+
+```{r}
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para el lote 1 y 2:
+
+Promedios <- Muestras %>%
+  group_by(Tratamiento) %>%
+  summarize(Long = mean(Longitud, na.rm = TRUE),
+            Lat = mean(ifelse(Raices.laterales==0, NA, Raices.laterales), na.rm = TRUE))
+
+# Se acomodan los datos:
+
+levels(Promedios$Tratamiento)
+Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECA Maduro directo", "ECA Maduro 1:20", "ECA Maduro 1:50", "ECA S/Madurar directo", "ECA S/Madurar 1:20", "ECA S/Madurar 1:50"))
+levels(Promedios$Tratamiento)
+
+# Grafico de la longitud de raíz:
+
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long, fill= Tratamiento))+
+  ggtitle("Bioensayo de muestras de Externas y Exuroot+ECCA'S (15Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  theme(axis.title.y=element_text(vjust = 3))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+   theme(legend.position = "none")+
+  scale_x_discrete(labels=c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECCA Maduro directo", "ECCA Maduro 1:20", "ECCA Maduro 1:50", "ECCA S/Madurar directo", "ECCA S/Madurar 1:20", "ECCA S/Madurar 1:50"))
+
+# Grafico raices laterales:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestras de Externas y Exuroot+ECCA'S (15Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  theme(axis.title.y=element_text(vjust = 3))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  theme(legend.position = "none")+
+   scale_x_discrete(labels=c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECCA Maduro directo", "ECCA Maduro 1:20", "ECCA Maduro 1:50", "ECCA S/Madurar directo", "ECCA S/Madurar 1:20", "ECCA S/Madurar 1:50"))
+```
+
+```{r}
+# Ambas variables en un mismo gráfico:
+
+ggplot(Variables,aes(x=Tratamiento, y = Resultado ,fill = Variable))+   
+  theme_bw()+
+  geom_bar(stat= "summary", fun="mean", position="dodge")+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  scale_x_discrete(limits = c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECA Maduro directo", "ECA Maduro 1:20", "ECA Maduro 1:50", "ECA S/Madurar directo", "ECA S/Madurar 1:20", "ECA S/Madurar 1:50"))+
+  scale_fill_manual(name = "# Variable", values = c("#00688B", "seagreen3"))
+
+
+Prom <- Variables %>%
+  group_by(Tratamiento, Variable) %>%
+  summarize(Resultado= mean(ifelse(Resultado==0, NA, Resultado), na.rm = TRUE))
+
+
+ggplot(Prom, aes(x = Tratamiento, y = Resultado, fill = Variable))+
+  theme_bw()+
+  geom_col(position = "dodge")+
+  ggtitle("Bioensayo de muestras externas y Exuroot+ECCA'S (15Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color= "black", face = "bold"))+
+  scale_x_discrete(limits = c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECCA Maduro directo", "ECCA Maduro 1:20", "ECCA Maduro 1:50", "ECCA S/Madurar directo", "ECCA S/Madurar 1:20", "ECCA S/Madurar 1:50"))+
+  theme(axis.text.x = element_text(angle=45,hjust=1))+
+  theme(axis.title.y = element_text(vjust = 3))+
+  scale_fill_manual(name = "Variable",values = c("#00688B", "seagreen3"))
+```
