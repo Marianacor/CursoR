@@ -355,7 +355,7 @@ anosim(SoilASVs, # Tabla de conteo
 
 Al interpretar estos resultados, desea observar la estadistica R de ANOSIM y los valores de significancia. Un valor de significancia inferior a 0.05 generalmente se considera estadisticamente significativo y significa que s epuede rechazar la hipotesis nula. Por lo tanto, existe una diferencia estadisticamente significativa en las comunidades microbianas entre sus grupos. Mayor que 0.05 significa que no hay diferencia estadistica entre las comunidades microbianas de su grupos.
 
-" +La estadistica "R" de ANOSIM compara la media de las disimilitude clasificadas dentro de los grupos. Un valor de R cercano a "1" sugieres disimilitud entre grupos, mientras que un valor de R cercano a "0" sugiere una distribucion uniforme de rangos atos y bajos dentro y entre grupos". En otras palabras, cuanto mayor sea el valor R, más diferentes serán sus grupos en términos de composición de la comunidad microbiana.
+" +La estadistica "R" de ANOSIM compara la media de las disimilitude clasificadas dentro de los grupos. Un valor de R cercano a "1" sugieres disimilitud entre grupos, mientras que un valor de R cercano a "0" sugiere una distribucion uniforme de rangos altos y bajos dentro y entre grupos". En otras palabras, cuanto mayor sea el valor R, más diferentes serán sus grupos en términos de composición de la comunidad microbiana.
 
 ## Mini ejercicio
 

@@ -11,7 +11,7 @@
 
 
 
-<title>Diversidad alfa</title>
+<title>Diversidad Beta</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1746,326 +1746,549 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Diversidad alfa</h1>
+<h1 class="title toc-ignore">Diversidad Beta</h1>
 
 </div>
 
 
 <!-- rnb-text-begin -->
-<div id="introduccion" class="section level1">
-<h1>Introduccion</h1>
-<p>Como menciones anteriormente, la diversidad alfa es la diversidad
-media de especies en un sitio a escala local. Este es el primer nivel de
-comparacion de diversidad que van a usar para comparar sus muestras</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBMaWJyZXJpYXNcbmxpYnJhcnkocGh5bG9zZXEpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KFJDb2xvckJyZXdlcilcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkoY2FyKVxubGlicmFyeShicmVha2F3YXkpICMgY2hhby1idW5nZVxubGlicmFyeShtaWNyb2Jpb21lKVxubGlicmFyeShhZ3JpY29sYWUpXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBMaWJyZXJpYXNcbmxpYnJhcnkocGh5bG9zZXEpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KHZlZ2FuKSAjIGFuYWxpc2lzIGRlIGRpdmVyc2lkYWQgYmV0YVxuXG5gYGAifQ== -->
 <pre class="r"><code># Librerias
 library(phyloseq)
 library(ggplot2)
-library(RColorBrewer)
-library(tidyverse)
-library(dplyr)
-library(car)
-library(breakaway) # chao-bunge
-library(microbiome)
-library(agricolae)
+library(vegan) # analisis de diversidad beta
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogcGFja2FnZSDigJhhZ3JpY29sYWXigJkgd2FzIGJ1aWx0IHVuZGVyIFIgdmVyc2lvbiA0LjMuMlxuIn0= -->
-<pre><code>Warning: package ‘agricolae’ was built under R version 4.3.2</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogcGFja2FnZSDigJh2ZWdhbuKAmSB3YXMgYnVpbHQgdW5kZXIgUiB2ZXJzaW9uIDQuMy4yTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBwZXJtdXRlXG5XYXJuaW5nOiBwYWNrYWdlIOKAmHBlcm11dGXigJkgd2FzIGJ1aWx0IHVuZGVyIFIgdmVyc2lvbiA0LjMuMkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogbGF0dGljZVxuV2FybmluZzogcGFja2FnZSDigJhsYXR0aWNl4oCZIHdhcyBidWlsdCB1bmRlciBSIHZlcnNpb24gNC4zLjJUaGlzIGlzIHZlZ2FuIDIuNi00XG4ifQ== -->
+<pre><code>Warning: package ‘vegan’ was built under R version 4.3.2Loading required package: permute
+Warning: package ‘permute’ was built under R version 4.3.2Loading required package: lattice
+Warning: package ‘lattice’ was built under R version 4.3.2This is vegan 2.6-4</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShnZ2ZvcmNlKVxuYGBgIn0= -->
+<pre class="r"><code>library(ggforce)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogcGFja2FnZSDigJhnZ2ZvcmNl4oCZIHdhcyBidWlsdCB1bmRlciBSIHZlcnNpb24gNC4zLjJcbiJ9 -->
+<pre><code>Warning: package ‘ggforce’ was built under R version 4.3.2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwYXRjaHdvcmspXG5gYGAifQ== -->
+<pre class="r"><code>library(patchwork)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="introduccion" class="section level1">
+<h1>Introduccion</h1>
+<p>Mientras que la diversidad alfa representa la diversidad dentro de un
+ecosistema o una muestra, la diversidad beta representa la diferencia
+entre dos ecosistemas/muestras. En otras palabras, ¿qué tan similares o
+diferentes son dos ecosistemas o muestras? Entonces, la diversidad beta
+es una distancia entre dos muestras.</p>
+<p>El análisis basado en distancia de la diversidad beta para
+microbiomas puede ser una herramienta poderosa para descubrir nuevas
+asociaciones entre la composición microbiana y una amplia variedad de
+fenotipos.</p>
+<p>Las medidas ecológicas de la diversidad beta tienen como objetivo
+capturar la diferencia global entre dos comunidades ecológicas. En el
+contexto del análisis de datos del microbioma, esto corresponde a
+diferencias entre sujetos en la composición microbiana. El análisis
+basado en la distancia o “a nivel de comunidad” luego compara estas
+diferencias por pares entre sujetos con diferencias por pares con
+respecto a algún fenotipo.</p>
+<p>Estadisticamente, el analisis usando disimilitudes es mejor ya que
+evita la necesidad de realizar ajustes para una gran cantidad de
+comparaciones múltiples. Asimismo, los taxones no existen de forma
+aislada sino que tienen relaciones filogenéticas conocidas las cuales se
+pueden incluir en el analis. Otras características estructurales, como
+la similitud funcional, están bajo investigación y es posible que se
+puedan incorporar en el futuro.</p>
 </div>
-<div id="indices-de-diversidad-alfa" class="section level1">
-<h1>Indices de diversidad alfa</h1>
-<p>Calcular la diversidad alfaa en realidad es bastante sencillo. El
-reto para ustedes sera interpretar esos datos:</p>
+<div id="tipos-de-distancias" class="section level1">
+<h1>Tipos de distancias</h1>
+<p>Si creian que existen muchos metodos para analizar diversidad alfa,
+las cosas se complican aun mas con la diversidad beta. Phyloseq tiene
+integrados 44 tipos de distancias que se pueden calcular provenientes
+del paquete vegan (y ademas uno puede crear su propia formula):</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxwaGFkaXZcblxuYGBgIn0= -->
-<pre class="r"><code>alphadiv
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlzdF9tZXRob2RzIDwtIHVubGlzdChkaXN0YW5jZU1ldGhvZExpc3QpXG5wcmludChkaXN0X21ldGhvZHMpXG5gYGAifQ== -->
+<pre class="r"><code>dist_methods &lt;- unlist(distanceMethodList)
+print(dist_methods)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IG9iamV0byAnYWxwaGFkaXYnIG5vIGVuY29udHJhZG9cbiJ9 -->
-<pre><code>Error: objeto &#39;alphadiv&#39; no encontrado</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>La funcion base de phyloseq calcula 7 metodos diferentes para
-diversidad alfa:</p>
+<p><strong>¿Pero entonces cual metodo elegimos para realizar nuestro
+analisis?</strong></p>
+<p>Los ecologistas microbianos no utilizan distancias euclidianas, pero
+suelen utilizar distancias de Bray-Curtis, Jaccard o Unifrac de peso o
+sin peso para estimar la betadiversidad.</p>
+<p>La disimilitud de <em>Bray-Curtis</em> se basa en datos de ocurrencia
+(abundancia), mientras que la distancia de <em>Jaccard</em> se basa en
+datos de presencia/ausencia (no incluye información de abundancia). Las
+distancias <em>UniFrac</em> tienen en cuenta la tabla de ocurrencia y la
+diversidad de filogenia (distancia de secuencia). Distancias UniFrac
+ponderadas o no ponderadas dependiendo de si se tiene en cuenta la
+abundancia relativa o sólo la presencia/ausencia. Las métricas de
+distancias están entre 0 y 1: 0 significa comunidades idénticas en ambas
+muestras y 1 significa comunidades diferentes en ambas muestras.</p>
+<p>Top:</p>
 <ol style="list-style-type: decimal">
-<li><p><em>Observed:</em> cuenta el numero de especies por muestra
-(riqueza de especies)</p></li>
-<li><p><em>Chao1:</em> Estimador de riqueza de especie bajo la hipótesis
-de que las especies raras dan la mayor información sobre aquellas que no
-se observaron. Chao1 es usado por lo regular para muestras pequeñas y es
-particularmente útil en datos sesgados a especies de baja
-abundancia.</p></li>
-<li><p><em>ACE:</em> Abundance-based coverage estimator (ACE) es otro
-estimador no parametrico de riqueza de especie que usa la covertura de
-la muestra, basado en la suma de las probabilidades de las especies
-observadas</p></li>
-<li><p><em>Shannon H’:</em> es un indice que integra tanto riqueza como
-uniformidad. Sin entrar en las matematicas Shannon le pone mas enfasis
-en sus calculos a la riqueza de especies como componente y a la
-cobertura de especies raras.</p></li>
-<li><p><em>Simpson D1:</em> Es una medida de diversidad que tiene en
-cuenta el número de especies presentes, así como la abundancia relativa
-de cada especie. A medida que aumentan la riqueza y la uniformidad de
-las especies, también aumenta la diversidad. El valor de D oscila entre
-0 y 1. El índice de Simpson pone mayor énfasis en el componente de
-uniformidad y en los tipos de cobertura dominantes.</p></li>
-<li><p>Dado que Simpson mide la probabilidad de que dos individuos
-seleccionados aleatoriamente de una muestra pertenezcan a la misma
-especie (o a alguna categoría distinta de especie) tambien se puede
-calcular <em>InvSimpson</em></p></li>
-<li><p><em>Fisher:</em> Este es un índice paramétrico de diversidad que
-supone que la abundancia de especies sigue la distribución de la serie
-logarítmica.</p></li>
+<li><p>Bray-Curtis</p></li>
+<li><p>Jaccard (no toma en cuenta abundancia)</p></li>
+<li><p>Unifrac (solo si se tienen arboles filogeneticos)</p></li>
 </ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6NCwibmNvbCI6NSwic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbNCDDlyA1XSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJndHlpVERtaXVCaVlHQmdabUJoWm1SZ1pnVXlHVmhEUTl4MExSZ1lXSmlBSEVZR0ZnWk9FRjBCVkNRTWtnVmlQaUJtY1ZqM0NhU2F3V0ZSRzRSZWNRbENiMmxrZ0FLSXV2V0dqWktGS1ZjY0ZsM2N6MTFXdE1CaHBZZFU5VFRCRlE1YjVyOVY4K2M1Q2xjblV5KzMvWGNBdDRPaVE1WGVmWlUzRHFvMURhblRWVlVkcEQ0SHZuTUo2SVNyazd0VVVmTnZYNVdEek9xdUZ2Tm5teDFrRjdmdDNhVm82aUIvald2SmV3WVRtRHI3OTcvQzN2WEZHZHUvLzJhaE85K1N5Zjc5OTZMOXAyWXZ0My8vdTJsZTMyRU9OQSt5NWlYbXBoWURHUUpnVDBJRU9meVRpbE9MeWxKVFlJcWNNeEx6RFdHU3hhbDZ5VWg4OXVDTXhMeTgvRHc0TnpPM29CaklSYldIc3lpL1hBL1pMaGFvQkhPd2hTR0NhWVJnR2lPWXB1aU9UczVKTElZWkJCUGtTa2tzU2RSTEt3TGFBZVQ5UTlQQ25sOVFrcG1mQjlURUJJdE9aTTJNUldnQy9LVjVJTmVtNkNabmxPWmw2NXFETEFCTFF6QXZsR1pCWXJOQ3JHVDZqeGFhYktsNTZabDVxVEMzNXlRbXBlWkFPWHpBVUFFSGlsNUJVV1plQ2N3blFORml2Wkw4a2tTWU9xN2svQnlZQ05odkRQOEFKTkI1aU1VQ0FBQT0ifQ== -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Observed"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Chao1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["se.chao1"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Shannon"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Simpson"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"3961","2":"3992.752","3":"7.124141","4":"7.705538","5":"0.9993090","_rn_":"S81"},{"1":"2371","2":"2408.873","3":"8.625932","4":"7.167521","5":"0.9988061","_rn_":"S82"},{"1":"3177","2":"3236.052","3":"10.743167","4":"7.409694","5":"0.9989561","_rn_":"S83"},{"1":"5249","2":"5279.926","3":"6.737617","4":"7.959025","5":"0.9994519","_rn_":"S85"}],"options":{"columns":{"min":{},"max":[10],"total":[5]},"rows":{"min":[10],"max":[10],"total":[4]},"pages":{}}}
-  </script>
+<p>¿Por qué las distancias de Bray-Curtis o Unifrac serían mejores para
+los datos de microbiota que la distancia euclidiana?</p>
+<p>Los datos de microbiota son escasos y distancias específicas, como
+Bray-Curtis, Jaccard o las distancias Unifrac de peso/no peso, abordan
+mejor el problema de la presencia de muchos dobles ceros en los
+conjuntos de datos.</p>
 </div>
-<!-- rnb-frame-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="otros-indices-de-diversidad-que-pueden-calcular" class="section level2">
-<h2>Otros indices de diversidad que pueden calcular</h2>
+<div id="calcular-distancias" class="section level1">
+<h1>Calcular distancias</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkZWwgcGFxdWV0ZSBicmVha2F3YXlcbmNoYW9fYnVuZ2UodmlkX2JpbywgY3V0b2ZmID0gMTApICMgU2ltaWxhciBhIENoYW8xIHBlcm8gbWFzIHNlbnNpYmxlXG5cbmBgYCJ9 -->
-<pre class="r"><code># del paquete breakaway
-chao_bunge(vid_bio, cutoff = 10) # Similar a Chao1 pero mas sensible
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBNb2RpZmljYXIgcGh5bG9zZXFcblZpZDIgPC0gdmlkX2Jpb1xuXG5WaWQyQHNhbV9kYXRhIDwtIFZpZDJAc2FtX2RhdGFbLDFdXG4jIyMjIEJyYXkgIyMjI1xuXG5icmF5X2JkaXYgPC0gcGh5bG9zZXE6OmRpc3RhbmNlKFBzb2lsX2ZpbHQsICMgZXNwZWNpZmljYW1vcyBxdWUgZXMgbGEgZnVuY2lvbiBkaXN0YW5jZSBkZWwgcGFxdWV0ZSBkZSBwaHlsb3NlcSB5YSBxdWUgaGF5IG90cmEgZnVuY2lvbiBjb24gZXNlIG5vbWJyZVxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZXRob2QgPSBcImJyYXlcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdHlwZSA9IFwic2FtcGxlXCIpICMgc2FtcGxlIGVzIGVsIGRlZmF1bHQgcGFyYSBxdWUgc2UgY2FsY3VsZSBsYXMgZGlzdGFuY2lhcyBlbnRyZSBtdWVzdHJhcyB5IHRheGEgZXMgbGEgb3RyYSBvcGNpb24gcGVybyBubyBsYSB2YW1vcyBhIHVzYXJcbmBgYCJ9 -->
+<pre class="r"><code># Modificar phyloseq
+Vid2 &lt;- vid_bio
+
+Vid2@sam_data &lt;- Vid2@sam_data[,1]
+#### Bray ####
+
+bray_bdiv &lt;- phyloseq::distance(Psoil_filt, # especificamos que es la funcion distance del paquete de phyloseq ya que hay otra funcion con ese nombre
+                                method = &quot;bray&quot;,
+                                type = &quot;sample&quot;) # sample es el default para que se calcule las distancias entre muestras y taxa es la otra opcion pero no la vamos a usar</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQSBjb2xsZWN0aW9uIG9mIDQgYWxwaGEgZGl2ZXJzaXR5IGVzdGltYXRlczpcblxuJCBTODFcbkVzdGltYXRlIG9mIHJpY2huZXNzIGZyb20gbWV0aG9kIENoYW8tQnVuZ2U6XG4gIEVzdGltYXRlIGlzIDQwNjFcbiB3aXRoIHN0YW5kYXJkIGVycm9yIDMxLjUxXG4gIENvbmZpZGVuY2UgaW50ZXJ2YWw6ICgzOTY2LCA2MDI5KVxuICBDdXRvZmY6ICAxMFxuXG4kIFM4MlxuRXN0aW1hdGUgb2YgcmljaG5lc3MgZnJvbSBtZXRob2QgQ2hhby1CdW5nZTpcbiAgRXN0aW1hdGUgaXMgMjQ1MlxuIHdpdGggc3RhbmRhcmQgZXJyb3IgMjUuOTlcbiAgQ29uZmlkZW5jZSBpbnRlcnZhbDogKDIzNzUsIDM4OTApXG4gIEN1dG9mZjogIDEwXG5cbiQgUzgzXG5Fc3RpbWF0ZSBvZiByaWNobmVzcyBmcm9tIG1ldGhvZCBDaGFvLUJ1bmdlOlxuICBFc3RpbWF0ZSBpcyAzMzExXG4gd2l0aCBzdGFuZGFyZCBlcnJvciAyOS45M1xuICBDb25maWRlbmNlIGludGVydmFsOiAoMzE4NSwgNTM3NylcbiAgQ3V0b2ZmOiAgMTBcblxuJCBTODVcbkVzdGltYXRlIG9mIHJpY2huZXNzIGZyb20gbWV0aG9kIENoYW8tQnVuZ2U6XG4gIEVzdGltYXRlIGlzIDUzNzRcbiB3aXRoIHN0YW5kYXJkIGVycm9yIDM1LjQzXG4gIENvbmZpZGVuY2UgaW50ZXJ2YWw6ICg1MjU1LCA3ODU1KVxuICBDdXRvZmY6ICAxMFxuIn0= -->
-<pre><code>A collection of 4 alpha diversity estimates:
-
-$ S81
-Estimate of richness from method Chao-Bunge:
-  Estimate is 4061
- with standard error 31.51
-  Confidence interval: (3966, 6029)
-  Cutoff:  10
-
-$ S82
-Estimate of richness from method Chao-Bunge:
-  Estimate is 2452
- with standard error 25.99
-  Confidence interval: (2375, 3890)
-  Cutoff:  10
-
-$ S83
-Estimate of richness from method Chao-Bunge:
-  Estimate is 3311
- with standard error 29.93
-  Confidence interval: (3185, 5377)
-  Cutoff:  10
-
-$ S85
-Estimate of richness from method Chao-Bunge:
-  Estimate is 5374
- with standard error 35.43
-  Confidence interval: (5255, 7855)
-  Cutoff:  10</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaChzaW1wbGVFcnJvcihtc2csIGNhbGwpKSA6IFxuICBlcnJvciBpbiBldmFsdWF0aW5nIHRoZSBhcmd1bWVudCAncGh5c2VxJyBpbiBzZWxlY3RpbmcgYSBtZXRob2QgZm9yIGZ1bmN0aW9uICdkaXN0YW5jZSc6IG9iamV0byAnUHNvaWxfZmlsdCcgbm8gZW5jb250cmFkb1xuIn0= -->
+<pre><code>Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument &#39;physeq&#39; in selecting a method for function &#39;distance&#39;: objeto &#39;Psoil_filt&#39; no encontrado</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>De esta segunda seccion es importante notar que la funcion de
-evenness() calcula otros indices de diversidad alfa los cuales estan
-enfocados en la uniformidad de especies. Si notan la mayor parte de los
-indices anteriores le daban mas peso a la riqueza de especies por lo que
-el paquete microbiome se enfoca en otros tipos de indices. Como esta
-clase no es para explicarles cada uno de ellos de aqui el unico que les
-puede ser util en el futuro es:</p>
-<ol start="8" style="list-style-type: decimal">
-<li><em>Pielou:</em> Equidad (también conocida como equidad de Pielou)
-es la diversidad de Shannon dividida por el logaritmo del número de
-taxones. Esto mide la uniformidad con la que los individuos se dividen
-entre los taxones presentes.</li>
+<div id="mini-ejercicio" class="section level2">
+<h2>Mini ejercicio</h2>
+<p>Calculen las distancias con jaccard: Psoil y Vid2</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="ordinacion" class="section level1">
+<h1>Ordinacion</h1>
+<p>Las medidas de diversidad beta se pueden visualizar utilizando varios
+métodos de ordinación. La ordinación es la técnicas para resumir y
+proyectar datos multidimensionales en un espacio de dimensiones
+inferiores (2-3d).</p>
+<p><strong>Como el analisis de PCA</strong></p>
+<div id="metodos-de-ordinacion" class="section level2">
+<h2>Metodos de ordinacion</h2>
+<p>Los metodos incluidos en phyloseq: c(“DCA”, “CCA”, “RDA”, “CAP”,
+“DPCoA”, “NMDS”, “MDS”, “PCoA”)</p>
+<ol style="list-style-type: decimal">
+<li><p>DCA (el default): Performs detrended correspondence analysis
+usingdecorana</p></li>
+<li><p>CCA Analisis de correspondencia (a.k.a. canonical correspondence
+analysis).</p></li>
+<li><p>RDA Analisis de Redundancia (equivalente al PCA)</p></li>
+<li><p>CAP Constrained Analysis of Principal Coordinates or
+distance-based RDA</p></li>
+<li><p>DPCoA Doble Analisis de coordenadas principales usa distancia
+filogenetica como correcion</p></li>
+<li><p><strong>NMDS</strong> Escalamiento multidimensional no métrico.
+NMDS maximiza la correlación de orden de clasificación entre muestras y
+tambien puede usarse con datos no parametricos. La mejor manera de
+visualizar la diversidad beta, o cuán diferentes son las muestras entre
+sí, es mediante escalamiento multidimensional no métrico (nMDS). Esto es
+similar al análisis de coordenadas principales o PCA/PCoA si ha oído
+hablar de eso, solo que nMDS es más robusto estadísticamente con
+múltiples iteraciones en la forma de la parte trymax del
+comando.</p></li>
+<li><p><strong>MDS/PCoA</strong> Realiza un análisis de coordenadas
+principales (también llamado descomposición de coordenadas principales,
+escalamiento multidimensional (MDS) o escalamiento clásico) de una
+matriz de distancias</p></li>
 </ol>
-<p><a href="https://www.nhm.uio.no/english/research/resources/past/help/diversity.html">Mas
-info en indices de diversidad</a></p>
-</div>
-</div>
-<div id="graficando-diversidad-alfa" class="section level1">
-<h1>Graficando diversidad alfa</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-plot-begin eyJoZWlnaHQiOjM5MS44NDE4LCJ3aWR0aCI6NjM0LCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
-<p><img src="data:image/png;base64,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" /></p>
-<!-- rnb-plot-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="analisis-estadistico" class="section level1">
-<h1>Analisis estadistico</h1>
-<p>Como con los datos que vimos durante ese modulo, el analisis
-estadistio seguira el mismo flujo de trabajo segun la naturaleza de los
-datos</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgUHJpbWVybyByZXZpc2Ftb3Mgbm9ybWFsaWRhZCAjI1xuXG4jIHNoYXBpcm8gdGVzdFxuZm9yKGkgaW4gMzoxNil7XG4gIHNoYXBpcm8gPC0gc2hhcGlyby50ZXN0KGFscGhhZGl2WyxpXSlcbiAgbm9ybWFsIDwtIGlmZWxzZShzaGFwaXJvW1tcInAudmFsdWVcIl1dPjAuMDUsIFwiWUVTXCIsIFwiTk9cIilcbiAgcHJpbnQoYyhpLG5vcm1hbCkpXG59XG5cbiMgaGlzdG9ncmFtYXMgc2kgZXMgcXVlIG5vIGVyYW4gbm9ybWFsZXNcbmBgYCJ9 -->
-<pre class="r"><code>## Primero revisamos normalidad ##
-
-# shapiro test
-for(i in 3:16){
-  shapiro &lt;- shapiro.test(alphadiv[,i])
-  normal &lt;- ifelse(shapiro[[&quot;p.value&quot;]]&gt;0.05, &quot;YES&quot;, &quot;NO&quot;)
-  print(c(i,normal))
-}
-
-# histogramas si es que no eran normales</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYnJheV9vcmQgPC0gb3JkaW5hdGUoUHNvaWxfZmlsdCwgIyBvYmpldG9cbiAgICAgICAgICAgICAgICAgICAgIG1ldGhvZCA9IFwiTk1EU1wiLCAjIG1ldG9kb1xuICAgICAgICAgICAgICAgICAgICAgZGlzdGFuY2UgPSBicmF5X2JkaXYpXG5gYGAifQ== -->
+<pre class="r"><code>bray_ord &lt;- ordinate(Psoil_filt, # objeto
+                     method = &quot;NMDS&quot;, # metodo
+                     distance = bray_bdiv)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Dado que</p>
+<p>Entonces cual elegir?</p>
+<p>Se debe elegir PCoA si las distancias entres muestras son tan
+cercanas que una transformacion lineal seria suficiente. Mientras tanto,
+se recomiend NMDS para resaltar la estructura de gradiente dentro de los
+datos. Otro metodo de ordenacion comun es el PCA, que es simplemente un
+tipo de PCoA que utiliza la distancia euclidiana.</p>
+<p><em>NMDS</em> &gt; <em>PCoA</em></p>
+<p>La mejor manera de visualizar la diversidad beta, o cuan diferentes
+son las muestras entre si, es mediante escalamiento multidimensional no
+metrico (nMDS). Esto es similar al analisis de coordenadas principales o
+PCA/PCoA si ha oido hablar de eso, solo que NMDS es mas robusto
+estadisticamente con multiples iteraciones.</p>
+</div>
+<div id="mini-ejercicio-1" class="section level2">
+<h2>Mini ejercicio</h2>
+<p>Calculen la ordinacion con PCoA y tambien calculenla para las
+distancias jaccard que teniamos.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZXZpc2FyIGhvbW9nZW5laWRhZCBkZSB2YXJpYW56YVxuZm9yKGkgaW4gMzpuY29sKGFscGhhZGl2KSl7ICMgZW1waWV6YW4gZW4gY29sdW1uYSBxdWUgdGVybWluYW4gbWV0YWRhdG9zXG4gIExldl9leCA8LSBsZXZlbmVUZXN0KGFscGhhZGl2WyxpXSB+IFN1ZWxvICogVHJhdGFtaWVudG8sIyB2YXIuaW5kZXBcbiAgICAgICAgICAgICAgICAgICAgICAgZGF0YSA9IGFscGhhZGl2KVxuICBsZXZlbmUgPC0gaWZlbHNlKExldl9leFtbXCJQcig+RilcIl1dPjAuMDUsIFwiWUVTXCIsIFwiTk9cIilcbiAgcHJpbnQoYyhpLGxldmVuZSkpXG59XG5cbiMgQ29tbyBzb2xvIHRlbmVtb3MgdW5hIG11ZXN0cmEgbm8gaGF5IHZhcmlhbnphIHBvciBsbyBxdWUgbm8gc2UgcHVlZGUgY2FsY3VsYXIgZWwgdGVzdCBsZXZlbmVcblxuIyBPYnNlcnZlZFxuXG4jI0FOT1ZBXG5hZF9hbm92YSA8LSBhb3YoT2JzZXJ2ZWQgfiBTdWVsbyAqIFRyYXRhbWllbnRvLFxuICAgICAgICAgICAgICAgIGRhdGEgPSBhbHBoYWRpdilcbkFub3ZhKGFkX2Fub3ZhKVxuIyBzYWxlIGVycm9yIHBvcnF1ZSBlc3RhbW9zIHVzYW5kbyB1bmEgc29sYSBtdWVzdHJhLCBzaSBodWJpZXJhbiBzYWxpZG8gZGlmZXJlbmNpYXMgc2UgcHJvY2VkZSBjb24gdW4gdHVrZXlcblxuYWRfVHVrZXkgPC0gVHVrZXlIU0QoYWRfYW5vdmEpXG5gYGAifQ== -->
-<pre class="r"><code># Revisar homogeneidad de varianza
-for(i in 3:ncol(alphadiv)){ # empiezan en columna que terminan metadatos
-  Lev_ex &lt;- leveneTest(alphadiv[,i] ~ Suelo * Tratamiento,# var.indep
-                       data = alphadiv)
-  levene &lt;- ifelse(Lev_ex[[&quot;Pr(&gt;F)&quot;]]&gt;0.05, &quot;YES&quot;, &quot;NO&quot;)
-  print(c(i,levene))
-}
-
-# Como solo tenemos una muestra no hay varianza por lo que no se puede calcular el test levene
-
-# Observed
-
-##ANOVA
-ad_anova &lt;- aov(Observed ~ Suelo * Tratamiento,
-                data = alphadiv)
-Anova(ad_anova)
-# sale error porque estamos usando una sola muestra, si hubieran salido diferencias se procede con un tukey
-
-ad_Tukey &lt;- TukeyHSD(ad_anova)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuamFjY2FyZF9vcmQgPC0gb3JkaW5hdGUoUHNvaWxfZmlsdCxcbiAgICAgICAgICAgICAgICAgICAgIG1ldGhvZCA9IFwiTk1EU1wiLCBcbiAgICAgICAgICAgICAgICAgICAgIGRpc3RhbmNlID0gamFjX2JkaXYpXG5cbmBgYCJ9 -->
+<pre class="r"><code>jaccard_ord &lt;- ordinate(Psoil_filt,
+                     method = &quot;NMDS&quot;, 
+                     distance = jac_bdiv)
+</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUnVuIDAgc3RyZXNzIDAuMTE2ODA5NCBcblJ1biAxIHN0cmVzcyAwLjExNjE4NjkgXG4uLi4gTmV3IGJlc3Qgc29sdXRpb25cbi4uLiBQcm9jcnVzdGVzOiBybXNlIDAuMDMwMjQ0NDMgIG1heCByZXNpZCAwLjEyNzI3ODYgXG5SdW4gMiBzdHJlc3MgMC4xMTY4MDk2IFxuUnVuIDMgc3RyZXNzIDAuMTE2MjczMSBcbi4uLiBQcm9jcnVzdGVzOiBybXNlIDAuMDAzNTM4MzM1ICBtYXggcmVzaWQgMC4wMTI5MjM3MSBcblJ1biA0IHN0cmVzcyAwLjExNjgwOTUgXG5SdW4gNSBzdHJlc3MgMC4xMTYxODY4IFxuLi4uIE5ldyBiZXN0IHNvbHV0aW9uXG4uLi4gUHJvY3J1c3Rlczogcm1zZSA0LjM5NjA2MWUtMDUgIG1heCByZXNpZCAwLjAwMDE2NDY2NjMgXG4uLi4gU2ltaWxhciB0byBwcmV2aW91cyBiZXN0XG5SdW4gNiBzdHJlc3MgMC4xMjQ5MzA3IFxuUnVuIDcgc3RyZXNzIDAuMTE2ODA5NCBcblJ1biA4IHN0cmVzcyAwLjEyNDkzMDYgXG5SdW4gOSBzdHJlc3MgMC4xMTYxODY4IFxuLi4uIE5ldyBiZXN0IHNvbHV0aW9uXG4uLi4gUHJvY3J1c3Rlczogcm1zZSAyLjI4MjQ5NGUtMDUgIG1heCByZXNpZCA3LjAwNjQyNmUtMDUgXG4uLi4gU2ltaWxhciB0byBwcmV2aW91cyBiZXN0XG5SdW4gMTAgc3RyZXNzIDAuMTE2MjczIFxuLi4uIFByb2NydXN0ZXM6IHJtc2UgMC4wMDM1MDczMTkgIG1heCByZXNpZCAwLjAxMjkxMzk5IFxuUnVuIDExIHN0cmVzcyAwLjEyNDkzMDggXG5SdW4gMTIgc3RyZXNzIDAuMTE2MTg2OCBcbi4uLiBQcm9jcnVzdGVzOiBybXNlIDMuMzU5MDAzZS0wNSAgbWF4IHJlc2lkIDAuMDAwMTEyNTcyNCBcbi4uLiBTaW1pbGFyIHRvIHByZXZpb3VzIGJlc3RcblJ1biAxMyBzdHJlc3MgMC4xMTYyNzMgXG4uLi4gUHJvY3J1c3Rlczogcm1zZSAwLjAwMzUwMjEyOCAgbWF4IHJlc2lkIDAuMDEyOTEzMjggXG5SdW4gMTQgc3RyZXNzIDAuMTE2MjczMSBcbi4uLiBQcm9jcnVzdGVzOiBybXNlIDAuMDAzNTIxNTUgIG1heCByZXNpZCAwLjAxMjkxNzk3IFxuUnVuIDE1IHN0cmVzcyAwLjExNjgwOTUgXG5SdW4gMTYgc3RyZXNzIDAuMTI0OTMwMyBcblJ1biAxNyBzdHJlc3MgMC4xMTY4MDk0IFxuUnVuIDE4IHN0cmVzcyAwLjEyNDkxODEgXG5SdW4gMTkgc3RyZXNzIDAuMTE2ODA5NSBcblJ1biAyMCBzdHJlc3MgMC4xMTYyNzMxIFxuLi4uIFByb2NydXN0ZXM6IHJtc2UgMC4wMDM1MjExODUgIG1heCByZXNpZCAwLjAxMjkxODk2IFxuKioqIEJlc3Qgc29sdXRpb24gcmVwZWF0ZWQgMiB0aW1lc1xuIn0= -->
+<pre><code>Run 0 stress 0.1168094 
+Run 1 stress 0.1161869 
+... New best solution
+... Procrustes: rmse 0.03024443  max resid 0.1272786 
+Run 2 stress 0.1168096 
+Run 3 stress 0.1162731 
+... Procrustes: rmse 0.003538335  max resid 0.01292371 
+Run 4 stress 0.1168095 
+Run 5 stress 0.1161868 
+... New best solution
+... Procrustes: rmse 4.396061e-05  max resid 0.0001646663 
+... Similar to previous best
+Run 6 stress 0.1249307 
+Run 7 stress 0.1168094 
+Run 8 stress 0.1249306 
+Run 9 stress 0.1161868 
+... New best solution
+... Procrustes: rmse 2.282494e-05  max resid 7.006426e-05 
+... Similar to previous best
+Run 10 stress 0.116273 
+... Procrustes: rmse 0.003507319  max resid 0.01291399 
+Run 11 stress 0.1249308 
+Run 12 stress 0.1161868 
+... Procrustes: rmse 3.359003e-05  max resid 0.0001125724 
+... Similar to previous best
+Run 13 stress 0.116273 
+... Procrustes: rmse 0.003502128  max resid 0.01291328 
+Run 14 stress 0.1162731 
+... Procrustes: rmse 0.00352155  max resid 0.01291797 
+Run 15 stress 0.1168095 
+Run 16 stress 0.1249303 
+Run 17 stress 0.1168094 
+Run 18 stress 0.1249181 
+Run 19 stress 0.1168095 
+Run 20 stress 0.1162731 
+... Procrustes: rmse 0.003521185  max resid 0.01291896 
+*** Best solution repeated 2 times</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Dado que solo tenemos ” 1 muestra” por tratamiento no es correcto
-calcular un ANOVA ya que la ANOVA usa <em>grupos</em>. Lo ideal en este
-caso seria tratar de agrupar nuestras muestras por variables y llevar a
-cabo una T de student:</p>
+</div>
+</div>
+<div id="visualizacion" class="section level1">
+<h1>Visualizacion</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudC50ZXN0KE9ic2VydmVkIH4gVHJhdGFtaWVudG8sIGRhdGEgPSBhbHBoYWRpdikgIyBubyBzaWduaWZpY2F0aXZvXG50LnRlc3QoQ2hhbzEgfiBUcmF0YW1pZW50bywgZGF0YSA9IGFscGhhZGl2KSAjIG5vIHNpZ25pZmljYXRpdm9cbnQudGVzdChTaGFubm9uIH4gVHJhdGFtaWVudG8sIGRhdGEgPSBhbHBoYWRpdikgIyBubyBzaWduaWZpY2F0aXZvXG50LnRlc3QocGllbG91IH4gVHJhdGFtaWVudG8sIGRhdGEgPSBhbHBoYWRpdikgIyBubyBzaWduaWZpY2F0aXZvXG50LnRlc3QoU2ltcHNvbiB+IFRyYXRhbWllbnRvLCBkYXRhID0gYWxwaGFkaXYpICMgc2FsaW8gc2lnbmlmaWNhdGl2b1xuXG4jIHNpIGhheSBkaWZlcmVuY2lhIGVuIGxhIGRpdmVyc2lkYWQgZGUgYWxmYSBzZWd1biBlbCB0ZXN0IGRlIHNpbXBzb24sIHBvciBsbyBxdWUgc2kgaGF5IGRpZmVyZW5jaWEgZW4gZWwgc3VlbG8gYWwgdXNhciBlbCBiaW9lc3RpbXVsYW50ZVxuXG5gYGAifQ== -->
-<pre class="r"><code>t.test(Observed ~ Tratamiento, data = alphadiv) # no significativo
-t.test(Chao1 ~ Tratamiento, data = alphadiv) # no significativo
-t.test(Shannon ~ Tratamiento, data = alphadiv) # no significativo
-t.test(pielou ~ Tratamiento, data = alphadiv) # no significativo
-t.test(Simpson ~ Tratamiento, data = alphadiv) # salio significativo
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucF9icmF5IDwtIHBsb3Rfb3JkaW5hdGlvbihQc29pbF9maWx0LCAjIG9iamV0b1xuICAgICAgICAgICAgICAgICAgICAgICAgICBicmF5X29yZCwgIyBkaXN0YW5jaWEgYnJheSBjb24gbm1kc1xuICAgICAgICAgICAgICAgICAgICAgICAgICBcInNhbXBsZXNcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSBcIlBsYW50X1R5cGVcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgc2hhcGUgPSBcIlRyZWF0bWVudFwiKSArXG4gIHNjYWxlX2NvbG9yX21hbnVhbCh2YWx1ZXMgPSBjKFwiYnVybHl3b29kM1wiLFwic3RlZWxibHVlXCIsXCJsaWdodHBpbmtcIiksXG4gICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJQbGFudCBUeXBlXCIpICtcbiAgdGhlbWVfYncoKStcbiAgZ2VvbV9wb2ludChzaXplPTMuOClcblxucF9icmF5XG5cbiMgTW9kaWZpY2FuZG8gbGFzIGZpZ3VyYXNcbnBfYnJheSA8LSBwX2JyYXkgK1xuICBzY2FsZV9zaGFwZV9tYW51YWwodmFsdWVzID0gYygxNSwxNiwxNywxOCksXG4gICAgICAgICAgICAgICAgICAgICBsYWJlbHMgPSBjKFwiUGlcIiwgXCJMb3cgUFwiLCBcIlBoaVwiLCBcIlBpL1BoaSBtaXhcIikpXG5wX2JyYXlcblxuIyBBZ3JlZ2FuZG8gZWxpcHNlXG5cbnBfYnJheSA8LSBwX2JyYXkgK1xuICBnZW9tX21hcmtfZWxsaXBzZShhZXMoZmlsbD0gUGxhbnRfVHlwZSxcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yPSBQbGFudF9UeXBlKSwgIyB0aWVuZSBxdWUgc2VyIGlndWFsIHF1ZSBhcnJpYmFcbiAgICAgICAgICAgICAgICAgICAgZXhwYW5kID0gYygwLjAwMzUpKSArICMgYW5jaG8gZGVsIGNpcmN1bG9cbiAgc2NhbGVfZmlsbF9tYW51YWwodmFsdWVzID0gYyhcImJ1cmx5d29vZDNcIixcInN0ZWVsYmx1ZVwiLFwibGlnaHRwaW5rXCIpLFxuICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJQbGFudCBUeXBlXCIpXG5wX2JyYXlcblxuIyBvIGFncmVnYW5kbyBwb2xpZ29ub1xucF9icmF5IDwtIHBfYnJheSArXG4gIGdlb21fcG9seWdvbihhZXMoZmlsbD0gUGxhbnRfVHlwZSksXG4gICAgICAgICAgICAgICAgICAgIGFscGhhID0gYygwLjIpKSArICMgYW5jaG8gZGVsIGNpcmN1bG9cbiAgc2NhbGVfZmlsbF9tYW51YWwodmFsdWVzID0gYyhcImJ1cmx5d29vZDNcIixcInN0ZWVsYmx1ZVwiLFwibGlnaHRwaW5rXCIpLFxuICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJQbGFudCBUeXBlXCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>p_bray &lt;- plot_ordination(Psoil_filt, # objeto
+                          bray_ord, # distancia bray con nmds
+                          &quot;samples&quot;,
+                          color = &quot;Plant_Type&quot;,
+                          shape = &quot;Treatment&quot;) +
+  scale_color_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                     name = &quot;Plant Type&quot;) +
+  theme_bw()+
+  geom_point(size=3.8)
 
-# si hay diferencia en la diversidad de alfa segun el test de simpson, por lo que si hay diferencia en el suelo al usar el bioestimulante
+p_bray
+
+# Modificando las figuras
+p_bray &lt;- p_bray +
+  scale_shape_manual(values = c(15,16,17,18),
+                     labels = c(&quot;Pi&quot;, &quot;Low P&quot;, &quot;Phi&quot;, &quot;Pi/Phi mix&quot;))
+p_bray
+
+# Agregando elipse
+
+p_bray &lt;- p_bray +
+  geom_mark_ellipse(aes(fill= Plant_Type,
+                        color= Plant_Type), # tiene que ser igual que arriba
+                    expand = c(0.0035)) + # ancho del circulo
+  scale_fill_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                    name = &quot;Plant Type&quot;)
+p_bray
+
+# o agregando poligono
+p_bray &lt;- p_bray +
+  geom_polygon(aes(fill= Plant_Type),
+                    alpha = c(0.2)) + # ancho del circulo
+  scale_fill_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                    name = &quot;Plant Type&quot;)
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Ya que esperamos que la aplicacion de nuestro bioestimulante mejor la
-diversidad alfa sin importar el tipo de suelo y basados en simpson si
-son diferentes</p>
+</div>
+<div id="ejercicio" class="section level1">
+<h1>Ejercicio</h1>
+<p>Van hacer otros tres graficos:</p>
+<ul>
+<li><p>El primero con distancias de bray pero ordinacion PCoA</p></li>
+<li><p>El segundo con Jaccard y ordinacion NMDS</p></li>
+<li><p>El tercero Jaccard y ordinacion PCoA</p></li>
+</ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQZXJvIGNvbXByb2JhbW9zIHF1ZSBubyBoYXkgZGlmZXJlbmNpYXMgZW4gdGlwbyBkZSBzdWVsb1xudC50ZXN0KE9ic2VydmVkIH4gU3VlbG8sIGRhdGEgPSBhbHBoYWRpdikgIyBOU1xudC50ZXN0KENoYW8xIH4gU3VlbG8sIGRhdGEgPSBhbHBoYWRpdikgIyBOU1xudC50ZXN0KFNoYW5ub24gfiBTdWVsbywgZGF0YSA9IGFscGhhZGl2KSAjIE5TXG50LnRlc3QocGllbG91IH4gU3VlbG8sIGRhdGEgPSBhbHBoYWRpdikgIyBOU1xudC50ZXN0KFNpbXBzb24gfiBTdWVsbywgZGF0YSA9IGFscGhhZGl2KSAjIE5TXG5cbiMgRXMgYnVlbm8gcXVlIG5vIGhheWFuIGRpZmVyZW5jaWFzIGVuIGVsIHN1ZWxvIHBvcnF1ZSBhbCBkZXNjYXJ0YWxvcyBjb21vIHZhcmlhYmxlIG5vIGFmZWN0YW1vcyBlbCBhbmFsaXNpc1xuYGBgIn0= -->
-<pre class="r"><code># Pero comprobamos que no hay diferencias en tipo de suelo
-t.test(Observed ~ Suelo, data = alphadiv) # NS
-t.test(Chao1 ~ Suelo, data = alphadiv) # NS
-t.test(Shannon ~ Suelo, data = alphadiv) # NS
-t.test(pielou ~ Suelo, data = alphadiv) # NS
-t.test(Simpson ~ Suelo, data = alphadiv) # NS
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFbCBwcmltZXJvIGNvbiBkaXN0YW5jaWFzIGRlIGJyYXkgcGVybyBvcmRpbmFjaW9uIFBDb0FcblxucF9icmF5X1BDb0EgPC0gcGxvdF9vcmRpbmF0aW9uKFBzb2lsX2ZpbHQsICMgb2JqZXRvXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGJyYXlfb3JkX1BDb0EsICMgZGlzdGFuY2lhIGJyYXkgY29uIFBDb0FcbiAgICAgICAgICAgICAgICAgICAgICAgICAgXCJzYW1wbGVzXCIsXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yID0gXCJQbGFudF9UeXBlXCIsXG4gICAgICAgICAgICAgICAgICAgICAgICAgIHNoYXBlID0gXCJUcmVhdG1lbnRcIikgK1xuICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYyhcImJ1cmx5d29vZDNcIixcInN0ZWVsYmx1ZVwiLFwibGlnaHRwaW5rXCIpLFxuICAgICAgICAgICAgICAgICAgICAgbmFtZSA9IFwiUGxhbnQgVHlwZVwiKSArXG4gIHRoZW1lX2J3KCkrXG4gIGdlb21fcG9pbnQoc2l6ZT0zLjgpXG5cbnBfYnJheV9QQ29BIDwtIHBfYnJheV9QQ29BICtcbiAgc2NhbGVfc2hhcGVfbWFudWFsKHZhbHVlcyA9IGMoMTUsMTYsMTcsMTgpLFxuICAgICAgICAgICAgICAgICAgICAgbGFiZWxzID0gYyhcIlBpXCIsIFwiTG93IFBcIiwgXCJQaGlcIiwgXCJQaS9QaGkgbWl4XCIpKVxuXG5wX2JyYXlfUENvQSA8LSBwX2JyYXlfUENvQSArXG4gIGdlb21fbWFya19lbGxpcHNlKGFlcyhmaWxsPSBQbGFudF9UeXBlLFxuICAgICAgICAgICAgICAgICAgICAgICAgY29sb3I9IFBsYW50X1R5cGUpLCAjIHRpZW5lIHF1ZSBzZXIgaWd1YWwgcXVlIGFycmliYVxuICAgICAgICAgICAgICAgICAgICBleHBhbmQgPSBjKDAuMDAzNSkpICsgIyBhbmNobyBkZWwgY2lyY3Vsb1xuICBzY2FsZV9maWxsX21hbnVhbCh2YWx1ZXMgPSBjKFwiYnVybHl3b29kM1wiLFwic3RlZWxibHVlXCIsXCJsaWdodHBpbmtcIiksXG4gICAgICAgICAgICAgICAgICAgIG5hbWUgPSBcIlBsYW50IFR5cGVcIilcblxucF9icmF5X1BDb0FcblxuIyBFbCBzZWd1bmRvIGNvbiBKYWNjYXJkIHkgb3JkaW5hY2lvbiBOTURTXG5cbnBfamFjIDwtIHBsb3Rfb3JkaW5hdGlvbihQc29pbF9maWx0LCAjIG9iamV0b1xuICAgICAgICAgICAgICAgICAgICAgICAgICBqYWNjYXJkX29yZCwgIyBkaXN0YW5jaWEgamFjIGNvbiBOTURTXG4gICAgICAgICAgICAgICAgICAgICAgICAgIFwic2FtcGxlc1wiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICBjb2xvciA9IFwiUGxhbnRfVHlwZVwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICBzaGFwZSA9IFwiVHJlYXRtZW50XCIpICtcbiAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGMoXCJidXJseXdvb2QzXCIsXCJzdGVlbGJsdWVcIixcImxpZ2h0cGlua1wiKSxcbiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSBcIlBsYW50IFR5cGVcIikgK1xuICB0aGVtZV9idygpK1xuICBnZW9tX3BvaW50KHNpemU9My44KVxuXG5wX2phYyA8LSBwX2phYyArXG4gIHNjYWxlX3NoYXBlX21hbnVhbCh2YWx1ZXMgPSBjKDE1LDE2LDE3LDE4KSxcbiAgICAgICAgICAgICAgICAgICAgIGxhYmVscyA9IGMoXCJQaVwiLCBcIkxvdyBQXCIsIFwiUGhpXCIsIFwiUGkvUGhpIG1peFwiKSlcblxucF9qYWMgPC0gcF9qYWMgK1xuICBnZW9tX21hcmtfZWxsaXBzZShhZXMoZmlsbD0gUGxhbnRfVHlwZSxcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yPSBQbGFudF9UeXBlKSwgIyB0aWVuZSBxdWUgc2VyIGlndWFsIHF1ZSBhcnJpYmFcbiAgICAgICAgICAgICAgICAgICAgZXhwYW5kID0gYygwLjAwMzUpKSArICMgYW5jaG8gZGVsIGNpcmN1bG9cbiAgc2NhbGVfZmlsbF9tYW51YWwodmFsdWVzID0gYyhcImJ1cmx5d29vZDNcIixcInN0ZWVsYmx1ZVwiLFwibGlnaHRwaW5rXCIpLFxuICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJQbGFudCBUeXBlXCIpXG5cbnBfamFjXG5cbiMgRWwgdGVyY2VybyBKYWNjYXJkIHkgb3JkaW5hY2lvbiBQQ29BXG5cbnBfamFjX1BDb0EgPC0gcGxvdF9vcmRpbmF0aW9uKFBzb2lsX2ZpbHQsICMgb2JqZXRvXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGphY2NhcmRfb3JkX1BDb0EsICMgZGlzdGFuY2lhIGphYyBjb24gTk1EU1xuICAgICAgICAgICAgICAgICAgICAgICAgICBcInNhbXBsZXNcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSBcIlBsYW50X1R5cGVcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgc2hhcGUgPSBcIlRyZWF0bWVudFwiKSArXG4gIHNjYWxlX2NvbG9yX21hbnVhbCh2YWx1ZXMgPSBjKFwiYnVybHl3b29kM1wiLFwic3RlZWxibHVlXCIsXCJsaWdodHBpbmtcIiksXG4gICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJQbGFudCBUeXBlXCIpICtcbiAgdGhlbWVfYncoKStcbiAgZ2VvbV9wb2ludChzaXplPTMuOClcblxucF9qYWNfUENvQSA8LSBwX2phY19QQ29BICtcbiAgc2NhbGVfc2hhcGVfbWFudWFsKHZhbHVlcyA9IGMoMTUsMTYsMTcsMTgpLFxuICAgICAgICAgICAgICAgICAgICAgbGFiZWxzID0gYyhcIlBpXCIsIFwiTG93IFBcIiwgXCJQaGlcIiwgXCJQaS9QaGkgbWl4XCIpKVxuXG5wX2phY19QQ29BIDwtIHBfamFjX1BDb0EgK1xuICBnZW9tX21hcmtfZWxsaXBzZShhZXMoZmlsbD0gUGxhbnRfVHlwZSxcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yPSBQbGFudF9UeXBlKSwgIyB0aWVuZSBxdWUgc2VyIGlndWFsIHF1ZSBhcnJpYmFcbiAgICAgICAgICAgICAgICAgICAgZXhwYW5kID0gYygwLjAwMzUpKSArICMgYW5jaG8gZGVsIGNpcmN1bG9cbiAgc2NhbGVfZmlsbF9tYW51YWwodmFsdWVzID0gYyhcImJ1cmx5d29vZDNcIixcInN0ZWVsYmx1ZVwiLFwibGlnaHRwaW5rXCIpLFxuICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJQbGFudCBUeXBlXCIpXG5cbnBfamFjX1BDb0FcblxuKHBfYnJheXxwX2JyYXlfUENvQSkvKHBfamFjfHBfamFjX1BDb0EpXG5gYGAifQ== -->
+<pre class="r"><code># El primero con distancias de bray pero ordinacion PCoA
 
-# Es bueno que no hayan diferencias en el suelo porque al descartalos como variable no afectamos el analisis</code></pre>
+p_bray_PCoA &lt;- plot_ordination(Psoil_filt, # objeto
+                          bray_ord_PCoA, # distancia bray con PCoA
+                          &quot;samples&quot;,
+                          color = &quot;Plant_Type&quot;,
+                          shape = &quot;Treatment&quot;) +
+  scale_color_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                     name = &quot;Plant Type&quot;) +
+  theme_bw()+
+  geom_point(size=3.8)
+
+p_bray_PCoA &lt;- p_bray_PCoA +
+  scale_shape_manual(values = c(15,16,17,18),
+                     labels = c(&quot;Pi&quot;, &quot;Low P&quot;, &quot;Phi&quot;, &quot;Pi/Phi mix&quot;))
+
+p_bray_PCoA &lt;- p_bray_PCoA +
+  geom_mark_ellipse(aes(fill= Plant_Type,
+                        color= Plant_Type), # tiene que ser igual que arriba
+                    expand = c(0.0035)) + # ancho del circulo
+  scale_fill_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                    name = &quot;Plant Type&quot;)
+
+p_bray_PCoA
+
+# El segundo con Jaccard y ordinacion NMDS
+
+p_jac &lt;- plot_ordination(Psoil_filt, # objeto
+                          jaccard_ord, # distancia jac con NMDS
+                          &quot;samples&quot;,
+                          color = &quot;Plant_Type&quot;,
+                          shape = &quot;Treatment&quot;) +
+  scale_color_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                     name = &quot;Plant Type&quot;) +
+  theme_bw()+
+  geom_point(size=3.8)
+
+p_jac &lt;- p_jac +
+  scale_shape_manual(values = c(15,16,17,18),
+                     labels = c(&quot;Pi&quot;, &quot;Low P&quot;, &quot;Phi&quot;, &quot;Pi/Phi mix&quot;))
+
+p_jac &lt;- p_jac +
+  geom_mark_ellipse(aes(fill= Plant_Type,
+                        color= Plant_Type), # tiene que ser igual que arriba
+                    expand = c(0.0035)) + # ancho del circulo
+  scale_fill_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                    name = &quot;Plant Type&quot;)
+
+p_jac
+
+# El tercero Jaccard y ordinacion PCoA
+
+p_jac_PCoA &lt;- plot_ordination(Psoil_filt, # objeto
+                          jaccard_ord_PCoA, # distancia jac con NMDS
+                          &quot;samples&quot;,
+                          color = &quot;Plant_Type&quot;,
+                          shape = &quot;Treatment&quot;) +
+  scale_color_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                     name = &quot;Plant Type&quot;) +
+  theme_bw()+
+  geom_point(size=3.8)
+
+p_jac_PCoA &lt;- p_jac_PCoA +
+  scale_shape_manual(values = c(15,16,17,18),
+                     labels = c(&quot;Pi&quot;, &quot;Low P&quot;, &quot;Phi&quot;, &quot;Pi/Phi mix&quot;))
+
+p_jac_PCoA &lt;- p_jac_PCoA +
+  geom_mark_ellipse(aes(fill= Plant_Type,
+                        color= Plant_Type), # tiene que ser igual que arriba
+                    expand = c(0.0035)) + # ancho del circulo
+  scale_fill_manual(values = c(&quot;burlywood3&quot;,&quot;steelblue&quot;,&quot;lightpink&quot;),
+                    name = &quot;Plant Type&quot;)
+
+p_jac_PCoA
+
+(p_bray|p_bray_PCoA)/(p_jac|p_jac_PCoA)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>En realidad no habian diferencias en los graficos podemos ver que los
+patrones se mantienen</p>
+</div>
+<div id="analisis-estadisco-multivariable" class="section level1">
+<h1>Analisis estadisco multivariable</h1>
+<div id="permanova" class="section level2">
+<h2>PERMANOVA</h2>
+<p>Para probar si los grupos son diferentes con respecto al centroide y
+la dispersión, se realizará una prueba estadística PERMANOVA. Para ello
+se utilizará una extensión multivariada de ANOVA, ya que hay muchas OTU
+que se utilizarán en la prueba. La extensión se basa en distancias entre
+muestras. La prueba compara distancias de muestras dentro del mismo
+grupo con distancias de muestras de diferentes grupos. Si la distancia
+entre muestras de diferentes grupos es mucho mayor que las muestras del
+mismo grupo, concluimos que los grupos no son iguales.</p>
+<p>Para probar la importancia del resultado, se utiliza una prueba de
+permutación. Por lo tanto, todas las muestras se mezclan aleatoriamente
+en los grupos y la prueba se repite muchas veces. Si la relación (entre
+la distancia del grupo/la distancia dentro del grupo) es mucho mayor
+para los datos originales que para las permutaciones, concluimos que hay
+una diferencia estadísticamente significativa.</p>
+<p>La prueba se puede aplicar en combinación con cualquier medida de
+distancia.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWRvbmlzMihTb2lsQVNWcyB+IFRyZWF0bWVudCAqIFBsYW50X1R5cGUsXG4gICAgICAgIGRhdGEgPSBTb2lsTWV0YSwgXG4gICAgICAgIHBlcm11dGF0aW9ucyA9IDEwMDAwLCAjIGVzdGUgbnVtZXJvIGVzIGFyYml0cmFyaW9cbiAgICAgICAgbWV0aG9kID0gXCJqYWNjYXJkXCIsIGJpbmFyeT1UUlVFKSAjIGJpbmFyeSBzaWduaWZpY2EgYXVzZW5jaWFzL3ByZXNlbmNpYVxuXG5gYGAifQ== -->
+<pre class="r"><code>adonis2(SoilASVs ~ Treatment * Plant_Type,
+        data = SoilMeta, 
+        permutations = 10000, # este numero es arbitrario
+        method = &quot;jaccard&quot;, binary=TRUE) # binary significa ausencias/presencia
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGVybXV0YXRpb24gdGVzdCBmb3IgYWRvbmlzIHVuZGVyIHJlZHVjZWQgbW9kZWxcblRlcm1zIGFkZGVkIHNlcXVlbnRpYWxseSAoZmlyc3QgdG8gbGFzdClcblBlcm11dGF0aW9uOiBmcmVlXG5OdW1iZXIgb2YgcGVybXV0YXRpb25zOiAxMDAwMFxuXG5hZG9uaXMyKGZvcm11bGEgPSBTb2lsQVNWcyB+IFRyZWF0bWVudCAqIFBsYW50X1R5cGUsIGRhdGEgPSBTb2lsTWV0YSwgcGVybXV0YXRpb25zID0gMTAwMDAsIG1ldGhvZCA9IFwiamFjY2FyZFwiLCBiaW5hcnkgPSBUUlVFKVxuICAgICAgICAgICAgICAgICAgICAgRGYgU3VtT2ZTcXMgICAgICBSMiAgICAgIEYgUHIoPkYpXG5UcmVhdG1lbnQgICAgICAgICAgICAgMyAgMC4yMDY1MiAwLjEyMzk0IDAuOTc0MSAwLjc2MDZcblBsYW50X1R5cGUgICAgICAgICAgICAyICAwLjE0MzA1IDAuMDg1ODUgMS4wMTIxIDAuMzYzN1xuVHJlYXRtZW50OlBsYW50X1R5cGUgIDUgIDAuMzI3MzkgMC4xOTY0NyAwLjkyNjUgMC45Njc1XG5SZXNpZHVhbCAgICAgICAgICAgICAxNCAgMC45ODkzNyAwLjU5Mzc0ICAgICAgICAgICAgICBcblRvdGFsICAgICAgICAgICAgICAgIDI0ICAxLjY2NjMzIDEuMDAwMDAgICAgICAgICAgICAgIFxuIn0= -->
+<pre><code>Permutation test for adonis under reduced model
+Terms added sequentially (first to last)
+Permutation: free
+Number of permutations: 10000
+
+adonis2(formula = SoilASVs ~ Treatment * Plant_Type, data = SoilMeta, permutations = 10000, method = &quot;jaccard&quot;, binary = TRUE)
+                     Df SumOfSqs      R2      F Pr(&gt;F)
+Treatment             3  0.20652 0.12394 0.9741 0.7606
+Plant_Type            2  0.14305 0.08585 1.0121 0.3637
+Treatment:Plant_Type  5  0.32739 0.19647 0.9265 0.9675
+Residual             14  0.98937 0.59374              
+Total                24  1.66633 1.00000              </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>La PERMANOVA es muy sensible anumeros bajos de muestreo</p>
+<div id="variables-opcionales" class="section level3">
+<h3>Variables opcionales</h3>
+<p>Estratificacion: Entre que grupos se haran las comparaciones</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgQnkgcGxhbnQgdHlwZVxuYWRvbmlzMihTb2lsQVNWcyB+IFRyZWF0bWVudCxcbiAgICAgICAgc3RyYXRhID0gU29pbE1ldGEkUGxhbnRfVHlwZSwgIyBzZXBhcmFyIGVudHJlIHRpcG8gZGUgcGxhbnRhXG4gICAgICAgIGRhdGEgPSBTb2lsTWV0YSwgXG4gICAgICAgIHBlcm11dGF0aW9ucyA9IDk5OSwgIyBlc3RlIG51bWVybyBlcyBhcmJpdHJhcmlvXG4gICAgICAgIG1ldGhvZCA9IFwiYnJheVwiKVxuXG4jIyBCeSB0cmVhdG1lbnRcbmFkb25pczIoU29pbEFTVnMgfiBQbGFudF9UeXBlLCAjIGxhIHZhcmlhYmxlICBhbmFsaXphclxuICAgICAgICBzdHJhdGEgPSBTb2lsTWV0YSRUcmVhdG1lbnQsICMgbG9zIGdydXBvcyBwb3IgbG9zIHF1ZSB2YXMgYW5hbGl6YXJcbiAgICAgICAgZGF0YSA9IFNvaWxNZXRhLCBcbiAgICAgICAgcGVybXV0YXRpb25zID0gOTk5LCAjIGVzdGUgbnVtZXJvIGVzIGFyYml0cmFyaW9cbiAgICAgICAgbWV0aG9kID0gXCJicmF5XCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>## By plant type
+adonis2(SoilASVs ~ Treatment,
+        strata = SoilMeta$Plant_Type, # separar entre tipo de planta
+        data = SoilMeta, 
+        permutations = 999, # este numero es arbitrario
+        method = &quot;bray&quot;)
+
+## By treatment
+adonis2(SoilASVs ~ Plant_Type, # la variable  analizar
+        strata = SoilMeta$Treatment, # los grupos por los que vas analizar
+        data = SoilMeta, 
+        permutations = 999, # este numero es arbitrario
+        method = &quot;bray&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Si el P_value es inferior a 0.05 por lo que podemos concluir que la
+intravariabilidad es menor que la intervariabilidad entre los dos itios
+y que tenemos un efecto significativo</p>
+</div>
+</div>
+<div id="anosim" class="section level2">
+<h2>ANOSIM</h2>
+<p>Es la version no parametrica de un PEMANOVA. ANOSIM evalua si las
+distancias o diferencias entro del grupo son mayores o iguales a las
+distancias entre grupos utilizando los rangos de todas las distancias de
+muestra por pares. Es menos robusto que la PERMANOVA pero es un analisis
+mas simplificado.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYW5vc2ltKFNvaWxBU1ZzLCAjIFRhYmxhIGRlIGNvbnRlb1xuICAgICAgIFNvaWxNZXRhJFBsYW50X1R5cGUsICMgbWV0YWRhdG9zXG4gICAgICAgZGlzdGFuY2UgPSBcImJyYXlcIixcbiAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTkpXG5cbmFub3NpbShTb2lsQVNWcywgIyBUYWJsYSBkZSBjb250ZW9cbiAgICAgICBTb2lsTWV0YSRUcmVhdG1lbnQsICMgbWV0YWRhdG9zXG4gICAgICAgZGlzdGFuY2UgPSBcImJyYXlcIixcbiAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTkpICMgbm8gaGF5IHNpZ25pZmljYW5jaWFzXG5cbiMgKHIpIGVudHJlIG1hcyBjZXJjYSBkZSAxIGVzIG1lam9yLCBtYXMgY2VyY2EgYSAwIGVzdGFuIG1heW9ybWVudGUgZGlzdHJpYnVpZG9zXG5gYGAifQ== -->
+<pre class="r"><code>anosim(SoilASVs, # Tabla de conteo
+       SoilMeta$Plant_Type, # metadatos
+       distance = &quot;bray&quot;,
+       permutations = 999)
+
+anosim(SoilASVs, # Tabla de conteo
+       SoilMeta$Treatment, # metadatos
+       distance = &quot;bray&quot;,
+       permutations = 999) # no hay significancias
+
+# (r) entre mas cerca de 1 es mejor, mas cerca a 0 estan mayormente distribuidos</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Al interpretar estos resultados, desea observar la estadistica R de
+ANOSIM y los valores de significancia. Un valor de significancia
+inferior a 0.05 generalmente se considera estadisticamente significativo
+y significa que s epuede rechazar la hipotesis nula. Por lo tanto,
+existe una diferencia estadisticamente significativa en las comunidades
+microbianas entre sus grupos. Mayor que 0.05 significa que no hay
+diferencia estadistica entre las comunidades microbianas de su
+grupos.</p>
+<p>” +La estadistica “R” de ANOSIM compara la media de las disimilitude
+clasificadas dentro de los grupos. Un valor de R cercano a “1” sugieres
+disimilitud entre grupos, mientras que un valor de R cercano a “0”
+sugiere una distribucion uniforme de rangos altos y bajos dentro y entre
+grupos”. En otras palabras, cuanto mayor sea el valor R, más diferentes
+serán sus grupos en términos de composición de la comunidad
+microbiana.</p>
+</div>
+<div id="mini-ejercicio-2" class="section level2">
+<h2>Mini ejercicio</h2>
+<p>Repetir este analisis estadistico con jaccard</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYW5vc2ltKFNvaWxBU1ZzLCAjIFRhYmxhIGRlIGNvbnRlb1xuICAgICAgIFNvaWxNZXRhJFBsYW50X1R5cGUsICMgbWV0YWRhdG9zXG4gICAgICAgZGlzdGFuY2UgPSBcImphY2NhcmRcIixcbiAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTkpXG5cbmFub3NpbShTb2lsQVNWcywgIyBUYWJsYSBkZSBjb250ZW9cbiAgICAgICBTb2lsTWV0YSRUcmVhdG1lbnQsICMgbWV0YWRhdG9zXG4gICAgICAgZGlzdGFuY2UgPSBcImphY2NhcmRcIixcbiAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTkpXG5gYGAifQ== -->
+<pre class="r"><code>anosim(SoilASVs, # Tabla de conteo
+       SoilMeta$Plant_Type, # metadatos
+       distance = &quot;jaccard&quot;,
+       permutations = 999)
+
+anosim(SoilASVs, # Tabla de conteo
+       SoilMeta$Treatment, # metadatos
+       distance = &quot;jaccard&quot;,
+       permutations = 999)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
 </div>
 <div id="ejercicio-final" class="section level1">
 <h1>Ejercicio final</h1>
+<p>Realizar analisis de div beta comparando la variable “SeqTech” como
+grupos usando “bray”</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YShcIkdsb2JhbFBhdHRlcm5zXCIpXG5gYGAifQ== -->
-<pre class="r"><code>data(&quot;GlobalPatterns&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Van a usar los datos de “GlobalPatterns” que comparan las comunidades
-microbianas de 25 muestras ambientales y tres “comunidades simuladas”
-conocidas (un total de 9 tipos de muestras) a una profundidad promedio
-de 3.1 millones de lecturas por muestra. Con estos datos seguiran el
-flujo de trabajo que acabamos de ver y para el analisis estadistico
-compararan _“SampleType”. Para este ejercicio solo analicen y grafiquen
-Chao1 y Shannon.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmdW5jaW9uIGRlIHBoeWxvc2VxXG5hbHBoYWRpdiA8LSBlc3RpbWF0ZV9yaWNobmVzcyhHbG9iYWxQYXR0ZXJucywgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzcGxpdD0gVFJVRSwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZWFzdXJlcyA9IGMoXCJDaGFvMVwiLFwiU2hhbm5vblwiKSkgXG5cbiMgU2VwYXJhciBtZXRkYXRvcyBwYXJhIHBvbmVybG9zIGVuIGxhIHRhYmxhIGRlIGRpdiBhbGZhXG5zYW1wbGVtZXRhIDwtIGFzLmRhdGEuZnJhbWUoR2xvYmFsUGF0dGVybnNAc2FtX2RhdGEpXG5hbHBoYWRpdiA8LSBjYmluZChzYW1wbGVtZXRhLGFscGhhZGl2KVxuXG5lc3RpbWF0ZV9yaWNobmVzcyhHbG9iYWxQYXR0ZXJucywgc3BsaXQgPSBUUlVFLFxuICAgICAgICAgICAgICAgICAgbWVhc3VyZXMgPSBjKFwiQ2hhbzFcIixcIlNoYW5ub25cIikpXG5cbiMgR3JhZmljbyB1c2FuZG8gbGEgZnVuY2lvbiBkZSBwaHlsb3NlcVxuZ3JhZl9hbGZhIDwtIHBsb3RfcmljaG5lc3MoR2xvYmFsUGF0dGVybnMsIHg9IFwiU2FtcGxlVHlwZVwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZWFzdXJlcyA9IGMoXCJDaGFvMVwiLFwiU2hhbm5vblwiKSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSBcIlNhbXBsZVR5cGVcIikrXG4gIHNjYWxlX2NvbG9yX21hbnVhbCh2YWx1ZXMgPSBjKFwiIzhCMEE1MFwiLCBcIm1hcm9vbjJcIixcImRhcmtvcmFuZ2UxXCIsIFwiI0EwMjBGMFwiLCBcIiMwMEJGRkZcIiwgXCIjQ0RDRDAwXCIsIFwiIzAwOEI0NVwiLCBcIiMwMENEMDBcIiwgXCIjNDM2RUVFXCIpLFxuICAgICAgICAgICAgICAgICAgICAgbmFtZSA9IFwiU2FtcGxlVHlwZVwiKStcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGhlbWVfYncoKVxuZ3JhZl9hbGZhXG5cbiMjIFByaW1lcm8gcmV2aXNhbW9zIG5vcm1hbGlkYWQgIyNcblxuIyBzaGFwaXJvIHRlc3RcbmZvcihpIGluIDg6MTApe1xuICBzaGFwaXJvIDwtIHNoYXBpcm8udGVzdChhbHBoYWRpdlssaV0pXG4gIG5vcm1hbCA8LSBpZmVsc2Uoc2hhcGlyb1tbXCJwLnZhbHVlXCJdXT4wLjA1LCBcIllFU1wiLCBcIk5PXCIpXG4gIHByaW50KGMoaSxub3JtYWwpKVxufVxuXG4jIEhpc3RvZ3JhbWFcbmhpc3QoYWxwaGFkaXYkQ2hhbzEpXG5oaXN0KGxvZyhhbHBoYWRpdiRDaGFvMSkpICMgbm8gc2UgcHVlZGUgbm9ybWFsaXphciBwb3IgbG8gcXVlIHNlIGRlYmUgdXNhciB1biB0ZXN0IG5vIHBhcmFtZXRyaWNvIEtydXNrYWwgV2FsbGlzXG5cbmhpc3QoYWxwaGFkaXYkU2hhbm5vbilcbmhpc3Qoc3FydChhbHBoYWRpdiRTaGFubm9uKSkgIyBzaSBzZSBub3JtYWxpem8gcG9yIGxvIHF1ZSBzZSBwcm9jZWRlIGNvbiBhbm92YVxuXG4jIFJldmlzYXIgaG9tb2dlbmVpZGFkIGRlIHZhcmlhbnphXG5sZXZlbmVUZXN0KHNxcnQoU2hhbm5vbikgfiBTYW1wbGVUeXBlLCBkYXRhID0gYWxwaGFkaXYpICMgcHZhbHVlPSAwLjA0OFxuXG4jI0FOT1ZBXG5hZF9hbm92YSA8LSBhb3Yoc3FydChTaGFubm9uKSB+IFNhbXBsZVR5cGUsXG4gICAgICAgICAgICAgICAgZGF0YSA9IGFscGhhZGl2KVxuQW5vdmEoYWRfYW5vdmEpICMgc2kgaGF5IGRpZmVyZW5jaWFzIHNpZ25pZmljYXRpdmFzXG5cblxuYWRfVHVrZXkgPC0gVHVrZXlIU0QoYWRfYW5vdmEpXG5cbiMgdXNhbmRvIGFncmljb2xhZVxuc3VtbWFyeShhZF9hbm92YSlcbnJ0b3V0IDwtIEhTRC50ZXN0KGFkX2Fub3ZhLCB0cnQgPSBcIlNhbXBsZVR5cGVcIiwgYWxwaGEgPSAwLjA1KVxuXG5cbmBgYCJ9 -->
-<pre class="r"><code># funcion de phyloseq
-alphadiv &lt;- estimate_richness(GlobalPatterns, 
-                              split= TRUE, 
-                              measures = c(&quot;Chao1&quot;,&quot;Shannon&quot;)) 
-
-# Separar metdatos para ponerlos en la tabla de div alfa
-samplemeta &lt;- as.data.frame(GlobalPatterns@sam_data)
-alphadiv &lt;- cbind(samplemeta,alphadiv)
-
-estimate_richness(GlobalPatterns, split = TRUE,
-                  measures = c(&quot;Chao1&quot;,&quot;Shannon&quot;))
-
-# Grafico usando la funcion de phyloseq
-graf_alfa &lt;- plot_richness(GlobalPatterns, x= &quot;SampleType&quot;, 
-                            measures = c(&quot;Chao1&quot;,&quot;Shannon&quot;),
-                                         color = &quot;SampleType&quot;)+
-  scale_color_manual(values = c(&quot;#8B0A50&quot;, &quot;maroon2&quot;,&quot;darkorange1&quot;, &quot;#A020F0&quot;, &quot;#00BFFF&quot;, &quot;#CDCD00&quot;, &quot;#008B45&quot;, &quot;#00CD00&quot;, &quot;#436EEE&quot;),
-                     name = &quot;SampleType&quot;)+
-                             theme_bw()
-graf_alfa
-
-## Primero revisamos normalidad ##
-
-# shapiro test
-for(i in 8:10){
-  shapiro &lt;- shapiro.test(alphadiv[,i])
-  normal &lt;- ifelse(shapiro[[&quot;p.value&quot;]]&gt;0.05, &quot;YES&quot;, &quot;NO&quot;)
-  print(c(i,normal))
-}
-
-# Histograma
-hist(alphadiv$Chao1)
-hist(log(alphadiv$Chao1)) # no se puede normalizar por lo que se debe usar un test no parametrico Kruskal Wallis
-
-hist(alphadiv$Shannon)
-hist(sqrt(alphadiv$Shannon)) # si se normalizo por lo que se procede con anova
-
-# Revisar homogeneidad de varianza
-leveneTest(sqrt(Shannon) ~ SampleType, data = alphadiv) # pvalue= 0.048
-
-##ANOVA
-ad_anova &lt;- aov(sqrt(Shannon) ~ SampleType,
-                data = alphadiv)
-Anova(ad_anova) # si hay diferencias significativas
-
-
-ad_Tukey &lt;- TukeyHSD(ad_anova)
-
-# usando agricolae
-summary(ad_anova)
-rtout &lt;- HSD.test(ad_anova, trt = &quot;SampleType&quot;, alpha = 0.05)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0FOT1NJTVxuYW5vc2ltKGVudGVyb3R5cGVBU1ZzLCBcbiAgICAgICBFbnRlcm90eXBlTWV0YSRTZXFUZWNoLCBcbiAgICAgICBkaXN0YW5jZSA9IFwiYnJheVwiLFxuICAgICAgIHBlcm11dGF0aW9ucyA9IDk5OSlcblxuYGBgIn0= -->
+<pre class="r"><code>#ANOSIM
+anosim(enterotypeASVs, 
+       EnterotypeMeta$SeqTech, 
+       distance = &quot;bray&quot;,
+       permutations = 999)
 </code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxuYW5vc2ltKHggPSBlbnRlcm90eXBlQVNWcywgZ3JvdXBpbmcgPSBFbnRlcm90eXBlTWV0YSRTZXFUZWNoLCAgICAgIHBlcm11dGF0aW9ucyA9IDk5OSwgZGlzdGFuY2UgPSBcImJyYXlcIikgXG5EaXNzaW1pbGFyaXR5OiBicmF5IFxuXG5BTk9TSU0gc3RhdGlzdGljIFI6IDAuNzM0NSBcbiAgICAgIFNpZ25pZmljYW5jZTogMC4wMDEgXG5cblBlcm11dGF0aW9uOiBmcmVlXG5OdW1iZXIgb2YgcGVybXV0YXRpb25zOiA5OTlcbiJ9 -->
+<pre><code>
+Call:
+anosim(x = enterotypeASVs, grouping = EnterotypeMeta$SeqTech,      permutations = 999, distance = &quot;bray&quot;) 
+Dissimilarity: bray 
+
+ANOSIM statistic R: 0.7345 
+      Significance: 0.001 
+
+Permutation: free
+Number of permutations: 999</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkRpdmVyc2lkYWQgYWxmYSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSW50cm9kdWNjaW9uIA0KDQpDb21vIG1lbmNpb25lcyBhbnRlcmlvcm1lbnRlLCBsYSBkaXZlcnNpZGFkIGFsZmEgZXMgbGEgZGl2ZXJzaWRhZCBtZWRpYSBkZSBlc3BlY2llcyBlbiB1biBzaXRpbyBhIGVzY2FsYSBsb2NhbC4gRXN0ZSBlcyBlbCBwcmltZXIgbml2ZWwgZGUgY29tcGFyYWNpb24gZGUgZGl2ZXJzaWRhZCBxdWUgdmFuIGEgdXNhciBwYXJhIGNvbXBhcmFyIHN1cyBtdWVzdHJhcw0KDQpgYGB7cn0NCiMgTGlicmVyaWFzDQpsaWJyYXJ5KHBoeWxvc2VxKQ0KbGlicmFyeShnZ3Bsb3QyKQ0KbGlicmFyeShSQ29sb3JCcmV3ZXIpDQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCmxpYnJhcnkoZHBseXIpDQpsaWJyYXJ5KGNhcikNCmxpYnJhcnkoYnJlYWthd2F5KSAjIGNoYW8tYnVuZ2UNCmxpYnJhcnkobWljcm9iaW9tZSkNCmxpYnJhcnkoYWdyaWNvbGFlKQ0KDQpCaW9jTWFuYWdlcjo6aW5zdGFsbCgibWljcm9iaW9tZSIpDQoNCiMgRGF0YQ0KbG9hZCgidmlkX2VqZW1wbG9zLlJEYXRhIikNCmBgYA0KDQojIEluZGljZXMgZGUgZGl2ZXJzaWRhZCBhbGZhDQoNCkNhbGN1bGFyIGxhIGRpdmVyc2lkYWQgYWxmYWEgZW4gcmVhbGlkYWQgZXMgYmFzdGFudGUgc2VuY2lsbG8uIEVsIHJldG8gcGFyYSB1c3RlZGVzIHNlcmEgaW50ZXJwcmV0YXIgZXNvcyBkYXRvczoNCg0KYGBge3J9DQojIGZ1bmNpb24gZGUgcGh5bG9zZXENCmFscGhhZGl2IDwtIGVzdGltYXRlX3JpY2huZXNzKHZpZF9iaW8sICMgb2JqZXRvDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzcGxpdD0gVFJVRSwgIyBkZWZhdWx0DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZWFzdXJlcyA9IE5VTEwpICMgZWxlZ2lyIGVsIHRpcG8gZGUgaW5kaWNlLCBlbCBkZWZhdWx0IGVzIE5VTEwgeSB0ZSBkYSBjb21vIHJlc3VsdGFkbyA3IGluZGljZXMgZGlmZXJlbnRlcw0KDQojIFNlcGFyYXIgbWV0ZGF0b3MgcGFyYSBwb25lcmxvcyBlbiBsYSB0YWJsYSBkZSBkaXYgYWxmYQ0Kc2FtcGxlbWV0YSA8LSBhcy5kYXRhLmZyYW1lKHZpZF9iaW9Ac2FtX2RhdGEpDQphbHBoYWRpdiA8LSBjYmluZChzYW1wbGVtZXRhLGFscGhhZGl2KQ0KYGBgDQoNCkxhIGZ1bmNpb24gYmFzZSBkZSBwaHlsb3NlcSBjYWxjdWxhIDcgbWV0b2RvcyBkaWZlcmVudGVzIHBhcmEgZGl2ZXJzaWRhZCBhbGZhOg0KDQoxLiBfT2JzZXJ2ZWQ6XyBjdWVudGEgZWwgbnVtZXJvIGRlIGVzcGVjaWVzIHBvciBtdWVzdHJhIChyaXF1ZXphIGRlIGVzcGVjaWVzKQ0KDQoyLiBfQ2hhbzE6XyBFc3RpbWFkb3IgZGUgcmlxdWV6YSBkZSBlc3BlY2llIGJham8gbGEgaGlww7N0ZXNpcyBkZSBxdWUgbGFzIGVzcGVjaWVzIHJhcmFzIGRhbiBsYSBtYXlvciBpbmZvcm1hY2nDs24gc29icmUgYXF1ZWxsYXMgcXVlIG5vIHNlIG9ic2VydmFyb24uIENoYW8xIGVzIHVzYWRvIHBvciBsbyByZWd1bGFyIHBhcmEgbXVlc3RyYXMgcGVxdWXDsWFzIHkgZXMgcGFydGljdWxhcm1lbnRlIMO6dGlsIGVuIGRhdG9zIHNlc2dhZG9zIGEgZXNwZWNpZXMgZGUgYmFqYSBhYnVuZGFuY2lhLg0KDQozLiBfQUNFOl8gQWJ1bmRhbmNlLWJhc2VkIGNvdmVyYWdlIGVzdGltYXRvciAoQUNFKSBlcyBvdHJvIGVzdGltYWRvciBubyBwYXJhbWV0cmljbyBkZSByaXF1ZXphIGRlIGVzcGVjaWUgcXVlIHVzYSBsYSBjb3ZlcnR1cmEgZGUgbGEgbXVlc3RyYSwgYmFzYWRvIGVuIGxhIHN1bWEgZGUgbGFzIHByb2JhYmlsaWRhZGVzIGRlIGxhcyBlc3BlY2llcyBvYnNlcnZhZGFzDQoNCjQuIF9TaGFubm9uIEgnOl8gZXMgdW4gaW5kaWNlIHF1ZSBpbnRlZ3JhIHRhbnRvIHJpcXVlemEgY29tbyB1bmlmb3JtaWRhZC4gU2luIGVudHJhciBlbiBsYXMgbWF0ZW1hdGljYXMgU2hhbm5vbiBsZSBwb25lIG1hcyBlbmZhc2lzIGVuIHN1cyBjYWxjdWxvcyBhIGxhIHJpcXVlemEgZGUgZXNwZWNpZXMgY29tbyBjb21wb25lbnRlIHkgYSBsYSBjb2JlcnR1cmEgZGUgZXNwZWNpZXMgcmFyYXMuDQoNCjUuIF9TaW1wc29uIEQxOl8gRXMgdW5hIG1lZGlkYSBkZSBkaXZlcnNpZGFkIHF1ZSB0aWVuZSBlbiBjdWVudGEgZWwgbsO6bWVybyBkZSBlc3BlY2llcyBwcmVzZW50ZXMsIGFzw60gY29tbyBsYSBhYnVuZGFuY2lhIHJlbGF0aXZhIGRlIGNhZGEgZXNwZWNpZS4gQSBtZWRpZGEgcXVlIGF1bWVudGFuIGxhIHJpcXVlemEgeSBsYSB1bmlmb3JtaWRhZCBkZSBsYXMgZXNwZWNpZXMsIHRhbWJpw6luIGF1bWVudGEgbGEgZGl2ZXJzaWRhZC4gRWwgdmFsb3IgZGUgRCBvc2NpbGEgZW50cmUgMCB5IDEuIEVsIMOtbmRpY2UgZGUgU2ltcHNvbiBwb25lIG1heW9yIMOpbmZhc2lzIGVuIGVsIGNvbXBvbmVudGUgZGUgdW5pZm9ybWlkYWQgeSBlbiBsb3MgdGlwb3MgZGUgY29iZXJ0dXJhIGRvbWluYW50ZXMuDQoNCjYuIERhZG8gcXVlIFNpbXBzb24gbWlkZSBsYSBwcm9iYWJpbGlkYWQgZGUgcXVlIGRvcyBpbmRpdmlkdW9zIHNlbGVjY2lvbmFkb3MgYWxlYXRvcmlhbWVudGUgZGUgdW5hIG11ZXN0cmEgcGVydGVuZXpjYW4gYSBsYSBtaXNtYSBlc3BlY2llIChvIGEgYWxndW5hIGNhdGVnb3LDrWEgZGlzdGludGEgZGUgZXNwZWNpZSkgdGFtYmllbiBzZSBwdWVkZSBjYWxjdWxhciBfSW52U2ltcHNvbl8NCg0KNy4gX0Zpc2hlcjpfIEVzdGUgZXMgdW4gw61uZGljZSBwYXJhbcOpdHJpY28gZGUgZGl2ZXJzaWRhZCBxdWUgc3Vwb25lIHF1ZSBsYSBhYnVuZGFuY2lhIGRlIGVzcGVjaWVzIHNpZ3VlIGxhIGRpc3RyaWJ1Y2nDs24gZGUgbGEgc2VyaWUgbG9nYXLDrXRtaWNhLg0KDQpgYGB7cn0NCmVzdGltYXRlX3JpY2huZXNzKHZpZF9iaW8sIHNwbGl0ID0gVFJVRSwNCiAgICAgICAgICAgICAgICAgIG1lYXN1cmVzID0gYygiT2JzZXJ2ZWQiLCJDaGFvMSIsIlNoYW5ub24iLCJTaW1wc29uIikpICMgZXN0YXMgc29uIGxhcyBtYXMgY29tdW5lcyBhIHVzYXJzZQ0KYGBgDQoNCiMjIE90cm9zIGluZGljZXMgZGUgZGl2ZXJzaWRhZCBxdWUgcHVlZGVuIGNhbGN1bGFyDQoNCmBgYHtyfQ0KIyBkZWwgcGFxdWV0ZSBicmVha2F3YXkNCmNoYW9fYnVuZ2UodmlkX2JpbywgY3V0b2ZmID0gMTApICMgU2ltaWxhciBhIENoYW8xIHBlcm8gbWFzIHNlbnNpYmxlDQojIGN1YW5kbyB1c2FybG8/IGN1YW5kbyB0ZW5nYSBiYWphIGFidW5kYW5jaWEgeSBncmFuIHBvcmNlbnRhamUgZGUgbXVlc3RyYXMgcmFyYXMNCg0KIyBkZWwgcGFxdWV0ZSBtaWNyb2Jpb21lDQpFdmVubmVzcyA8LSBldmVubmVzcyh2aWRfYmlvLCAjIG9iamV0bw0KICAgICAgICAgICAgICAgICAgICAgaW5kZXggPSAnYWxsJywgDQogICAgICAgICAgICAgICAgICAgICB6ZXJvZXMgPSBUUlVFLCBkZXRlY3Rpb24gPSAwKSAjIGRlZmF1bHQNCg0KIyBVbmlyIHkgZ3VhcmRhciBudWVzdHJhIHRhYmxhDQphbHBoYWRpdiA8LSBjYmluZChhbHBoYWRpdiwgRXZlbm5lc3MpDQp3cml0ZS5jc3YoYWxwaGFkaXYsICJ+L0N1cnNvUi9DdXJzb1JnaXQvTWF0ZXJpYWxlcy9EaXZlcnNpZGFkX2FsZmEuY3N2IikNCmBgYA0KDQpEZSBlc3RhIHNlZ3VuZGEgc2VjY2lvbiBlcyBpbXBvcnRhbnRlIG5vdGFyIHF1ZSBsYSBmdW5jaW9uIGRlIGV2ZW5uZXNzKCkgY2FsY3VsYSBvdHJvcyBpbmRpY2VzIGRlIGRpdmVyc2lkYWQgYWxmYSBsb3MgY3VhbGVzIGVzdGFuIGVuZm9jYWRvcyBlbiBsYSB1bmlmb3JtaWRhZCBkZSBlc3BlY2llcy4gU2kgbm90YW4gbGEgbWF5b3IgcGFydGUgZGUgbG9zIGluZGljZXMgYW50ZXJpb3JlcyBsZSBkYWJhbiBtYXMgcGVzbyBhIGxhIHJpcXVlemEgZGUgZXNwZWNpZXMgcG9yIGxvIHF1ZSBlbCBwYXF1ZXRlIG1pY3JvYmlvbWUgc2UgZW5mb2NhIGVuIG90cm9zIHRpcG9zIGRlIGluZGljZXMuIENvbW8gZXN0YSBjbGFzZSBubyBlcyBwYXJhIGV4cGxpY2FybGVzIGNhZGEgdW5vIGRlIGVsbG9zIGRlIGFxdWkgZWwgdW5pY28gcXVlIGxlcyBwdWVkZSBzZXIgdXRpbCBlbiBlbCBmdXR1cm8gZXM6DQoNCjguIF9QaWVsb3U6XyBFcXVpZGFkICh0YW1iacOpbiBjb25vY2lkYSBjb21vIGVxdWlkYWQgZGUgUGllbG91KSBlcyBsYSBkaXZlcnNpZGFkIGRlIFNoYW5ub24gZGl2aWRpZGEgcG9yIGVsIGxvZ2FyaXRtbyBkZWwgbsO6bWVybyBkZSB0YXhvbmVzLiBFc3RvIG1pZGUgbGEgdW5pZm9ybWlkYWQgY29uIGxhIHF1ZSBsb3MgaW5kaXZpZHVvcyBzZSBkaXZpZGVuIGVudHJlIGxvcyB0YXhvbmVzIHByZXNlbnRlcy4NCg0KW01hcyBpbmZvIGVuIGluZGljZXMgZGUgZGl2ZXJzaWRhZF0oaHR0cHM6Ly93d3cubmhtLnVpby5uby9lbmdsaXNoL3Jlc2VhcmNoL3Jlc291cmNlcy9wYXN0L2hlbHAvZGl2ZXJzaXR5Lmh0bWwpDQoNCiMgR3JhZmljYW5kbyBkaXZlcnNpZGFkIGFsZmENCg0KYGBge3J9DQojIEdyYWZpY28gdXNhbmRvIGxhIGZ1bmNpb24gZGUgcGh5bG9zZXENCg0KZ3JhZl9hbGZhIDwtIHBsb3RfcmljaG5lc3ModmlkX2JpbywgeD0gIlRyYXRhbWllbnRvIiwgIyB2YXIgaW5kZXBlbmRpZW50ZSAxDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVhc3VyZXMgPSBjKCJPYnNlcnZlZCIsIlNoYW5ub24iLCJTaW1wc29uIiwgIkNoYW8xIiksDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSAiU3VlbG8iKSArICMgdmFyIGluZGVwZW5kaWVudGUgMg0KICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYygiIzhCMEE1MCIsICIjNDNDRDgwIiksDQogICAgICAgICAgICAgICAgICAgICBuYW1lID0gIlN1ZWxvIikrDQogIHRoZW1lX2J3KCkNCg0KZ3JhZl9hbGZhJGxheWVycyA8LSBncmFmX2FsZmEkbGF5ZXJzWy0xXQ0KZ3JhZl9hbGZhIDwtIGdyYWZfYWxmYSArIGdlb21fcG9pbnQoc2l6ZT00LCBhbHBoYT0wLjMpDQpncmFmX2FsZmENCg0KIyBBIG1hbm8gdXNhbmRvIGxhIHRhYmxhIHF1ZSBjcmVhbW9zDQoNCiMjIFBpZWxvdQ0KZ2dwbG90KGFscGhhZGl2LCAjIG9iamV0bw0KICAgICAgIGFlcyh4PVRyYXRhbWllbnRvLA0KICAgICAgICAgICB5PXBpZWxvdSwgIyB5IHNlcmlhIGVsIGluZGljZQ0KICAgICAgICAgICBjb2xvcj0gU3VlbG8pKSsNCiAgZ2VvbV9wb2ludChzaXplPTQsIGFscGhhPTAuNCkrDQogIHNjYWxlX2NvbG9yX21hbnVhbCh2YWx1ZXMgPSBjKCIjOEIwQTUwIiwgIiM0M0NEODAiKSkrDQogIHRoZW1lX2J3KCkNCiAgICAgICAgIA0KYGBgDQoNCiMgQW5hbGlzaXMgZXN0YWRpc3RpY28NCg0KQ29tbyBjb24gbG9zIGRhdG9zIHF1ZSB2aW1vcyBkdXJhbnRlIGVzZSBtb2R1bG8sIGVsIGFuYWxpc2lzIGVzdGFkaXN0aW8gc2VndWlyYSBlbCBtaXNtbyBmbHVqbyBkZSB0cmFiYWpvIHNlZ3VuIGxhIG5hdHVyYWxlemEgZGUgbG9zIGRhdG9zDQoNCmBgYHtyfQ0KIyMgUHJpbWVybyByZXZpc2Ftb3Mgbm9ybWFsaWRhZCAjIw0KDQojIHNoYXBpcm8gdGVzdA0KZm9yKGkgaW4gMzoxNil7DQogIHNoYXBpcm8gPC0gc2hhcGlyby50ZXN0KGFscGhhZGl2WyxpXSkNCiAgbm9ybWFsIDwtIGlmZWxzZShzaGFwaXJvW1sicC52YWx1ZSJdXT4wLjA1LCAiWUVTIiwgIk5PIikNCiAgcHJpbnQoYyhpLG5vcm1hbCkpDQp9DQoNCiMgaGlzdG9ncmFtYXMgc2kgZXMgcXVlIG5vIGVyYW4gbm9ybWFsZXMNCmBgYA0KDQpEYWRvIHF1ZSANCg0KYGBge3J9DQojIFJldmlzYXIgaG9tb2dlbmVpZGFkIGRlIHZhcmlhbnphDQpmb3IoaSBpbiAzOm5jb2woYWxwaGFkaXYpKXsgIyBlbXBpZXphbiBlbiBjb2x1bW5hIHF1ZSB0ZXJtaW5hbiBtZXRhZGF0b3MNCiAgTGV2X2V4IDwtIGxldmVuZVRlc3QoYWxwaGFkaXZbLGldIH4gU3VlbG8gKiBUcmF0YW1pZW50bywjIHZhci5pbmRlcA0KICAgICAgICAgICAgICAgICAgICAgICBkYXRhID0gYWxwaGFkaXYpDQogIGxldmVuZSA8LSBpZmVsc2UoTGV2X2V4W1siUHIoPkYpIl1dPjAuMDUsICJZRVMiLCAiTk8iKQ0KICBwcmludChjKGksbGV2ZW5lKSkNCn0NCg0KIyBDb21vIHNvbG8gdGVuZW1vcyB1bmEgbXVlc3RyYSBubyBoYXkgdmFyaWFuemEgcG9yIGxvIHF1ZSBubyBzZSBwdWVkZSBjYWxjdWxhciBlbCB0ZXN0IGxldmVuZQ0KDQojIE9ic2VydmVkDQoNCiMjQU5PVkENCmFkX2Fub3ZhIDwtIGFvdihPYnNlcnZlZCB+IFN1ZWxvICogVHJhdGFtaWVudG8sDQogICAgICAgICAgICAgICAgZGF0YSA9IGFscGhhZGl2KQ0KQW5vdmEoYWRfYW5vdmEpDQojIHNhbGUgZXJyb3IgcG9ycXVlIGVzdGFtb3MgdXNhbmRvIHVuYSBzb2xhIG11ZXN0cmEsIHNpIGh1YmllcmFuIHNhbGlkbyBkaWZlcmVuY2lhcyBzZSBwcm9jZWRlIGNvbiB1biB0dWtleQ0KDQphZF9UdWtleSA8LSBUdWtleUhTRChhZF9hbm92YSkNCmBgYA0KDQpEYWRvIHF1ZSBzb2xvIHRlbmVtb3MgIiAxIG11ZXN0cmEiIHBvciB0cmF0YW1pZW50byBubyBlcyBjb3JyZWN0byBjYWxjdWxhciB1biBBTk9WQSB5YSBxdWUgbGEgQU5PVkEgdXNhIF9ncnVwb3NfLiBMbyBpZGVhbCBlbiBlc3RlIGNhc28gc2VyaWEgdHJhdGFyIGRlIGFncnVwYXIgbnVlc3RyYXMgbXVlc3RyYXMgcG9yIHZhcmlhYmxlcyB5IGxsZXZhciBhIGNhYm8gdW5hIFQgZGUgc3R1ZGVudDoNCg0KYGBge3J9DQp0LnRlc3QoT2JzZXJ2ZWQgfiBUcmF0YW1pZW50bywgZGF0YSA9IGFscGhhZGl2KSAjIG5vIHNpZ25pZmljYXRpdm8NCnQudGVzdChDaGFvMSB+IFRyYXRhbWllbnRvLCBkYXRhID0gYWxwaGFkaXYpICMgbm8gc2lnbmlmaWNhdGl2bw0KdC50ZXN0KFNoYW5ub24gfiBUcmF0YW1pZW50bywgZGF0YSA9IGFscGhhZGl2KSAjIG5vIHNpZ25pZmljYXRpdm8NCnQudGVzdChwaWVsb3UgfiBUcmF0YW1pZW50bywgZGF0YSA9IGFscGhhZGl2KSAjIG5vIHNpZ25pZmljYXRpdm8NCnQudGVzdChTaW1wc29uIH4gVHJhdGFtaWVudG8sIGRhdGEgPSBhbHBoYWRpdikgIyBzYWxpbyBzaWduaWZpY2F0aXZvDQoNCiMgc2kgaGF5IGRpZmVyZW5jaWEgZW4gbGEgZGl2ZXJzaWRhZCBkZSBhbGZhIHNlZ3VuIGVsIHRlc3QgZGUgc2ltcHNvbiwgcG9yIGxvIHF1ZSBzaSBoYXkgZGlmZXJlbmNpYSBlbiBlbCBzdWVsbyBhbCB1c2FyIGVsIGJpb2VzdGltdWxhbnRlDQoNCmBgYA0KDQpZYSBxdWUgZXNwZXJhbW9zIHF1ZSBsYSBhcGxpY2FjaW9uIGRlIG51ZXN0cm8gYmlvZXN0aW11bGFudGUgbWVqb3IgbGEgZGl2ZXJzaWRhZCBhbGZhIHNpbiBpbXBvcnRhciBlbCB0aXBvIGRlIHN1ZWxvIHkgYmFzYWRvcyBlbiBzaW1wc29uIHNpIHNvbiBkaWZlcmVudGVzDQoNCmBgYHtyfQ0KIyBQZXJvIGNvbXByb2JhbW9zIHF1ZSBubyBoYXkgZGlmZXJlbmNpYXMgZW4gdGlwbyBkZSBzdWVsbw0KdC50ZXN0KE9ic2VydmVkIH4gU3VlbG8sIGRhdGEgPSBhbHBoYWRpdikgIyBOUw0KdC50ZXN0KENoYW8xIH4gU3VlbG8sIGRhdGEgPSBhbHBoYWRpdikgIyBOUw0KdC50ZXN0KFNoYW5ub24gfiBTdWVsbywgZGF0YSA9IGFscGhhZGl2KSAjIE5TDQp0LnRlc3QocGllbG91IH4gU3VlbG8sIGRhdGEgPSBhbHBoYWRpdikgIyBOUw0KdC50ZXN0KFNpbXBzb24gfiBTdWVsbywgZGF0YSA9IGFscGhhZGl2KSAjIE5TDQoNCiMgRXMgYnVlbm8gcXVlIG5vIGhheWFuIGRpZmVyZW5jaWFzIGVuIGVsIHN1ZWxvIHBvcnF1ZSBhbCBkZXNjYXJ0YWxvcyBjb21vIHZhcmlhYmxlIG5vIGFmZWN0YW1vcyBlbCBhbmFsaXNpcw0KYGBgDQoNCiMgRWplcmNpY2lvIGZpbmFsDQoNCmBgYHtyfQ0KZGF0YSgiR2xvYmFsUGF0dGVybnMiKQ0KYGBgDQoNClZhbiBhIHVzYXIgbG9zIGRhdG9zIGRlICJHbG9iYWxQYXR0ZXJucyIgcXVlIGNvbXBhcmFuIGxhcyBjb211bmlkYWRlcyBtaWNyb2JpYW5hcyBkZSAyNSBtdWVzdHJhcyBhbWJpZW50YWxlcyB5IHRyZXMgImNvbXVuaWRhZGVzIHNpbXVsYWRhcyIgY29ub2NpZGFzICh1biB0b3RhbCBkZSA5IHRpcG9zIGRlIG11ZXN0cmFzKSBhIHVuYSBwcm9mdW5kaWRhZCBwcm9tZWRpbyBkZSAzLjEgbWlsbG9uZXMgZGUgbGVjdHVyYXMgcG9yIG11ZXN0cmEuIENvbiBlc3RvcyBkYXRvcyBzZWd1aXJhbiBlbCBmbHVqbyBkZSB0cmFiYWpvIHF1ZSBhY2FiYW1vcyBkZSB2ZXIgeSBwYXJhIGVsIGFuYWxpc2lzIGVzdGFkaXN0aWNvIGNvbXBhcmFyYW4gXyJTYW1wbGVUeXBlIi4gUGFyYSBlc3RlIGVqZXJjaWNpbyBzb2xvIGFuYWxpY2VuIHkgZ3JhZmlxdWVuIENoYW8xIHkgU2hhbm5vbi4NCg0KYGBge3J9DQojIGZ1bmNpb24gZGUgcGh5bG9zZXENCmFscGhhZGl2IDwtIGVzdGltYXRlX3JpY2huZXNzKEdsb2JhbFBhdHRlcm5zLCANCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNwbGl0PSBUUlVFLCANCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1lYXN1cmVzID0gYygiQ2hhbzEiLCJTaGFubm9uIikpIA0KDQojIFNlcGFyYXIgbWV0ZGF0b3MgcGFyYSBwb25lcmxvcyBlbiBsYSB0YWJsYSBkZSBkaXYgYWxmYQ0Kc2FtcGxlbWV0YSA8LSBhcy5kYXRhLmZyYW1lKEdsb2JhbFBhdHRlcm5zQHNhbV9kYXRhKQ0KYWxwaGFkaXYgPC0gY2JpbmQoc2FtcGxlbWV0YSxhbHBoYWRpdikNCg0KZXN0aW1hdGVfcmljaG5lc3MoR2xvYmFsUGF0dGVybnMsIHNwbGl0ID0gVFJVRSwNCiAgICAgICAgICAgICAgICAgIG1lYXN1cmVzID0gYygiQ2hhbzEiLCJTaGFubm9uIikpDQoNCiMgR3JhZmljbyB1c2FuZG8gbGEgZnVuY2lvbiBkZSBwaHlsb3NlcQ0KZ3JhZl9hbGZhIDwtIHBsb3RfcmljaG5lc3MoR2xvYmFsUGF0dGVybnMsIHg9ICJTYW1wbGVUeXBlIiwgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVhc3VyZXMgPSBjKCJDaGFvMSIsIlNoYW5ub24iKSwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSAiU2FtcGxlVHlwZSIpKw0KICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYygiIzhCMEE1MCIsICJtYXJvb24yIiwiZGFya29yYW5nZTEiLCAiI0EwMjBGMCIsICIjMDBCRkZGIiwgIiNDRENEMDAiLCAiIzAwOEI0NSIsICIjMDBDRDAwIiwgIiM0MzZFRUUiKSwNCiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiU2FtcGxlVHlwZSIpKw0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aGVtZV9idygpDQpncmFmX2FsZmENCg0KIyMgUHJpbWVybyByZXZpc2Ftb3Mgbm9ybWFsaWRhZCAjIw0KDQojIHNoYXBpcm8gdGVzdA0KZm9yKGkgaW4gODoxMCl7DQogIHNoYXBpcm8gPC0gc2hhcGlyby50ZXN0KGFscGhhZGl2WyxpXSkNCiAgbm9ybWFsIDwtIGlmZWxzZShzaGFwaXJvW1sicC52YWx1ZSJdXT4wLjA1LCAiWUVTIiwgIk5PIikNCiAgcHJpbnQoYyhpLG5vcm1hbCkpDQp9DQoNCiMgSGlzdG9ncmFtYQ0KaGlzdChhbHBoYWRpdiRDaGFvMSkNCmhpc3QobG9nKGFscGhhZGl2JENoYW8xKSkgIyBubyBzZSBwdWVkZSBub3JtYWxpemFyIHBvciBsbyBxdWUgc2UgZGViZSB1c2FyIHVuIHRlc3Qgbm8gcGFyYW1ldHJpY28gS3J1c2thbCBXYWxsaXMNCg0KaGlzdChhbHBoYWRpdiRTaGFubm9uKQ0KaGlzdChzcXJ0KGFscGhhZGl2JFNoYW5ub24pKSAjIHNpIHNlIG5vcm1hbGl6byBwb3IgbG8gcXVlIHNlIHByb2NlZGUgY29uIGFub3ZhDQoNCiMgUmV2aXNhciBob21vZ2VuZWlkYWQgZGUgdmFyaWFuemENCmxldmVuZVRlc3Qoc3FydChTaGFubm9uKSB+IFNhbXBsZVR5cGUsIGRhdGEgPSBhbHBoYWRpdikgIyBwdmFsdWU9IDAuMDQ4DQoNCiMjQU5PVkENCmFkX2Fub3ZhIDwtIGFvdihzcXJ0KFNoYW5ub24pIH4gU2FtcGxlVHlwZSwNCiAgICAgICAgICAgICAgICBkYXRhID0gYWxwaGFkaXYpDQpBbm92YShhZF9hbm92YSkgIyBzaSBoYXkgZGlmZXJlbmNpYXMgc2lnbmlmaWNhdGl2YXMNCg0KDQphZF9UdWtleSA8LSBUdWtleUhTRChhZF9hbm92YSkNCg0KIyB1c2FuZG8gYWdyaWNvbGFlDQpzdW1tYXJ5KGFkX2Fub3ZhKQ0KcnRvdXQgPC0gSFNELnRlc3QoYWRfYW5vdmEsIHRydCA9ICJTYW1wbGVUeXBlIiwgYWxwaGEgPSAwLjA1KQ0KDQoNCmBgYA0KDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkRpdmVyc2lkYWQgQmV0YSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCmBgYHtyfQ0KIyBMaWJyZXJpYXMNCmxpYnJhcnkocGh5bG9zZXEpDQpsaWJyYXJ5KGdncGxvdDIpDQpsaWJyYXJ5KHZlZ2FuKSAjIGFuYWxpc2lzIGRlIGRpdmVyc2lkYWQgYmV0YQ0KbGlicmFyeShnZ2ZvcmNlKQ0KbGlicmFyeShwYXRjaHdvcmspDQoNCiMgRGF0YQ0KbG9hZCgidmlkX2VqZW1wbG9zLlJEYXRhIikNCmxvYWQoIlBzb2lsX2ZpbHQuUkRhdGEiKQ0KYGBgDQoNCiMgSW50cm9kdWNjaW9uDQoNCk1pZW50cmFzIHF1ZSBsYSBkaXZlcnNpZGFkIGFsZmEgcmVwcmVzZW50YSBsYSBkaXZlcnNpZGFkIGRlbnRybyBkZSB1biBlY29zaXN0ZW1hIG8gdW5hIG11ZXN0cmEsIGxhIGRpdmVyc2lkYWQgYmV0YSByZXByZXNlbnRhIGxhIGRpZmVyZW5jaWEgZW50cmUgZG9zIGVjb3Npc3RlbWFzL211ZXN0cmFzLiBFbiBvdHJhcyBwYWxhYnJhcywgwr9xdcOpIHRhbiBzaW1pbGFyZXMgbyBkaWZlcmVudGVzIHNvbiBkb3MgZWNvc2lzdGVtYXMgbyBtdWVzdHJhcz8gRW50b25jZXMsIGxhIGRpdmVyc2lkYWQgYmV0YSBlcyB1bmEgZGlzdGFuY2lhIGVudHJlIGRvcyBtdWVzdHJhcy4NCg0KRWwgYW7DoWxpc2lzIGJhc2FkbyBlbiBkaXN0YW5jaWEgZGUgbGEgZGl2ZXJzaWRhZCBiZXRhIHBhcmEgbWljcm9iaW9tYXMgcHVlZGUgc2VyIHVuYSBoZXJyYW1pZW50YSBwb2Rlcm9zYSBwYXJhIGRlc2N1YnJpciBudWV2YXMgYXNvY2lhY2lvbmVzIGVudHJlIGxhIGNvbXBvc2ljacOzbiBtaWNyb2JpYW5hIHkgdW5hIGFtcGxpYSB2YXJpZWRhZCBkZSBmZW5vdGlwb3MuIA0KDQpMYXMgbWVkaWRhcyBlY29sw7NnaWNhcyBkZSBsYSBkaXZlcnNpZGFkIGJldGEgdGllbmVuIGNvbW8gb2JqZXRpdm8gY2FwdHVyYXIgbGEgZGlmZXJlbmNpYSBnbG9iYWwgZW50cmUgZG9zIGNvbXVuaWRhZGVzIGVjb2zDs2dpY2FzLiBFbiBlbCBjb250ZXh0byBkZWwgYW7DoWxpc2lzIGRlIGRhdG9zIGRlbCBtaWNyb2Jpb21hLCBlc3RvIGNvcnJlc3BvbmRlIGEgZGlmZXJlbmNpYXMgZW50cmUgc3VqZXRvcyBlbiBsYSBjb21wb3NpY2nDs24gbWljcm9iaWFuYS4gRWwgYW7DoWxpc2lzIGJhc2FkbyBlbiBsYSBkaXN0YW5jaWEgbyDigJxhIG5pdmVsIGRlIGNvbXVuaWRhZOKAnSBsdWVnbyBjb21wYXJhIGVzdGFzIGRpZmVyZW5jaWFzIHBvciBwYXJlcyBlbnRyZSBzdWpldG9zIGNvbiBkaWZlcmVuY2lhcyBwb3IgcGFyZXMgY29uIHJlc3BlY3RvIGEgYWxnw7puIGZlbm90aXBvLg0KDQpFc3RhZGlzdGljYW1lbnRlLCBlbCBhbmFsaXNpcyB1c2FuZG8gZGlzaW1pbGl0dWRlcyBlcyBtZWpvciB5YSBxdWUgZXZpdGEgbGEgbmVjZXNpZGFkIGRlIHJlYWxpemFyIGFqdXN0ZXMgcGFyYSB1bmEgZ3JhbiBjYW50aWRhZCBkZSBjb21wYXJhY2lvbmVzIG3Dumx0aXBsZXMuIEFzaW1pc21vLCBsb3MgdGF4b25lcyBubyBleGlzdGVuIGRlIGZvcm1hIGFpc2xhZGEgc2lubyBxdWUgdGllbmVuIHJlbGFjaW9uZXMgZmlsb2dlbsOpdGljYXMgY29ub2NpZGFzIGxhcyBjdWFsZXMgc2UgcHVlZGVuIGluY2x1aXIgZW4gZWwgYW5hbGlzLiBPdHJhcyBjYXJhY3RlcsOtc3RpY2FzIGVzdHJ1Y3R1cmFsZXMsIGNvbW8gbGEgc2ltaWxpdHVkIGZ1bmNpb25hbCwgZXN0w6FuIGJham8gaW52ZXN0aWdhY2nDs24geSBlcyBwb3NpYmxlIHF1ZSBzZSBwdWVkYW4gaW5jb3Jwb3JhciBlbiBlbCBmdXR1cm8uDQoNCiMgVGlwb3MgZGUgZGlzdGFuY2lhcw0KDQpTaSBjcmVpYW4gcXVlIGV4aXN0ZW4gbXVjaG9zIG1ldG9kb3MgcGFyYSBhbmFsaXphciBkaXZlcnNpZGFkIGFsZmEsIGxhcyBjb3NhcyBzZSBjb21wbGljYW4gYXVuIG1hcyBjb24gbGEgZGl2ZXJzaWRhZCBiZXRhLiBQaHlsb3NlcSB0aWVuZSBpbnRlZ3JhZG9zIDQ0IHRpcG9zIGRlIGRpc3RhbmNpYXMgcXVlIHNlIHB1ZWRlbiBjYWxjdWxhciBwcm92ZW5pZW50ZXMgZGVsIHBhcXVldGUgdmVnYW4gKHkgYWRlbWFzIHVubyBwdWVkZSBjcmVhciBzdSBwcm9waWEgZm9ybXVsYSk6DQoNCmBgYHtyfQ0KZGlzdF9tZXRob2RzIDwtIHVubGlzdChkaXN0YW5jZU1ldGhvZExpc3QpDQpwcmludChkaXN0X21ldGhvZHMpDQpgYGANCg0KX1/Cv1Blcm8gZW50b25jZXMgY3VhbCBtZXRvZG8gZWxlZ2ltb3MgcGFyYSByZWFsaXphciBudWVzdHJvIGFuYWxpc2lzP19fDQoNCkxvcyBlY29sb2dpc3RhcyBtaWNyb2JpYW5vcyBubyB1dGlsaXphbiBkaXN0YW5jaWFzIGV1Y2xpZGlhbmFzLCBwZXJvIHN1ZWxlbiB1dGlsaXphciBkaXN0YW5jaWFzIGRlIEJyYXktQ3VydGlzLCBKYWNjYXJkIG8gVW5pZnJhYyBkZSBwZXNvIG8gc2luIHBlc28gcGFyYSBlc3RpbWFyIGxhIGJldGFkaXZlcnNpZGFkLg0KDQpMYSBkaXNpbWlsaXR1ZCBkZSBfQnJheS1DdXJ0aXNfIHNlIGJhc2EgZW4gZGF0b3MgZGUgb2N1cnJlbmNpYSAoYWJ1bmRhbmNpYSksIG1pZW50cmFzIHF1ZSBsYSBkaXN0YW5jaWEgZGUgX0phY2NhcmRfIHNlIGJhc2EgZW4gZGF0b3MgZGUgcHJlc2VuY2lhL2F1c2VuY2lhIChubyBpbmNsdXllIGluZm9ybWFjacOzbiBkZSBhYnVuZGFuY2lhKS4gTGFzIGRpc3RhbmNpYXMgX1VuaUZyYWNfIHRpZW5lbiBlbiBjdWVudGEgbGEgdGFibGEgZGUgb2N1cnJlbmNpYSB5IGxhIGRpdmVyc2lkYWQgZGUgZmlsb2dlbmlhIChkaXN0YW5jaWEgZGUgc2VjdWVuY2lhKS4gRGlzdGFuY2lhcyBVbmlGcmFjIHBvbmRlcmFkYXMgbyBubyBwb25kZXJhZGFzIGRlcGVuZGllbmRvIGRlIHNpIHNlIHRpZW5lIGVuIGN1ZW50YSBsYSBhYnVuZGFuY2lhIHJlbGF0aXZhIG8gc8OzbG8gbGEgcHJlc2VuY2lhL2F1c2VuY2lhLg0KTGFzIG3DqXRyaWNhcyBkZSBkaXN0YW5jaWFzIGVzdMOhbiBlbnRyZSAwIHkgMTogMCBzaWduaWZpY2EgY29tdW5pZGFkZXMgaWTDqW50aWNhcyBlbiBhbWJhcyBtdWVzdHJhcyB5IDEgc2lnbmlmaWNhIGNvbXVuaWRhZGVzIGRpZmVyZW50ZXMgZW4gYW1iYXMgbXVlc3RyYXMuDQoNClRvcDoNCg0KMS4gQnJheS1DdXJ0aXMNCg0KMi4gSmFjY2FyZCAobm8gdG9tYSBlbiBjdWVudGEgYWJ1bmRhbmNpYSkNCg0KMy4gVW5pZnJhYyAoc29sbyBzaSBzZSB0aWVuZW4gYXJib2xlcyBmaWxvZ2VuZXRpY29zKQ0KDQrCv1BvciBxdcOpIGxhcyBkaXN0YW5jaWFzIGRlIEJyYXktQ3VydGlzIG8gVW5pZnJhYyBzZXLDrWFuIG1lam9yZXMgcGFyYSBsb3MgZGF0b3MgZGUgbWljcm9iaW90YSBxdWUgbGEgZGlzdGFuY2lhIGV1Y2xpZGlhbmE/DQoNCkxvcyBkYXRvcyBkZSBtaWNyb2Jpb3RhIHNvbiBlc2Nhc29zIHkgZGlzdGFuY2lhcyBlc3BlY8OtZmljYXMsIGNvbW8gQnJheS1DdXJ0aXMsIEphY2NhcmQgbyBsYXMgZGlzdGFuY2lhcyBVbmlmcmFjIGRlIHBlc28vbm8gcGVzbywgYWJvcmRhbiBtZWpvciBlbCBwcm9ibGVtYSBkZSBsYSBwcmVzZW5jaWEgZGUgbXVjaG9zIGRvYmxlcyBjZXJvcyBlbiBsb3MgY29uanVudG9zIGRlIGRhdG9zLg0KDQojIENhbGN1bGFyIGRpc3RhbmNpYXMNCg0KYGBge3J9DQojIE1vZGlmaWNhciBwaHlsb3NlcQ0KVmlkMiA8LSB2aWRfYmlvDQoNClZpZDJAc2FtX2RhdGEgPC0gVmlkMkBzYW1fZGF0YVssMV0NCiMjIyMgQnJheSAjIyMjDQoNCmJyYXlfYmRpdiA8LSBwaHlsb3NlcTo6ZGlzdGFuY2UoUHNvaWxfZmlsdCwgIyBlc3BlY2lmaWNhbW9zIHF1ZSBlcyBsYSBmdW5jaW9uIGRpc3RhbmNlIGRlbCBwYXF1ZXRlIGRlIHBoeWxvc2VxIHlhIHF1ZSBoYXkgb3RyYSBmdW5jaW9uIGNvbiBlc2Ugbm9tYnJlDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1ldGhvZCA9ICJicmF5IiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdHlwZSA9ICJzYW1wbGUiKSAjIHNhbXBsZSBlcyBlbCBkZWZhdWx0IHBhcmEgcXVlIHNlIGNhbGN1bGUgbGFzIGRpc3RhbmNpYXMgZW50cmUgbXVlc3RyYXMgeSB0YXhhIGVzIGxhIG90cmEgb3BjaW9uIHBlcm8gbm8gbGEgdmFtb3MgYSB1c2FyDQpgYGANCg0KIyMgTWluaSBlamVyY2ljaW8NCg0KQ2FsY3VsZW4gbGFzIGRpc3RhbmNpYXMgY29uIGphY2NhcmQ6IFBzb2lsIHkgVmlkMg0KDQpgYGB7cn0NCmJyYXlfYmRpdiA8LSBwaHlsb3NlcTo6ZGlzdGFuY2UoUHNvaWxfZmlsdCwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gImphY2NhcmQiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0eXBlID0gInNhbXBsZSIpDQoNCmJyYXlfYmRpdiA8LSBwaHlsb3NlcTo6ZGlzdGFuY2UoVmlkMiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gImphY2NhcmQiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0eXBlID0gInNhbXBsZSIpDQpgYGANCg0KIyBPcmRpbmFjaW9uDQoNCkxhcyBtZWRpZGFzIGRlIGRpdmVyc2lkYWQgYmV0YSBzZSBwdWVkZW4gdmlzdWFsaXphciB1dGlsaXphbmRvIHZhcmlvcyBtw6l0b2RvcyBkZSBvcmRpbmFjacOzbi4gTGEgb3JkaW5hY2nDs24gZXMgbGEgdMOpY25pY2FzIHBhcmEgcmVzdW1pciB5IHByb3llY3RhciBkYXRvcyBtdWx0aWRpbWVuc2lvbmFsZXMgZW4gdW4gZXNwYWNpbyBkZSBkaW1lbnNpb25lcyBpbmZlcmlvcmVzICgyLTNkKS4NCg0KX19Db21vIGVsIGFuYWxpc2lzIGRlIFBDQV9fDQoNCiMjIE1ldG9kb3MgZGUgb3JkaW5hY2lvbg0KDQpMb3MgbWV0b2RvcyBpbmNsdWlkb3MgZW4gcGh5bG9zZXE6IGMoIkRDQSIsICJDQ0EiLCAiUkRBIiwgIkNBUCIsICJEUENvQSIsICJOTURTIiwgIk1EUyIsICJQQ29BIikNCg0KMS4gRENBIChlbCBkZWZhdWx0KTogUGVyZm9ybXMgZGV0cmVuZGVkIGNvcnJlc3BvbmRlbmNlIGFuYWx5c2lzIHVzaW5nZGVjb3JhbmENCg0KMi4gQ0NBIEFuYWxpc2lzIGRlIGNvcnJlc3BvbmRlbmNpYSAoYS5rLmEuIGNhbm9uaWNhbCBjb3JyZXNwb25kZW5jZSBhbmFseXNpcykuDQoNCjMuIFJEQSBBbmFsaXNpcyBkZSBSZWR1bmRhbmNpYSAoZXF1aXZhbGVudGUgYWwgUENBKQ0KDQo0LiBDQVAgQ29uc3RyYWluZWQgQW5hbHlzaXMgb2YgUHJpbmNpcGFsIENvb3JkaW5hdGVzIG9yIGRpc3RhbmNlLWJhc2VkIFJEQQ0KDQo1LiBEUENvQSBEb2JsZSBBbmFsaXNpcyBkZSBjb29yZGVuYWRhcyBwcmluY2lwYWxlcyB1c2EgZGlzdGFuY2lhIGZpbG9nZW5ldGljYSBjb21vIGNvcnJlY2lvbg0KDQo2LiBfX05NRFNfXyBFc2NhbGFtaWVudG8gbXVsdGlkaW1lbnNpb25hbCBubyBtw6l0cmljby4gTk1EUyBtYXhpbWl6YSBsYSBjb3JyZWxhY2nDs24gZGUgb3JkZW4gZGUgY2xhc2lmaWNhY2nDs24gZW50cmUgbXVlc3RyYXMgeSB0YW1iaWVuIHB1ZWRlIHVzYXJzZSBjb24gZGF0b3Mgbm8gcGFyYW1ldHJpY29zLiBMYSBtZWpvciBtYW5lcmEgZGUgdmlzdWFsaXphciBsYSBkaXZlcnNpZGFkIGJldGEsIG8gY3XDoW4gZGlmZXJlbnRlcyBzb24gbGFzIG11ZXN0cmFzIGVudHJlIHPDrSwgZXMgbWVkaWFudGUgZXNjYWxhbWllbnRvIG11bHRpZGltZW5zaW9uYWwgbm8gbcOpdHJpY28gKG5NRFMpLiBFc3RvIGVzIHNpbWlsYXIgYWwgYW7DoWxpc2lzIGRlIGNvb3JkZW5hZGFzIHByaW5jaXBhbGVzIG8gUENBL1BDb0Egc2kgaGEgb8OtZG8gaGFibGFyIGRlIGVzbywgc29sbyBxdWUgbk1EUyBlcyBtw6FzIHJvYnVzdG8gZXN0YWTDrXN0aWNhbWVudGUgY29uIG3Dumx0aXBsZXMgaXRlcmFjaW9uZXMgZW4gbGEgZm9ybWEgZGUgbGEgcGFydGUgdHJ5bWF4IGRlbCBjb21hbmRvLg0KDQo3LiBfX01EUy9QQ29BX18gUmVhbGl6YSB1biBhbsOhbGlzaXMgZGUgY29vcmRlbmFkYXMgcHJpbmNpcGFsZXMgKHRhbWJpw6luIGxsYW1hZG8gZGVzY29tcG9zaWNpw7NuIGRlIGNvb3JkZW5hZGFzIHByaW5jaXBhbGVzLCBlc2NhbGFtaWVudG8gbXVsdGlkaW1lbnNpb25hbCAoTURTKSBvIGVzY2FsYW1pZW50byBjbMOhc2ljbykgZGUgdW5hIG1hdHJpeiBkZSBkaXN0YW5jaWFzIA0KDQpgYGB7cn0NCmJyYXlfb3JkIDwtIG9yZGluYXRlKFBzb2lsX2ZpbHQsICMgb2JqZXRvDQogICAgICAgICAgICAgICAgICAgICBtZXRob2QgPSAiTk1EUyIsICMgbWV0b2RvDQogICAgICAgICAgICAgICAgICAgICBkaXN0YW5jZSA9IGJyYXlfYmRpdikNCmBgYA0KDQpFbnRvbmNlcyBjdWFsIGVsZWdpcj8NCg0KU2UgZGViZSBlbGVnaXIgUENvQSBzaSBsYXMgZGlzdGFuY2lhcyBlbnRyZXMgbXVlc3RyYXMgc29uIHRhbiBjZXJjYW5hcyBxdWUgdW5hIHRyYW5zZm9ybWFjaW9uIGxpbmVhbCBzZXJpYSBzdWZpY2llbnRlLiBNaWVudHJhcyB0YW50bywgc2UgcmVjb21pZW5kIE5NRFMgcGFyYSByZXNhbHRhciBsYSBlc3RydWN0dXJhIGRlIGdyYWRpZW50ZSBkZW50cm8gZGUgbG9zIGRhdG9zLiBPdHJvIG1ldG9kbyBkZSBvcmRlbmFjaW9uIGNvbXVuIGVzIGVsIFBDQSwgcXVlIGVzIHNpbXBsZW1lbnRlIHVuIHRpcG8gZGUgUENvQSBxdWUgdXRpbGl6YSBsYSBkaXN0YW5jaWEgZXVjbGlkaWFuYS4gDQoNCl9OTURTXyA+IF9QQ29BXw0KDQpMYSBtZWpvciBtYW5lcmEgZGUgdmlzdWFsaXphciBsYSBkaXZlcnNpZGFkIGJldGEsIG8gY3VhbiBkaWZlcmVudGVzIHNvbiBsYXMgbXVlc3RyYXMgZW50cmUgc2ksIGVzIG1lZGlhbnRlIGVzY2FsYW1pZW50byBtdWx0aWRpbWVuc2lvbmFsIG5vIG1ldHJpY28gKG5NRFMpLiBFc3RvIGVzIHNpbWlsYXIgYWwgYW5hbGlzaXMgZGUgY29vcmRlbmFkYXMgcHJpbmNpcGFsZXMgbyBQQ0EvUENvQSBzaSBoYSBvaWRvIGhhYmxhciBkZSBlc28sIHNvbG8gcXVlIE5NRFMgZXMgbWFzIHJvYnVzdG8gZXN0YWRpc3RpY2FtZW50ZSBjb24gbXVsdGlwbGVzIGl0ZXJhY2lvbmVzLg0KDQojIyBNaW5pIGVqZXJjaWNpbw0KDQpDYWxjdWxlbiBsYSBvcmRpbmFjaW9uIGNvbiBQQ29BIHkgdGFtYmllbiBjYWxjdWxlbmxhIHBhcmEgbGFzIGRpc3RhbmNpYXMgamFjY2FyZCBxdWUgdGVuaWFtb3MuDQoNCmBgYHtyfQ0KamFjX2JkaXYgPC0gcGh5bG9zZXE6OmRpc3RhbmNlKFBzb2lsX2ZpbHQsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1ldGhvZCA9ICJqYWNjYXJkIiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdHlwZSA9ICJzYW1wbGUiKQ0KDQpicmF5X2JkaXYgPC0gcGh5bG9zZXE6OmRpc3RhbmNlKFBzb2lsX2ZpbHQsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1ldGhvZCA9ICJicmF5IiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdHlwZSA9ICJzYW1wbGUiKQ0KDQpicmF5X29yZF9QQ29BIDwtIG9yZGluYXRlKFBzb2lsX2ZpbHQsDQogICAgICAgICAgICAgICAgICAgICBtZXRob2QgPSAiUENvQSIsIA0KICAgICAgICAgICAgICAgICAgICAgZGlzdGFuY2UgPSBicmF5X2JkaXYpDQoNCmphY2NhcmRfb3JkIDwtIG9yZGluYXRlKFBzb2lsX2ZpbHQsDQogICAgICAgICAgICAgICAgICAgICBtZXRob2QgPSAiTk1EUyIsIA0KICAgICAgICAgICAgICAgICAgICAgZGlzdGFuY2UgPSBqYWNfYmRpdikNCg0KamFjY2FyZF9vcmRfUENvQSA8LSBvcmRpbmF0ZShQc29pbF9maWx0LA0KICAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gIlBDb0EiLCANCiAgICAgICAgICAgICAgICAgICAgIGRpc3RhbmNlID0gamFjX2JkaXYpDQoNCiMgZXN0b3MgdmFsb3JlcyBvYnRlbmlkb3MgZGUgbGEgb3JkaW5hY2lvbiBubyBzZSBpbnRlcnByZXRhbiBwZXJvIHNlIHV0aWxpemFuIHBhcmEgZ3JhZmljYXINCmBgYA0KDQojIFZpc3VhbGl6YWNpb24NCg0KYGBge3J9DQpwX2JyYXkgPC0gcGxvdF9vcmRpbmF0aW9uKFBzb2lsX2ZpbHQsICMgb2JqZXRvDQogICAgICAgICAgICAgICAgICAgICAgICAgIGJyYXlfb3JkLCAjIGRpc3RhbmNpYSBicmF5IGNvbiBubWRzDQogICAgICAgICAgICAgICAgICAgICAgICAgICJzYW1wbGVzIiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSAiUGxhbnRfVHlwZSIsDQogICAgICAgICAgICAgICAgICAgICAgICAgIHNoYXBlID0gIlRyZWF0bWVudCIpICsNCiAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGMoImJ1cmx5d29vZDMiLCJzdGVlbGJsdWUiLCJsaWdodHBpbmsiKSwNCiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiUGxhbnQgVHlwZSIpICsNCiAgdGhlbWVfYncoKSsNCiAgZ2VvbV9wb2ludChzaXplPTMuOCkNCg0KcF9icmF5DQoNCiMgTW9kaWZpY2FuZG8gbGFzIGZpZ3VyYXMNCnBfYnJheSA8LSBwX2JyYXkgKw0KICBzY2FsZV9zaGFwZV9tYW51YWwodmFsdWVzID0gYygxNSwxNiwxNywxOCksDQogICAgICAgICAgICAgICAgICAgICBsYWJlbHMgPSBjKCJQaSIsICJMb3cgUCIsICJQaGkiLCAiUGkvUGhpIG1peCIpKQ0KcF9icmF5DQoNCiMgQWdyZWdhbmRvIGVsaXBzZQ0KDQpwX2JyYXkgPC0gcF9icmF5ICsNCiAgZ2VvbV9tYXJrX2VsbGlwc2UoYWVzKGZpbGw9IFBsYW50X1R5cGUsDQogICAgICAgICAgICAgICAgICAgICAgICBjb2xvcj0gUGxhbnRfVHlwZSksICMgdGllbmUgcXVlIHNlciBpZ3VhbCBxdWUgYXJyaWJhDQogICAgICAgICAgICAgICAgICAgIGV4cGFuZCA9IGMoMC4wMDM1KSkgKyAjIGFuY2hvIGRlbCBjaXJjdWxvDQogIHNjYWxlX2ZpbGxfbWFudWFsKHZhbHVlcyA9IGMoImJ1cmx5d29vZDMiLCJzdGVlbGJsdWUiLCJsaWdodHBpbmsiKSwNCiAgICAgICAgICAgICAgICAgICAgbmFtZSA9ICJQbGFudCBUeXBlIikNCnBfYnJheQ0KDQojIG8gYWdyZWdhbmRvIHBvbGlnb25vDQpwX2JyYXkgPC0gcF9icmF5ICsNCiAgZ2VvbV9wb2x5Z29uKGFlcyhmaWxsPSBQbGFudF9UeXBlKSwNCiAgICAgICAgICAgICAgICAgICAgYWxwaGEgPSBjKDAuMikpICsgIyBhbmNobyBkZWwgY2lyY3Vsbw0KICBzY2FsZV9maWxsX21hbnVhbCh2YWx1ZXMgPSBjKCJidXJseXdvb2QzIiwic3RlZWxibHVlIiwibGlnaHRwaW5rIiksDQogICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiUGxhbnQgVHlwZSIpDQoNCmBgYA0KDQojIEVqZXJjaWNpbw0KDQpWYW4gaGFjZXIgb3Ryb3MgdHJlcyBncmFmaWNvczoNCg0KKiBFbCBwcmltZXJvIGNvbiBkaXN0YW5jaWFzIGRlIGJyYXkgcGVybyBvcmRpbmFjaW9uIFBDb0ENCg0KKiBFbCBzZWd1bmRvIGNvbiBKYWNjYXJkIHkgb3JkaW5hY2lvbiBOTURTDQoNCiogRWwgdGVyY2VybyBKYWNjYXJkIHkgb3JkaW5hY2lvbiBQQ29BDQoNCmBgYHtyfQ0KIyBFbCBwcmltZXJvIGNvbiBkaXN0YW5jaWFzIGRlIGJyYXkgcGVybyBvcmRpbmFjaW9uIFBDb0ENCg0KcF9icmF5X1BDb0EgPC0gcGxvdF9vcmRpbmF0aW9uKFBzb2lsX2ZpbHQsICMgb2JqZXRvDQogICAgICAgICAgICAgICAgICAgICAgICAgIGJyYXlfb3JkX1BDb0EsICMgZGlzdGFuY2lhIGJyYXkgY29uIFBDb0ENCiAgICAgICAgICAgICAgICAgICAgICAgICAgInNhbXBsZXMiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICBjb2xvciA9ICJQbGFudF9UeXBlIiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgc2hhcGUgPSAiVHJlYXRtZW50IikgKw0KICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYygiYnVybHl3b29kMyIsInN0ZWVsYmx1ZSIsImxpZ2h0cGluayIpLA0KICAgICAgICAgICAgICAgICAgICAgbmFtZSA9ICJQbGFudCBUeXBlIikgKw0KICB0aGVtZV9idygpKw0KICBnZW9tX3BvaW50KHNpemU9My44KQ0KDQpwX2JyYXlfUENvQSA8LSBwX2JyYXlfUENvQSArDQogIHNjYWxlX3NoYXBlX21hbnVhbCh2YWx1ZXMgPSBjKDE1LDE2LDE3LDE4KSwNCiAgICAgICAgICAgICAgICAgICAgIGxhYmVscyA9IGMoIlBpIiwgIkxvdyBQIiwgIlBoaSIsICJQaS9QaGkgbWl4IikpDQoNCnBfYnJheV9QQ29BIDwtIHBfYnJheV9QQ29BICsNCiAgZ2VvbV9tYXJrX2VsbGlwc2UoYWVzKGZpbGw9IFBsYW50X1R5cGUsDQogICAgICAgICAgICAgICAgICAgICAgICBjb2xvcj0gUGxhbnRfVHlwZSksICMgdGllbmUgcXVlIHNlciBpZ3VhbCBxdWUgYXJyaWJhDQogICAgICAgICAgICAgICAgICAgIGV4cGFuZCA9IGMoMC4wMDM1KSkgKyAjIGFuY2hvIGRlbCBjaXJjdWxvDQogIHNjYWxlX2ZpbGxfbWFudWFsKHZhbHVlcyA9IGMoImJ1cmx5d29vZDMiLCJzdGVlbGJsdWUiLCJsaWdodHBpbmsiKSwNCiAgICAgICAgICAgICAgICAgICAgbmFtZSA9ICJQbGFudCBUeXBlIikNCg0KcF9icmF5X1BDb0ENCg0KIyBFbCBzZWd1bmRvIGNvbiBKYWNjYXJkIHkgb3JkaW5hY2lvbiBOTURTDQoNCnBfamFjIDwtIHBsb3Rfb3JkaW5hdGlvbihQc29pbF9maWx0LCAjIG9iamV0bw0KICAgICAgICAgICAgICAgICAgICAgICAgICBqYWNjYXJkX29yZCwgIyBkaXN0YW5jaWEgamFjIGNvbiBOTURTDQogICAgICAgICAgICAgICAgICAgICAgICAgICJzYW1wbGVzIiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgY29sb3IgPSAiUGxhbnRfVHlwZSIsDQogICAgICAgICAgICAgICAgICAgICAgICAgIHNoYXBlID0gIlRyZWF0bWVudCIpICsNCiAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGMoImJ1cmx5d29vZDMiLCJzdGVlbGJsdWUiLCJsaWdodHBpbmsiKSwNCiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiUGxhbnQgVHlwZSIpICsNCiAgdGhlbWVfYncoKSsNCiAgZ2VvbV9wb2ludChzaXplPTMuOCkNCg0KcF9qYWMgPC0gcF9qYWMgKw0KICBzY2FsZV9zaGFwZV9tYW51YWwodmFsdWVzID0gYygxNSwxNiwxNywxOCksDQogICAgICAgICAgICAgICAgICAgICBsYWJlbHMgPSBjKCJQaSIsICJMb3cgUCIsICJQaGkiLCAiUGkvUGhpIG1peCIpKQ0KDQpwX2phYyA8LSBwX2phYyArDQogIGdlb21fbWFya19lbGxpcHNlKGFlcyhmaWxsPSBQbGFudF9UeXBlLA0KICAgICAgICAgICAgICAgICAgICAgICAgY29sb3I9IFBsYW50X1R5cGUpLCAjIHRpZW5lIHF1ZSBzZXIgaWd1YWwgcXVlIGFycmliYQ0KICAgICAgICAgICAgICAgICAgICBleHBhbmQgPSBjKDAuMDAzNSkpICsgIyBhbmNobyBkZWwgY2lyY3Vsbw0KICBzY2FsZV9maWxsX21hbnVhbCh2YWx1ZXMgPSBjKCJidXJseXdvb2QzIiwic3RlZWxibHVlIiwibGlnaHRwaW5rIiksDQogICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiUGxhbnQgVHlwZSIpDQoNCnBfamFjDQoNCiMgRWwgdGVyY2VybyBKYWNjYXJkIHkgb3JkaW5hY2lvbiBQQ29BDQoNCnBfamFjX1BDb0EgPC0gcGxvdF9vcmRpbmF0aW9uKFBzb2lsX2ZpbHQsICMgb2JqZXRvDQogICAgICAgICAgICAgICAgICAgICAgICAgIGphY2NhcmRfb3JkX1BDb0EsICMgZGlzdGFuY2lhIGphYyBjb24gTk1EUw0KICAgICAgICAgICAgICAgICAgICAgICAgICAic2FtcGxlcyIsDQogICAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yID0gIlBsYW50X1R5cGUiLA0KICAgICAgICAgICAgICAgICAgICAgICAgICBzaGFwZSA9ICJUcmVhdG1lbnQiKSArDQogIHNjYWxlX2NvbG9yX21hbnVhbCh2YWx1ZXMgPSBjKCJidXJseXdvb2QzIiwic3RlZWxibHVlIiwibGlnaHRwaW5rIiksDQogICAgICAgICAgICAgICAgICAgICBuYW1lID0gIlBsYW50IFR5cGUiKSArDQogIHRoZW1lX2J3KCkrDQogIGdlb21fcG9pbnQoc2l6ZT0zLjgpDQoNCnBfamFjX1BDb0EgPC0gcF9qYWNfUENvQSArDQogIHNjYWxlX3NoYXBlX21hbnVhbCh2YWx1ZXMgPSBjKDE1LDE2LDE3LDE4KSwNCiAgICAgICAgICAgICAgICAgICAgIGxhYmVscyA9IGMoIlBpIiwgIkxvdyBQIiwgIlBoaSIsICJQaS9QaGkgbWl4IikpDQoNCnBfamFjX1BDb0EgPC0gcF9qYWNfUENvQSArDQogIGdlb21fbWFya19lbGxpcHNlKGFlcyhmaWxsPSBQbGFudF9UeXBlLA0KICAgICAgICAgICAgICAgICAgICAgICAgY29sb3I9IFBsYW50X1R5cGUpLCAjIHRpZW5lIHF1ZSBzZXIgaWd1YWwgcXVlIGFycmliYQ0KICAgICAgICAgICAgICAgICAgICBleHBhbmQgPSBjKDAuMDAzNSkpICsgIyBhbmNobyBkZWwgY2lyY3Vsbw0KICBzY2FsZV9maWxsX21hbnVhbCh2YWx1ZXMgPSBjKCJidXJseXdvb2QzIiwic3RlZWxibHVlIiwibGlnaHRwaW5rIiksDQogICAgICAgICAgICAgICAgICAgIG5hbWUgPSAiUGxhbnQgVHlwZSIpDQoNCnBfamFjX1BDb0ENCg0KKHBfYnJheXxwX2JyYXlfUENvQSkvKHBfamFjfHBfamFjX1BDb0EpDQpgYGANCg0KRW4gcmVhbGlkYWQgbm8gaGFiaWFuIGRpZmVyZW5jaWFzIGVuIGxvcyBncmFmaWNvcyBwb2RlbW9zIHZlciBxdWUgbG9zIHBhdHJvbmVzIHNlIG1hbnRpZW5lbg0KDQojIEFuYWxpc2lzIGVzdGFkaXNjbyBtdWx0aXZhcmlhYmxlDQoNCiMjIFBFUk1BTk9WQQ0KDQpQYXJhIHByb2JhciBzaSBsb3MgZ3J1cG9zIHNvbiBkaWZlcmVudGVzIGNvbiByZXNwZWN0byBhbCBjZW50cm9pZGUgeSBsYSBkaXNwZXJzacOzbiwgc2UgcmVhbGl6YXLDoSB1bmEgcHJ1ZWJhIGVzdGFkw61zdGljYSBQRVJNQU5PVkEuIFBhcmEgZWxsbyBzZSB1dGlsaXphcsOhIHVuYSBleHRlbnNpw7NuIG11bHRpdmFyaWFkYSBkZSBBTk9WQSwgeWEgcXVlIGhheSBtdWNoYXMgT1RVIHF1ZSBzZSB1dGlsaXphcsOhbiBlbiBsYSBwcnVlYmEuIExhIGV4dGVuc2nDs24gc2UgYmFzYSBlbiBkaXN0YW5jaWFzIGVudHJlIG11ZXN0cmFzLiBMYSBwcnVlYmEgY29tcGFyYSBkaXN0YW5jaWFzIGRlIG11ZXN0cmFzIGRlbnRybyBkZWwgbWlzbW8gZ3J1cG8gY29uIGRpc3RhbmNpYXMgZGUgbXVlc3RyYXMgZGUgZGlmZXJlbnRlcyBncnVwb3MuIFNpIGxhIGRpc3RhbmNpYSBlbnRyZSBtdWVzdHJhcyBkZSBkaWZlcmVudGVzIGdydXBvcyBlcyBtdWNobyBtYXlvciBxdWUgbGFzIG11ZXN0cmFzIGRlbCBtaXNtbyBncnVwbywgY29uY2x1aW1vcyBxdWUgbG9zIGdydXBvcyBubyBzb24gaWd1YWxlcy4NCg0KUGFyYSBwcm9iYXIgbGEgaW1wb3J0YW5jaWEgZGVsIHJlc3VsdGFkbywgc2UgdXRpbGl6YSB1bmEgcHJ1ZWJhIGRlIHBlcm11dGFjacOzbi4gUG9yIGxvIHRhbnRvLCB0b2RhcyBsYXMgbXVlc3RyYXMgc2UgbWV6Y2xhbiBhbGVhdG9yaWFtZW50ZSBlbiBsb3MgZ3J1cG9zIHkgbGEgcHJ1ZWJhIHNlIHJlcGl0ZSBtdWNoYXMgdmVjZXMuIFNpIGxhIHJlbGFjacOzbiAoZW50cmUgbGEgZGlzdGFuY2lhIGRlbCBncnVwby9sYSBkaXN0YW5jaWEgZGVudHJvIGRlbCBncnVwbykgZXMgbXVjaG8gbWF5b3IgcGFyYSBsb3MgZGF0b3Mgb3JpZ2luYWxlcyBxdWUgcGFyYSBsYXMgcGVybXV0YWNpb25lcywgY29uY2x1aW1vcyBxdWUgaGF5IHVuYSBkaWZlcmVuY2lhIGVzdGFkw61zdGljYW1lbnRlIHNpZ25pZmljYXRpdmEuDQoNCkxhIHBydWViYSBzZSBwdWVkZSBhcGxpY2FyIGVuIGNvbWJpbmFjacOzbiBjb24gY3VhbHF1aWVyIG1lZGlkYSBkZSBkaXN0YW5jaWEuDQoNCmBgYHtyfQ0KIyMjIEV4dHJhZXIgZGF0YSBmcmFtZXMgZGVsIG9iamV0byBwaHlsb3NlcSAjIyMNCg0KIyBDb3VudCB0YWJsZTogQVNWcw0KU29pbEFTVnMgPC0gYXMuZGF0YS5mcmFtZShQc29pbF9maWx0QG90dV90YWJsZSkNCg0KIyBtZXRhZGF0YSBvciBlbnZpcm9ubWVudA0KU29pbE1ldGEgPC0gYXMubWF0cml4KFBzb2lsX2ZpbHRAc2FtX2RhdGEpDQpTb2lsTWV0YSA8LSBhcy5kYXRhLmZyYW1lKFNvaWxNZXRhKQ0KDQojQWRvbmlzIGVzIGVsIGNvZGlnbyBkZSBsYSBwZXJtYW5vdmENCmFkb25pczIoU29pbEFTVnMgfiBUcmVhdG1lbnQgKiBQbGFudF9UeXBlLA0KICAgICAgICBkYXRhID0gU29pbE1ldGEsICMgZGUgZG9uZGUgdmllbmVuIGxvcyBtZXRhZGF0b3M/DQogICAgICAgIHBlcm11dGF0aW9ucyA9IDk5OSwgIyBlc3RlIG51bWVybyBlcyBhcmJpdHJhcmlvDQogICAgICAgIG1ldGhvZCA9ICJicmF5IikgIyBtaXNtbyBhIGxhcyBkaXN0YW5jaWFzIHF1ZSBjYWxjdWxhbW9zDQoNCmFkb25pczIoU29pbEFTVnMgfiBUcmVhdG1lbnQgKiBQbGFudF9UeXBlLA0KICAgICAgICBkYXRhID0gU29pbE1ldGEsIA0KICAgICAgICBwZXJtdXRhdGlvbnMgPSAxMDAwMCwgIyBlc3RlIG51bWVybyBlcyBhcmJpdHJhcmlvDQogICAgICAgIG1ldGhvZCA9ICJqYWNjYXJkIiwgYmluYXJ5PVRSVUUpICMgYmluYXJ5IHNpZ25pZmljYSBhdXNlbmNpYXMvcHJlc2VuY2lhDQpgYGANCkxhIFBFUk1BTk9WQSBlcyBtdXkgc2Vuc2libGUgYW51bWVyb3MgYmFqb3MgZGUgbXVlc3RyZW8NCg0KIyMjIFZhcmlhYmxlcyBvcGNpb25hbGVzDQoNCkVzdHJhdGlmaWNhY2lvbjogRW50cmUgcXVlIGdydXBvcyBzZSBoYXJhbiBsYXMgY29tcGFyYWNpb25lcw0KDQpgYGB7cn0NCiMjIEJ5IHBsYW50IHR5cGUNCmFkb25pczIoU29pbEFTVnMgfiBUcmVhdG1lbnQsDQogICAgICAgIHN0cmF0YSA9IFNvaWxNZXRhJFBsYW50X1R5cGUsICMgc2VwYXJhciBlbnRyZSB0aXBvIGRlIHBsYW50YQ0KICAgICAgICBkYXRhID0gU29pbE1ldGEsIA0KICAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTksICMgZXN0ZSBudW1lcm8gZXMgYXJiaXRyYXJpbw0KICAgICAgICBtZXRob2QgPSAiYnJheSIpDQoNCiMjIEJ5IHRyZWF0bWVudA0KYWRvbmlzMihTb2lsQVNWcyB+IFBsYW50X1R5cGUsICMgbGEgdmFyaWFibGUgIGFuYWxpemFyDQogICAgICAgIHN0cmF0YSA9IFNvaWxNZXRhJFRyZWF0bWVudCwgIyBsb3MgZ3J1cG9zIHBvciBsb3MgcXVlIHZhcyBhbmFsaXphcg0KICAgICAgICBkYXRhID0gU29pbE1ldGEsIA0KICAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTksICMgZXN0ZSBudW1lcm8gZXMgYXJiaXRyYXJpbw0KICAgICAgICBtZXRob2QgPSAiYnJheSIpDQoNCmBgYA0KDQpTaSBlbCBQX3ZhbHVlIGVzIGluZmVyaW9yIGEgMC4wNSBwb3IgbG8gcXVlIHBvZGVtb3MgY29uY2x1aXIgcXVlIGxhIGludHJhdmFyaWFiaWxpZGFkIGVzIG1lbm9yIHF1ZSBsYSBpbnRlcnZhcmlhYmlsaWRhZCBlbnRyZSBsb3MgZG9zIGl0aW9zIHkgcXVlIHRlbmVtb3MgdW4gZWZlY3RvIHNpZ25pZmljYXRpdm8NCg0KIyMgQU5PU0lNDQoNCkVzIGxhIHZlcnNpb24gbm8gcGFyYW1ldHJpY2EgZGUgdW4gUEVNQU5PVkEuIEFOT1NJTSBldmFsdWEgc2kgbGFzIGRpc3RhbmNpYXMgbyBkaWZlcmVuY2lhcyBlbnRybyBkZWwgZ3J1cG8gc29uIG1heW9yZXMgbyBpZ3VhbGVzIGEgbGFzIGRpc3RhbmNpYXMgZW50cmUgZ3J1cG9zIHV0aWxpemFuZG8gbG9zIHJhbmdvcyBkZSB0b2RhcyBsYXMgZGlzdGFuY2lhcyBkZSBtdWVzdHJhIHBvciBwYXJlcy4gRXMgbWVub3Mgcm9idXN0byBxdWUgbGEgUEVSTUFOT1ZBIHBlcm8gZXMgdW4gYW5hbGlzaXMgbWFzIHNpbXBsaWZpY2Fkby4NCg0KYGBge3J9DQphbm9zaW0oU29pbEFTVnMsICMgVGFibGEgZGUgY29udGVvDQogICAgICAgU29pbE1ldGEkUGxhbnRfVHlwZSwgIyBtZXRhZGF0b3MNCiAgICAgICBkaXN0YW5jZSA9ICJicmF5IiwNCiAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTkpDQoNCmFub3NpbShTb2lsQVNWcywgIyBUYWJsYSBkZSBjb250ZW8NCiAgICAgICBTb2lsTWV0YSRUcmVhdG1lbnQsICMgbWV0YWRhdG9zDQogICAgICAgZGlzdGFuY2UgPSAiYnJheSIsDQogICAgICAgcGVybXV0YXRpb25zID0gOTk5KSAjIG5vIGhheSBzaWduaWZpY2FuY2lhcw0KDQojIChyKSBlbnRyZSBtYXMgY2VyY2EgZGUgMSBlcyBtZWpvciwgbWFzIGNlcmNhIGEgMCBlc3RhbiBtYXlvcm1lbnRlIGRpc3RyaWJ1aWRvcw0KYGBgDQoNCkFsIGludGVycHJldGFyIGVzdG9zIHJlc3VsdGFkb3MsIGRlc2VhIG9ic2VydmFyIGxhIGVzdGFkaXN0aWNhIFIgZGUgQU5PU0lNIHkgbG9zIHZhbG9yZXMgZGUgc2lnbmlmaWNhbmNpYS4gVW4gdmFsb3IgZGUgc2lnbmlmaWNhbmNpYSBpbmZlcmlvciBhIDAuMDUgZ2VuZXJhbG1lbnRlIHNlIGNvbnNpZGVyYSBlc3RhZGlzdGljYW1lbnRlIHNpZ25pZmljYXRpdm8geSBzaWduaWZpY2EgcXVlIHMgZXB1ZWRlIHJlY2hhemFyIGxhIGhpcG90ZXNpcyBudWxhLiBQb3IgbG8gdGFudG8sIGV4aXN0ZSB1bmEgZGlmZXJlbmNpYSBlc3RhZGlzdGljYW1lbnRlIHNpZ25pZmljYXRpdmEgZW4gbGFzIGNvbXVuaWRhZGVzIG1pY3JvYmlhbmFzIGVudHJlIHN1cyBncnVwb3MuIE1heW9yIHF1ZSAwLjA1IHNpZ25pZmljYSBxdWUgbm8gaGF5IGRpZmVyZW5jaWEgZXN0YWRpc3RpY2EgZW50cmUgbGFzIGNvbXVuaWRhZGVzIG1pY3JvYmlhbmFzIGRlIHN1IGdydXBvcy4NCg0KIiArTGEgZXN0YWRpc3RpY2EgIlIiIGRlIEFOT1NJTSBjb21wYXJhIGxhIG1lZGlhIGRlIGxhcyBkaXNpbWlsaXR1ZGUgY2xhc2lmaWNhZGFzIGRlbnRybyBkZSBsb3MgZ3J1cG9zLiBVbiB2YWxvciBkZSBSIGNlcmNhbm8gYSAiMSIgc3VnaWVyZXMgZGlzaW1pbGl0dWQgZW50cmUgZ3J1cG9zLCBtaWVudHJhcyBxdWUgdW4gdmFsb3IgZGUgUiBjZXJjYW5vIGEgIjAiIHN1Z2llcmUgdW5hIGRpc3RyaWJ1Y2lvbiB1bmlmb3JtZSBkZSByYW5nb3MgYWx0b3MgeSBiYWpvcyBkZW50cm8geSBlbnRyZSBncnVwb3MiLiBFbiBvdHJhcyBwYWxhYnJhcywgY3VhbnRvIG1heW9yIHNlYSBlbCB2YWxvciBSLCBtw6FzIGRpZmVyZW50ZXMgc2Vyw6FuIHN1cyBncnVwb3MgZW4gdMOpcm1pbm9zIGRlIGNvbXBvc2ljacOzbiBkZSBsYSBjb211bmlkYWQgbWljcm9iaWFuYS4NCg0KIyMgTWluaSBlamVyY2ljaW8NCg0KUmVwZXRpciBlc3RlIGFuYWxpc2lzIGVzdGFkaXN0aWNvIGNvbiBqYWNjYXJkDQoNCmBgYHtyfQ0KYW5vc2ltKFNvaWxBU1ZzLCAjIFRhYmxhIGRlIGNvbnRlbw0KICAgICAgIFNvaWxNZXRhJFBsYW50X1R5cGUsICMgbWV0YWRhdG9zDQogICAgICAgZGlzdGFuY2UgPSAiamFjY2FyZCIsDQogICAgICAgcGVybXV0YXRpb25zID0gOTk5KQ0KDQphbm9zaW0oU29pbEFTVnMsICMgVGFibGEgZGUgY29udGVvDQogICAgICAgU29pbE1ldGEkVHJlYXRtZW50LCAjIG1ldGFkYXRvcw0KICAgICAgIGRpc3RhbmNlID0gImphY2NhcmQiLA0KICAgICAgIHBlcm11dGF0aW9ucyA9IDk5OSkNCmBgYA0KDQojIEVqZXJjaWNpbyBmaW5hbA0KDQpSZWFsaXphciBhbmFsaXNpcyBkZSBkaXYgYmV0YSBjb21wYXJhbmRvIGxhIHZhcmlhYmxlICJTZXFUZWNoIiBjb21vIGdydXBvcyB1c2FuZG8gImJyYXkiDQoNCmBgYHtyfQ0KZGF0YSgiZW50ZXJvdHlwZSIpDQoNCiMgZGlzdGFuY2lhIHkgb3JkaW5hY2lvbg0KYnJheV9iZGl2X2VqZXIgPC0gcGh5bG9zZXE6OmRpc3RhbmNlKGVudGVyb3R5cGUsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1ldGhvZCA9ICJicmF5IiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdHlwZSA9ICJzYW1wbGUiKQ0KDQpicmF5X29yZF9lamVyIDwtIG9yZGluYXRlKGVudGVyb3R5cGUsDQogICAgICAgICAgICAgICAgICAgICBtZXRob2QgPSAiTk1EUyIsIA0KICAgICAgICAgICAgICAgICAgICAgZGlzdGFuY2UgPSBicmF5X2JkaXZfZWplcikNCg0KIyBncmFmaWNvDQpwX2JyYXlfZWplciA8LSBwbG90X29yZGluYXRpb24oZW50ZXJvdHlwZSwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgYnJheV9vcmRfZWplciwgIyBkaXN0YW5jaWEgYnJheSBjb24gbm1kcw0KICAgICAgICAgICAgICAgICAgICAgICAgICAic2FtcGxlcyIsDQogICAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yID0gIlNlcVRlY2giKSsNCiAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGMoIiM0M0NEODAiLCJtZWRpdW1wdXJwbGUiLCIjRkY4QzY5IiksDQogICAgICAgICAgICAgICAgICAgICBuYW1lID0gIlNlcVRlY2giKSArDQogIHRoZW1lX2J3KCkNCg0KcF9icmF5X2VqZXIgPC0gcF9icmF5X2VqZXIgKw0KICBnZW9tX21hcmtfZWxsaXBzZShhZXMoZmlsbD0gU2VxVGVjaCwNCiAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yPSBTZXFUZWNoKSwgIyB0aWVuZSBxdWUgc2VyIGlndWFsIHF1ZSBhcnJpYmENCiAgICAgICAgICAgICAgICAgICAgZXhwYW5kID0gYygwLjAwMzUpKSArICMgYW5jaG8gZGVsIGNpcmN1bG8NCiAgc2NhbGVfZmlsbF9tYW51YWwodmFsdWVzID0gYygiIzQzQ0Q4MCIsIm1lZGl1bXB1cnBsZSIsIiNGRjhDNjkiKSwNCiAgICAgICAgICAgICAgICAgICAgbmFtZSA9ICJTZXFUZWNoIikNCnBfYnJheV9lamVyDQoNCiMgUEVSTUFOT1ZBDQplbnRlcm90eXBlQVNWcyA8LSBhcy5kYXRhLmZyYW1lKHQoZW50ZXJvdHlwZUBvdHVfdGFibGUpKSAjIHB1c2ltb3MgdHJhbnNwb3NlIHBhcmEgbW9kaWZpY2FyIGRlIGZpbGFzIGEgY29sdW1uYXMgcGFyYSBxdWUgbGFzIG9ic2VydmFjaW9uZXMgZnVlcmFuIGxhcyBtaXNtYXMNCg0KRW50ZXJvdHlwZU1ldGEgPC0gYXMubWF0cml4KGVudGVyb3R5cGVAc2FtX2RhdGEpDQpFbnRlcm90eXBlTWV0YSA8LSBhcy5kYXRhLmZyYW1lKEVudGVyb3R5cGVNZXRhKQ0KDQoNCmFkb25pczIoZW50ZXJvdHlwZUFTVnMgfiBTZXFUZWNoLA0KICAgICAgICBkYXRhID0gRW50ZXJvdHlwZU1ldGEsIA0KICAgICAgICBwZXJtdXRhdGlvbnMgPSAxMDAwMCwgDQogICAgICAgIG1ldGhvZCA9ICJicmF5IikNCg0KI0FOT1NJTQ0KYW5vc2ltKGVudGVyb3R5cGVBU1ZzLCANCiAgICAgICBFbnRlcm90eXBlTWV0YSRTZXFUZWNoLCANCiAgICAgICBkaXN0YW5jZSA9ICJicmF5IiwNCiAgICAgICBwZXJtdXRhdGlvbnMgPSA5OTkpDQoNCiMgRW4gZXN0ZSBjYXNvIFIgc2kgZXMgYWx0byBwb3IgbG8gcXVlIG1pcyBncnVwb3Mgc2kgc29uIGRpZmVyZW50ZXMNCmBgYA0KDQo=</div>
 
 
 
@@ -2112,7 +2335,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("16_Div_alfa.Rmd");
+  window.initializeSourceEmbed("17_Div_beta.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
