@@ -40,7 +40,7 @@ Promedios <- Hidro %>%
 # Se acomodan los datos:
 
 levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3", "Hidro Ruez D","Hidro Ruez 1:20","Hidro Ruez 1:50", "ECA Maduro directo","ECA Maduro 1:20","ECA Maduro 1:50"))
+Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3", "Hidro Ruez D","Hidro Ruez 1:20","Hidro Ruez 1:50", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50"))
 levels(Promedios$Tratamiento)
 
 # Grafico de la longitud de raíz:
