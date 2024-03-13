@@ -49,11 +49,13 @@ ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long, fill= Tratamiento))+
   ggtitle("Bioensayo de muestra Hidrolizado Ruezno (20Feb24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
-  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#A3CC51","#A3CC51","#A3CC51"))+
    theme(legend.position = "none")
 
 # Grafico raices laterales:
@@ -61,24 +63,18 @@ ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat, fill=Tratamiento))+
   ggtitle("Bioensayo de muestra Hidrolizado Ruezno (20Feb24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
-  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#A3CC51","#A3CC51","#A3CC51"))+
   theme(legend.position = "none")
 ```
 
 ```{r}
 # Ambas variables en un mismo gráfico:
-
-ggplot(Variables,aes(x=Tratamiento, y = Resultado ,fill = Variable))+   
-  theme_bw()+
-  geom_bar(stat= "summary", fun="mean", position="dodge")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  scale_x_discrete(limits = c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECA Maduro directo", "ECA Maduro 1:20", "ECA Maduro 1:50", "ECA S/Madurar directo", "ECA S/Madurar 1:20", "ECA S/Madurar 1:50"))+
-  scale_fill_manual(name = "# Variable", values = c("#00688B", "seagreen3"))
-
 
 Prom <- Variables %>%
   group_by(Tratamiento, Variable) %>%
@@ -87,11 +83,13 @@ Prom <- Variables %>%
 ggplot(Prom, aes(x = Tratamiento, y = Resultado, fill = Variable))+
   theme_bw()+
   geom_col(position = "dodge")+
-  ggtitle("Bioensayo de muestras externas y ECA's")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color= "black", face = "bold"))+
-  scale_x_discrete(limits = c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "ECA Maduro directo", "ECA Maduro 1:20", "ECA Maduro 1:50", "ECA S/Madurar directo", "ECA S/Madurar 1:20", "ECA S/Madurar 1:50"))+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y = element_text(vjust = 3))+
-  scale_fill_manual(name = "Variable",values = c("#00688B", "seagreen3"))
+  ggtitle("Bioensayo de Hidrolizado de Ruezno")+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color= "black", face = "bold"))+
+  scale_x_discrete(limits = c("Control","NAA","GA3","Hidro Ruez D", "Hidro Ruez 1:20","Hidro Ruez 1:50","Exuroot Directo", "Exuroot 1:20","Exuroot 1:50"))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
+  scale_fill_manual(name = "Variable",values = c("#A3CC51","#00688B"))
 ```
 
