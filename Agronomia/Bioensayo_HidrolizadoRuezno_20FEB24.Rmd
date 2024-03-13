@@ -35,7 +35,7 @@ Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo hidroli
 Promedios <- Hidro %>%
   group_by(Tratamiento) %>%
   summarize(Long = mean(Longitud, na.rm = TRUE),
-            Lat = mean(ifelse(Laterales==0, NA, Laterales), na.rm = TRUE))
+            Lat = mean(ifelse(Laterales==0, NA, Laterales), na.rm = TRUE)) 
 
 # Se acomodan los datos:
 
