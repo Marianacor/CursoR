@@ -440,7 +440,6 @@ for(i in 3:4){
 # histogramas si es que no eran normales
 ```
 
-Dado que 
 
 ```{r}
 # Revisar homogeneidad de varianza
@@ -475,6 +474,19 @@ t.test(Simpson ~ Tratamiento, data = alphadiv) # salio significativo
 
 # si hay diferencia en la diversidad de alfa segun el test de simpson, por lo que si hay diferencia en el suelo al usar el bioestimulante
 
+```
+
+```{r}
+load("Bio.RData")
+# Modificar phyloseq
+Vid2 <- Bio
+
+Vid2@sam_data <- Vid2@sam_data[,1]
+#### Bray ####
+
+bray_bdiv <- phyloseq::distance(Vid2, # especificamos que es la funcion distance del paquete de phyloseq ya que hay otra funcion con ese nombre
+                                method = "bray",
+                                type = "sample")
 ```
 
 # ANÁLISIS TAXA
@@ -1342,7 +1354,7 @@ ggplot(genus, aes(x = Muestra, y = Abundancia, fill = Genero))+
   scale_x_discrete(labels=c("Tratado 1ro","Tratado 2do","Tratado 3ro","Testigo 3ro","Testigo 1ro","Testigo 2do"))+
   ggtitle("Abundancia a nivel Género")+
   theme(plot.title = element_text(hjust = 0.5, size = 15, face = "bold"))+
-  theme(axis.text.x = element_text(size = 12))+
+  theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1))+
   theme(axis.text.y = element_text(size = 12))+
   theme(axis.title.x = element_text(size = 15,vjust = 0.5))+
   theme(axis.title.y = element_text(size = 15, vjust = 1.5))+
@@ -1354,7 +1366,6 @@ ggplot(genus, aes(x = Muestra, y = Abundancia, fill = Genero))+
                                               "#446600", "#669900", "#99e600", "#bbff33","#c4ff4d", "#ccff66", "#dfff80", "#ffff80", "#ffff66", "#ffff4d", "#ffff33" ,"#ffff00","#ffaa00","#ffb31a","#ffbb33", "#ffc34d",
                                               
                                               "#ffcc66","#ffd480","#ffdd99", "#ffeecc","#ff9999", "#ff8080", "#ff6666", "#ff4d4d", "#ff3333","#ff1a1a", "#ff0000", "#e60000","#cc0000", "#b30000", "#990000", "#800000"))
-  
 
 ```
 
