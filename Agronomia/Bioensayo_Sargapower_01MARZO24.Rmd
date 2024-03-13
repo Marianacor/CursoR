@@ -1,0 +1,95 @@
+---
+title: "Producto Sargapower y Exuroot 01 Marzo 2024"
+output: html_notebook
+---
+
+```{r}
+# Librerias:
+
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+
+# DATA:
+
+Muestras <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_long_lat.csv")
+
+Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_variables.csv")
+```
+
+### Graficos del promedio de la longitud de raiz y raices laterales
+```{r}
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz y de las raíces laterales:
+
+Promedios <- Muestras %>%
+  group_by(Tratamiento) %>%
+  summarize(Long = mean(Longitud, na.rm = TRUE),
+            Lat = mean(ifelse(Laterales==0, NA, Laterales), na.rm = TRUE))
+
+# Se acomodan los datos:
+
+levels(Promedios$Tratamiento)
+Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))
+levels(Promedios$Tratamiento)
+
+# Grafico de la longitud de raíz:
+
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long, fill= Tratamiento))+
+  ggtitle("Bioensayo de muestra SargaPower y Exuroot (01Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
+   theme(legend.position = "none")
+
+# Grafico raices laterales:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestra SargaPower y Exuroot (01Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
+  theme(legend.position = "none")
+```
+
+```{r}
+# Ambas variables en un mismo gráfico:
+Prom <- Variables %>%
+  group_by(Tratamiento, Variable) %>%
+  summarize(Resultado= mean(ifelse(Resultado==0, NA, Resultado), na.rm = TRUE))
+
+ggplot(Prom, aes(x = Tratamiento, y = Resultado, fill = Variable))+
+  theme_bw()+
+  geom_col(position = "dodge")+
+  ggtitle("Bioensayo de SargaPower y Exuroot L")+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color= "black", face = "bold"))+
+  scale_x_discrete(limits = c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y= element_text(vjust = 3, size = 15))+
+  theme(legend.title = element_text(size = 15), legend.text = element_text(size = 12))+
+  scale_fill_manual(name = "Variable",values = c("#A3CC51", "#0F6B99"))
+```
+

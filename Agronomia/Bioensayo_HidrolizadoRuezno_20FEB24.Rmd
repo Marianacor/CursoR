@@ -28,10 +28,9 @@ Hidro <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo hidrolizado
 Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo hidrolizado ruezno_variables.csv")
 ```
 
-### Graficos del promedio de la longitud de raiz y raices laterales para Nebiol y extractos M1-M6
-
+### Graficos del promedio de la longitud de raiz y raices laterales
 ```{r}
-# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para el lote 1 y 2:
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz y de las raices laterales:
 
 Promedios <- Hidro %>%
   group_by(Tratamiento) %>%
