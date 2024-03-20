@@ -51,14 +51,16 @@ levels(Promedios$Tratamiento)
 
 # Grafico de la longitud de raíz L1:
 
-g1 <- ggplot(Promedios)+
+g1 <-  ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_L1, fill= Tratamiento))+
-  ggtitle("Bioensayo L1 (15Feb24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA's L1 (15Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
    theme(legend.position = "none")
 
@@ -66,11 +68,13 @@ g1 <- ggplot(Promedios)+
 g2 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_L1, fill=Tratamiento))+
-  ggtitle("Bioensayo L1(15Feb24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA's L1(15Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.title.x = element_text(size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 
@@ -78,11 +82,13 @@ g2 <- ggplot(Promedios)+
 g3 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_L2, fill= Tratamiento))+
-  ggtitle("Bioensayo L2 (05Marzo24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA's L2 (05Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
    theme(legend.position = "none")
 
@@ -90,11 +96,13 @@ g3 <- ggplot(Promedios)+
 g4 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_L2, fill=Tratamiento))+
-  ggtitle("Bioensayo L2(05Marzo24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA's L2(05Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 ```
@@ -106,14 +114,16 @@ Prom_long <- longitud %>%
   group_by(Tratamiento, Lote) %>%
   summarize(Longitud= mean(ifelse(Longitud==0, NA, Longitud), na.rm = TRUE))
 
-ggplot(Prom, aes(x = Tratamiento, y = Longitud, fill = Lote))+
+ggplot(Prom_long, aes(x = Tratamiento, y = Longitud, fill = Lote))+
   theme_bw()+
   geom_col(position = "dodge")+
   ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA'S Longitud")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color= "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color= "black", face = "bold"))+
   scale_x_discrete(limits = c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "Exuroot+ECCA M directo", "Exuroot+ECCA M 1:20", "Exuroot+ECCA M 1:50", "Exuroot+ECCA S/M directo", "Exuroot+ECCA S/M 1:20", "Exuroot+ECCA S/M 1:50"))+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y = element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(name = "Lote",values = c("#260F99", "#7EC3E5"))
 
 # Lotes 1 y 2 en un mismo gráfico para la variable de laterales
@@ -126,9 +136,11 @@ ggplot(Prom_lat, aes(x = Tratamiento, y = Laterales, fill = Lote))+
   theme_bw()+
   geom_col(position = "dodge")+
   ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA'S Raíces laterales")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color= "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color= "black", face = "bold"))+
   scale_x_discrete(limits = c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "Exuroot+ECCA M directo", "Exuroot+ECCA M 1:20", "Exuroot+ECCA M 1:50", "Exuroot+ECCA S/M directo", "Exuroot+ECCA S/M 1:20", "Exuroot+ECCA S/M 1:50"))+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y = element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(name = "Lote",values = c("#260F99", "#7EC3E5"))
 ```
