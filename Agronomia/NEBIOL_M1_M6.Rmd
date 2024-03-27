@@ -34,14 +34,16 @@ Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo M1-M6_l
 ### Graficos del promedio de la longitud de raiz y raices laterales para Nebiol y extractos M1-M6
 
 ```{r}
-# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para el lote 1 y 2:
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para el lote 1,2 y 3:
 
 Promedios <- Bioensayo %>%
   group_by(Tratamiento) %>%
   summarize(Long_lote1 = mean(Longitud.Lote.1, na.rm = TRUE),
             Long_lote2 = mean(Longitud.Lote.2, na.rm = TRUE),
             Lat_lote1 = mean(ifelse(Laterales.Lote.1==0, NA, Laterales.Lote.1), na.rm = TRUE),
-            Lat_lote2 = mean(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.2), na.rm = TRUE))
+            Lat_lote2 = mean(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.2), na.rm = TRUE),
+            Long_lote3 = mean(Longitud.Lote.3, na.rm = TRUE),
+            Lat_lote3 = mean(ifelse(Laterales.Lote.3== 0, NA, Laterales.Lote.3), na.rm = TRUE)) 
 
 # Se acomodan los datos:
 
@@ -51,77 +53,105 @@ levels(Promedios$Tratamiento)
 
 # Grafico de la longitud de raíz lote 1:
 
-ggplot(Promedios)+
+g1 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1 (17Enero24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size =13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 1:
-ggplot(Promedios)+
+g2 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1 (17Enero24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
-  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 
 # Grafico de la longitud de raíz lote 2:
 
-ggplot(Promedios)+
+g3 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2 (9Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 
-# Grafico raices laterales para el lote 1:
-ggplot(Promedios)+
+# Grafico raices laterales para el lote 2:
+g4 <- ggplot(Promedios)+
   theme_classic()+
-  geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2 (9Feb24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
 
-# Grafico raices laterales para el lote 2:
-ggplot(Promedios)+
+
+# Grafico de la longitud de raíz lote 3:
+g5 <- ggplot(Promedios)+
   theme_classic()+
-  geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
-  ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y=element_text(vjust = 3))+
-  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  geom_col(aes(x = Tratamiento, y = Long_lote3, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #3 (12Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   theme(legend.position = "none")
+
+# Grafico raices laterales para el lote 3:
+g6 <- ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat_lote3, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #3 (12Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(name = "Tratamiento",
+                    values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"), 
+                    labels=c("Control", "NAA", "GA3", "Pasta", "Pasta", "Pasta","B_Fenol","B_Fenol", "B_Fenol","Ext.Ruezno", "Ext.Ruezno","Ext.Ruezno","Ext.Agave","Ext.Agave","Ext.Agave","Ext.Caña","Ext.Caña","Ext.Caña","Pasta+Fenol","Pasta+Fenol", "Pasta+Fenol"))
+  #theme(legend.position = "none")
 
 ```
 
 
 ```{r}
-# Ambos lotes en un mismo gráfico para la variable de la longitud de raiz:
+# Todos los lotes en un mismo gráfico para la variable de la longitud de raiz:
 
-ggplot(Longitud,aes(x=Tratamiento, y = Longitud ,fill= Lote))+   theme_bw()+
+ggplot(Longitud,aes(x=Tratamiento, y = Longitud ,fill= Lote))+   
+  theme_bw()+
   geom_bar(stat= "summary", fun="mean", position="dodge")+
   theme(axis.text.x = element_text(angle=45,hjust=1))+
   scale_x_discrete(limits = c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))+
-  scale_fill_manual(name = "# Lote", values = c("#00688B", "seagreen3"))
+  scale_fill_manual(name = "# Lote", values = c("#260F99", "#7EC3E5","#6B990F"))
 
 
 Prom <- Longitud %>%
@@ -132,16 +162,18 @@ ggplot(Prom, aes(x = Tratamiento, y = Longitud, fill = Lote))+
   theme_bw()+
   geom_col(position = "dodge")+
   ggtitle("Bioensayo de muestras de NEBIOL y extractos")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color= "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color= "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
   scale_x_discrete(limits = c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y = element_text(vjust = 3))+
-  scale_fill_manual(name = "# Lote",values = c("#00688B", "seagreen3"))
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size =13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
+  scale_fill_manual(name = "# Lote",values = c("#260F99", "#7EC3E5","#6B990F"))
 ```
 
 ```{r}
-# Ambos lotes en un mismo grafico para la variable de raices laterales:
+# Todos los lotes en un mismo grafico para la variable de raices laterales:
 
 Promlat <- Laterales %>%
   group_by(Tratamiento, Lote) %>%
@@ -151,11 +183,13 @@ ggplot(Promlat, aes(x = Tratamiento, y = Media_laterales, fill = Lote))+
   geom_col( position = "dodge")+
   theme_bw()+
   ggtitle("Bioensayo de muestras de NEBIOL y extractos")+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
   scale_x_discrete(limits = c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  theme(axis.title.y = element_text(vjust =3))+
-  scale_fill_manual(name = "# Lote", values = c("#00688B", "seagreen3"))
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust =3, size = 15))+
+  scale_fill_manual(name = "# Lote", values = c("#260F99", "#7EC3E5","#6B990F"))
 ```
 
