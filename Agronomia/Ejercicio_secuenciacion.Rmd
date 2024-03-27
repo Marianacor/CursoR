@@ -791,6 +791,7 @@ Si bien despues de phylum viene clase, por razones de tiempo(tanto de la clase c
 Firmi_ord <- tax_glom(Firmi,taxrank = "Order", NArm = FALSE)
 Chloro_ord <- tax_glom(Chloro,taxrank = "Order", NArm = FALSE)
 
+
 # Por abundancias
 Proteo_ord <- tax_glom(Proteo, taxrank = "Order", NArm = FALSE)
 Actino_ord <- tax_glom(Actino, taxrank = "Order", NArm = FALSE)
@@ -811,7 +812,7 @@ plot_composition(Chloro_ord, plot.type = "barplot")+
   theme(axis.title.y = element_text(size = 15))+
   theme(legend.text = element_text(size = 14), legend.title = element_text(size = 15))+
   scale_fill_manual(name = "Orden", 
-                    #labels = c("NA", "Ktedonobacterales", "NA", "B10-SB3A", "NA", "Elev-1554","NA", "B12-WMSP1", "Anaerolineales", "C0119", "SBR1031","NA", "Thermomicrobiales", "Caldilineales","NA", "Chloroflexales", "NA"),
+                    labels = c("NA", "Ktedonobacterales", "NA", "B10-SB3A", "NA", "Elev-1554","NA", "B12-WMSP1", "Anaerolineales", "C0119", "SBR1031","NA", "Thermomicrobiales", "Caldilineales","NA", "Chloroflexales", "NA"),
                     values = c("#8c8cd9","#2d2d86", "#24478f", "#80bfff","#00cc66", "#00994d","#006633","#c4ff4d","#ffff80", "#ffff00","#ffaa00", "#ffbb33","#ffcc66","#ffeecc","#ff8080","#ff4d4d","#ff1a1a","#e60000", "#800000"))
 
 plot_composition(Firmi_ord, plot.type = "barplot")+ 
@@ -837,7 +838,7 @@ plot_composition(Proteo_ord, plot.type = "barplot")+
   theme(axis.title.y = element_text(size = 15))+
   theme(legend.text = element_text(size = 14), legend.title = element_text(size = 15))+
   scale_fill_manual(name = "Orden", 
-                    #labels= c("Elsterales","Acetobacterales","NA","Rhizobiales","KF-JG30-C25","Xanthomonadales","Sphingomonadales","Burkholderiales", "Azospirillales", "Caulobacterales", "Tistrellales", "Micropepsales", "Gammaproteobacteria Incertae Sedis", "AT-s3-44", "Rhodobacterles","Pseudomonadales", "Enterobacterales","Diplorickettsiales","Nitrosococcales"),
+                    labels= c("Elsterales","Acetobacterales","NA","Rhizobiales","KF-JG30-C25","Xanthomonadales","Sphingomonadales","Burkholderiales", "Azospirillales", "Caulobacterales", "Tistrellales", "Micropepsales", "Gammaproteobacteria Incertae Sedis", "AT-s3-44", "Rhodobacterles","Pseudomonadales", "Enterobacterales","Diplorickettsiales","Nitrosococcales"),
                     values = c("#8c8cd9","#2d2d86", "#24478f", "#80bfff","#00cc66", "#00994d","#006633","#c4ff4d","#ffff80", "#ffff00","#ffaa00", "#ffbb33","#ffcc66","#ffeecc","#ff8080","#ff4d4d","#ff1a1a","#e60000", "#800000"))
 
 plot_composition(Actino_ord, plot.type = "barplot")+
@@ -856,6 +857,11 @@ plot_composition(Chloro_ord, plot.type = "heatmap")+
   coord_flip()
 # Si tenemos muhas muestras es mejor usar barplot porque pude morir la compu
 
+plot_composition(Proteo_ord, plot.type = "heatmap")+
+  theme_bw()+
+  scale_fill_gradient(low = "snow2", high = "blue")+
+  coord_flip()
+
 # Usando la funcion de phyloseq para los graficos de diferencias
 plot_heatmap(Chloro_ord, 
              low = "lightskyblue", high = "#4d0000",
@@ -870,12 +876,12 @@ plot_heatmap(Firmi_ord,
 
 # Usando la funcion de phyloseq para los graficos de abundancia
 plot_heatmap(Actino_ord,
-             low = "lightskyblue", high = "#0F0F43",
+             low = "lightskyblue", high = "#4d0000",
              na.value = "snow2",
              taxa.order = names(sort(taxa_sums(Actino_ord))))
 
 plot_heatmap(Proteo_ord,
-             low = "lightskyblue", high = "#0F0F43",
+             low = "lightskyblue", high = "#4d0000",
              na.value = "snow2",
              taxa.order = names(sort(taxa_sums(Proteo_ord))))
 
