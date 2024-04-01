@@ -1,0 +1,74 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# Librerias
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+
+# DATA
+
+Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo_humik_papel filtro.csv")
+```
+
+### Graficos del promedio de la longitud de raiz y raices laterales 
+
+```{r}
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para los tres lotes:
+
+Promedios <- Bioensayo %>%
+  group_by(Tratamiento) %>%
+  summarize(Long = mean(Longitud, na.rm = TRUE),
+            Lat = mean(ifelse(Laterales==0, NA, Laterales), na.rm = TRUE))
+
+# Se acomodan los datos:
+
+levels(Promedios$Tratamiento)
+Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Humik-WSG directo", "Humik-WSG directo PF", "Humik-WSG 1:20","Humik-WSG 1:20 PF","Humik-WSG 1:50","Humik-WSG 1:50 PF","Humik-WSP directo","Humik-WSP directo PF", "Humik-WSP 1:20","Humik-WSP 1:20 PF","Humik-WSP 1:50","Humik-WSP 1:50 PF","Humik-ONE directo","Humik-ONE directo PF","Humik-ONE 1:20","Humik-ONE 1:20 PF","Humik-ONE 1:50","Humik-ONE 1:50 PF"))
+levels(Promedios$Tratamiento)
+
+Datos <- Promedios[-c(1:11,30), ]
+
+# Grafico de la longitud de raíz:
+
+g1 <-  ggplot(Datos)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long, fill= Tratamiento))+
+  ggtitle("Bioensayo comparación de técnica de filtrado muestras Humik")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y = element_text(vjust = 3, size = 13))+
+  scale_fill_manual(values=c("#BFB2FF","#BFB2FF","#8F7EE5","#8F7EE5","#6559CC","#6559CC","#260F99", "#260F99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#A3CC51","#A3CC51", "#C3E58E", "#C3E58E"))+
+   theme(legend.position = "none")
+
+# Grafico raices laterales:
+g2 <- ggplot(Datos)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat, fill=Tratamiento))+
+  ggtitle("Bioensayo comparación de técnica de filtrado muestras Humik")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
+  theme(axis.title.x = element_text(size = 13))+
+  scale_fill_manual(values=c("#BFB2FF","#BFB2FF","#8F7EE5","#8F7EE5","#6559CC","#6559CC","#260F99", "#260F99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#A3CC51","#A3CC51", "#C3E58E", "#C3E58E"))+
+  theme(legend.position = "none")
+```

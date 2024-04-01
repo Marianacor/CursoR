@@ -23,9 +23,11 @@ library(paletteer)
 
 # DATA:
 
-Muestras <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_long_lat.csv")
+Muestras <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_lotes.csv")
 
-Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_variables.csv")
+Longitud <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_longitud.csv")
+
+Lateral <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_lateral.csv")
 ```
 
 ### Graficos del promedio de la longitud de raiz y raices laterales
@@ -34,8 +36,10 @@ Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapo
 
 Promedios <- Muestras %>%
   group_by(Tratamiento) %>%
-  summarize(Long = mean(Longitud, na.rm = TRUE),
-            Lat = mean(ifelse(Laterales==0, NA, Laterales), na.rm = TRUE))
+  summarize(Long_lote1 = mean(Longitud_Lote1, na.rm = TRUE),
+            Lat_lote1 = mean(ifelse(Laterales_Lote1==0, NA, Laterales_Lote1), na.rm = TRUE),
+            Long_lote2 = mean(Longitud_Lote2, na.rm = TRUE),
+            Lat_lote2 = mean(ifelse(Laterales_Lote2==0, NA, Laterales_Lote2), na.rm = TRUE))
 
 # Se acomodan los datos:
 
@@ -43,26 +47,55 @@ levels(Promedios$Tratamiento)
 Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))
 levels(Promedios$Tratamiento)
 
-# Grafico de la longitud de raíz:
+# Grafico de la longitud de raíz lote 1:
 
 ggplot(Promedios)+
   theme_classic()+
-  geom_col(aes(x = Tratamiento, y = Long, fill= Tratamiento))+
+  geom_col(aes(x = Tratamiento, y = Long_lote1, fill= Tratamiento))+
   ggtitle("Bioensayo de muestra SargaPower y Exuroot (01Marzo24)")+
-  theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
   theme(axis.text.y = element_text(size = 13))+
   theme(axis.title.x = element_text(size = 15))+
   theme(axis.title.y=element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
-   theme(legend.position = "none")
+  theme(legend.position = "none")
 
-# Grafico raices laterales:
+# Grafico raices laterales lote 1:
 ggplot(Promedios)+
   theme_classic()+
-  geom_col(aes(x = Tratamiento, y = Lat, fill=Tratamiento))+
+  geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
   ggtitle("Bioensayo de muestra SargaPower y Exuroot (01Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
+  theme(legend.position = "none")
+
+# Grafico de la longitud de raíz lote 2:
+
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long_lote2, fill= Tratamiento))+
+  ggtitle("Bioensayo de muestra SargaPower y Exuroot (22Marzo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#0F6B99", "#0F6B99","#0F6B99","#6B990F","#6B990F","#6B990F"))+
+  theme(legend.position = "none")
+
+# Grafico raices laterales lote 2:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
+  ggtitle("Bioensayo de muestra SargaPower y Exuroot (22Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 19, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
