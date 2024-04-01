@@ -64,7 +64,8 @@ g1 <-  ggplot(Promedios)+
   theme(axis.title.x = element_text(size = 13))+
   theme(axis.title.y = element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
-   theme(legend.position = "none")
+  ylim(0,50)+
+  theme(legend.position = "none")
 
 # Grafico raices laterales L1:
 g2 <- ggplot(Promedios)+
@@ -78,6 +79,7 @@ g2 <- ggplot(Promedios)+
   theme(axis.title.y=element_text(vjust = 3, size = 13))+
   theme(axis.title.x = element_text(size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,25)+
   theme(legend.position = "none")
 
 # Grafico de la longitud de raíz L2:
@@ -92,7 +94,8 @@ g3 <- ggplot(Promedios)+
   theme(axis.title.x = element_text(size = 13))+
   theme(axis.title.y = element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
-   theme(legend.position = "none")
+  ylim(0,50)+
+  theme(legend.position = "none")
 
 # Grafico raices laterales L2:
 g4 <- ggplot(Promedios)+
@@ -106,6 +109,7 @@ g4 <- ggplot(Promedios)+
   theme(axis.title.x = element_text(size = 13))+
   theme(axis.title.y = element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,25)+
   theme(legend.position = "none")
 
 # Grafico de la longitud de raíz L3:
@@ -121,6 +125,7 @@ g5 <-  ggplot(Promedios)+
   theme(axis.title.x = element_text(size = 13))+
   theme(axis.title.y = element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,50)+
    theme(legend.position = "none")
 
 # Grafico raices laterales L3:
@@ -135,6 +140,7 @@ g6 <- ggplot(Promedios)+
   theme(axis.title.y=element_text(vjust = 3, size = 13))+
   theme(axis.title.x = element_text(size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,25)+
   theme(legend.position = "none")
 ```
 

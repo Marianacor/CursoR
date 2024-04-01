@@ -56,28 +56,30 @@ levels(Promedios$Tratamiento)
 g1 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1 (17Enero24)")+
+  ggtitle("Bioensayo Lote #1 (17Enero24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size =13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,45)+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 1:
 g2 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #1 (17Enero24)")+
+  ggtitle("Bioensayo Lote #1 (17Enero24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,20)+
   theme(legend.position = "none")
 
 # Grafico de la longitud de raíz lote 2:
@@ -85,28 +87,30 @@ g2 <- ggplot(Promedios)+
 g3 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2 (9Feb24)")+
+  ggtitle("Bioensayo Lote #2 (9Feb24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,45)+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 2:
 g4 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #2 (9Feb24)")+
+  ggtitle("Bioensayo Lote #2 (9Feb24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,20)+
   theme(legend.position = "none")
 
 
@@ -114,31 +118,33 @@ g4 <- ggplot(Promedios)+
 g5 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote3, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #3 (12Marzo24)")+
+  ggtitle("Bioensayo Lote #3 (12Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
+  ylim(0,45)+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 3:
 g6 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote3, fill=Tratamiento))+
-  ggtitle("Bioensayo de muestras de NEBIOL y extractos Lote #3 (12Marzo24)")+
+  ggtitle("Bioensayo Lote #3 (12Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
+  theme(axis.text.y = element_text(size = 9))+
+  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 13))+
   scale_fill_manual(name = "Tratamiento",
-                    values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"), 
-                    labels=c("Control", "NAA", "GA3", "Pasta", "Pasta", "Pasta","B_Fenol","B_Fenol", "B_Fenol","Ext.Ruezno", "Ext.Ruezno","Ext.Ruezno","Ext.Agave","Ext.Agave","Ext.Agave","Ext.Caña","Ext.Caña","Ext.Caña","Pasta+Fenol","Pasta+Fenol", "Pasta+Fenol"))
-  #theme(legend.position = "none")
+                    values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99","#0F6B99", "#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+#, 
+                    #labels=c("Control", "NAA", "GA3", "Pasta", "Pasta", "Pasta","B_Fenol","B_Fenol", "B_Fenol","Ext.Ruezno", "Ext.Ruezno","Ext.Ruezno","Ext.Agave","Ext.Agave","Ext.Agave","Ext.Caña","Ext.Caña","Ext.Caña","Pasta+Fenol","Pasta+Fenol", "Pasta+Fenol"))
+  ylim(0,20)+
+  theme(legend.position = "none")
 
 ```
 
