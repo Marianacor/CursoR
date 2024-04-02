@@ -59,10 +59,11 @@ g1 <-  ggplot(Promedios)+
   ggtitle("Bioensayo L1 (15Feb24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
+  xlab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
-  theme(axis.title.x = element_text(size = 13))+
-  theme(axis.title.y = element_text(vjust = 3, size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   ylim(0,50)+
   theme(legend.position = "none")
@@ -74,10 +75,11 @@ g2 <- ggplot(Promedios)+
   ggtitle("Bioensayo L1 (15Feb24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
+  xlab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
-  theme(axis.title.y=element_text(vjust = 3, size = 13))+
-  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.title.x = element_text(size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   ylim(0,25)+
   theme(legend.position = "none")
@@ -88,11 +90,11 @@ g3 <- ggplot(Promedios)+
   geom_col(aes(x = Tratamiento, y = Long_L2, fill= Tratamiento))+
   ggtitle("Bioensayo L2 (05Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("Longitud de raíz primaria")+
+  ylab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
-  theme(axis.title.x = element_text(size = 13))+
-  theme(axis.title.y = element_text(vjust = 3, size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   ylim(0,50)+
   theme(legend.position = "none")
@@ -103,11 +105,11 @@ g4 <- ggplot(Promedios)+
   geom_col(aes(x = Tratamiento, y = Lat_L2, fill=Tratamiento))+
   ggtitle("Bioensayo L2 (05Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("Raíces laterales")+
+  ylab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
-  theme(axis.title.x = element_text(size = 13))+
-  theme(axis.title.y = element_text(vjust = 3, size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   ylim(0,25)+
   theme(legend.position = "none")
@@ -119,7 +121,8 @@ g5 <-  ggplot(Promedios)+
   geom_col(aes(x = Tratamiento, y = Long_L3, fill= Tratamiento))+
   ggtitle("Bioensayo L3 (15Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("Longitud de raíz primaria")+
+  ylab("")+
+  xlab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 13))+
@@ -134,11 +137,12 @@ g6 <- ggplot(Promedios)+
   geom_col(aes(x = Tratamiento, y = Lat_L3, fill=Tratamiento))+
   ggtitle("Bioensayo L3 (15Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("Raíces laterales")+
+  ylab("")+
+  xlab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
-  theme(axis.title.y=element_text(vjust = 3, size = 13))+
-  theme(axis.title.x = element_text(size = 13))+
+  theme(axis.title.y=element_text(vjust = 3, size = 15))+
+  theme(axis.title.x = element_text(size = 15))+
   scale_fill_manual(values=c("#BFB2FF","#8F7EE5","#6559CC","#260F99", "#260F99","#260F99","#0F6B99", "#0F6B99","#0F6B99", "#7EC3E5", "#7EC3E5", "#7EC3E5","#6B990F","#6B990F","#6B990F","#A3CC51" ,"#A3CC51","#A3CC51", "#C3E58E", "#C3E58E", "#C3E58E"))+
   ylim(0,25)+
   theme(legend.position = "none")
