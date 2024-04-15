@@ -25,6 +25,7 @@ library(paletteer)
 # Archivos para ambos lotes:
 longitud <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas Humik_longitud.csv")
 
+
 laterales <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas Humik_laterales.csv")
 
 # Archivo para graficos separados
