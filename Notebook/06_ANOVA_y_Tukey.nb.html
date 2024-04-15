@@ -1767,8 +1767,9 @@ dependiente. Tambien existe la ANOVA de tres vias pero la complejidad en
 comparaciones y tratamientos crece bastante.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBMaWJyYXJ5XG5cbmxpYnJhcnkoZHBseXIpXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmxpYnJhcnkoY2FyKVxubGlicmFyeShhZ3JpY29sYWUpXG5cbiMgRGF0YVxuXG5Sb2RpbGxhcyA8LSByZWFkLmNzdihcIn4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL1JvZGlsbGFzLmNzdlwiKVxuXG5Fc3RhbnF1ZXMgPC0gcmVhZC5jc3YoXCJ+L0N1cnNvUi9DdXJzb1JnaXQvTWF0ZXJpYWxlcy9CUlcucG9uZHMuY3N2XCIpXG5cbkNvbXBfc3VlbG9zIDwtIHJlYWQuY3N2KFwifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvU29pbF9Db21wYXJpc29uLmNzdlwiKVxuXG5gYGAifQ== -->
-<pre class="r"><code># Library
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBMaWJyYXJ5XG5cbmxpYnJhcnkoZHBseXIpXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmxpYnJhcnkoY2FyKVxubGlicmFyeShhZ3JpY29sYWUpXG5cbiMgRGF0YVxuXG5Sb2RpbGxhcyA8LSByZWFkLmNzdihcXH4vQ3Vyc29SL0N1cnNvUmdpdC9NYXRlcmlhbGVzL1JvZGlsbGFzLmNzdlxcKVxuXG5Fc3RhbnF1ZXMgPC0gcmVhZC5jc3YoXFx+L0N1cnNvUi9DdXJzb1JnaXQvTWF0ZXJpYWxlcy9CUlcucG9uZHMuY3N2XFwpXG5cbkNvbXBfc3VlbG9zIDwtIHJlYWQuY3N2KFxcfi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvU29pbF9Db21wYXJpc29uLmNzdlxcKVxuXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+# Library
 
 library(dplyr)
 library(tidyverse)
@@ -1777,57 +1778,77 @@ library(agricolae)
 
 # Data
 
-Rodillas &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/Rodillas.csv&quot;)
+Rodillas &lt;- read.csv(\~/CursoR/CursoRgit/Materiales/Rodillas.csv\)
 
-Estanques &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/BRW.ponds.csv&quot;)
+Estanques &lt;- read.csv(\~/CursoR/CursoRgit/Materiales/BRW.ponds.csv\)
 
-Comp_suelos &lt;- read.csv(&quot;~/CursoR/CursoRgit/Materiales/Soil_Comparison.csv&quot;)
+Comp_suelos &lt;- read.csv(\~/CursoR/CursoRgit/Materiales/Soil_Comparison.csv\)
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="anova-de-una-via" class="section level1">
-<h1>ANOVA de una via</h1>
-<p>Es decir solo UN tratamiento independiente</p>
-</div>
-<div id="anova-con-r-base" class="section level1">
-<h1>ANOVA con R base</h1>
-<p>R base puede calcular ANOVA de dos maneras diferentes, una de ellas
-usando el codigo <em>anova()</em>. Sin embargo, esta funcion base
-calcula automaticamente una ANOVA tipo I la cual da por sentado que los
-datos son balanceados por lo que cuando no sea así se debe usar la
-funcion del paquete <em>car</em>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB2YXJhYmxlIGRlcCB+IHZhcmlhYmxlIGluZGVwLCBkYXRvc1xuXG5zdW1tYXJ5KGFvdihzaGlmdH50cmVhdG1lbnQsIGRhdGEgPSBSb2RpbGxhcykpXG5cbmFub3ZhKGxtKHNoaWZ0fnRyZWF0bWVudCwgZGF0YSA9IFJvZGlsbGFzKSlcbmFub3ZhKGFvdihzaGlmdH50cmVhdG1lbnQsIGRhdGEgPSBSb2RpbGxhcykpXG5gYGAifQ== -->
-<pre class="r"><code># varable dep ~ variable indep, datos
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+# ANOVA de una via
+
+Es decir solo UN tratamiento independiente
+
+# ANOVA con R base
+
+R base puede calcular ANOVA de dos maneras diferentes, una de ellas usando el codigo _anova()_. Sin embargo, esta funcion base calcula automaticamente una ANOVA tipo I la cual da por sentado que los datos son balanceados por lo que cuando no sea así se debe usar la funcion del paquete _car_.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyB2YXJhYmxlIGRlcCB+IHZhcmlhYmxlIGluZGVwLCBkYXRvc1xuXG5zdW1tYXJ5KGFvdihzaGlmdH50cmVhdG1lbnQsIGRhdGEgPSBSb2RpbGxhcykpXG5cbmFub3ZhKGxtKHNoaWZ0fnRyZWF0bWVudCwgZGF0YSA9IFJvZGlsbGFzKSlcbmFub3ZhKGFvdihzaGlmdH50cmVhdG1lbnQsIGRhdGEgPSBSb2RpbGxhcykpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+# varable dep ~ variable indep, datos
 
 summary(aov(shift~treatment, data = Rodillas))
 
 anova(lm(shift~treatment, data = Rodillas))
 anova(aov(shift~treatment, data = Rodillas))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>La diferencia entre lm y aov es el tipo de modelo y mas que nada la
-presentacion de los datos. Si quieresn saber mas al respecto pueden leer
-aqui:</p>
-<p>(lm vs. aov)[ <a href="https://www.oreilly.com/library/view/the-r-book/9780470510247/ch011-sec015.html" class="uri">https://www.oreilly.com/library/view/the-r-book/9780470510247/ch011-sec015.html</a>]</p>
-<p>Sin embargo para fines utiles yo siempre uso aov() ya que por
-definición significa análisis de varianza</p>
-</div>
-<div id="anova-con-el-paquete-car" class="section level1">
-<h1>ANOVA con el paquete car</h1>
-<p>Este paquete esta enfocado a varios tipos de analisis estadisticos y
-su funcion de ANOVA tiene un argumento para lidiar con datos
-desbalanceados (Tipo II y III). Ademas que este paquete tambien cuenta
-con la funcion levene para checar igualdad de varianzas.</p>
-<p>(Tipos de ANOVA) [<a href="https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/" class="uri">https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/</a>]</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgUmV2aXNhciBwb3IgaG9tb2dlbmVpZGFkIGRlIHZhcmlhbnphc1xuXG5sZXZlbmVUZXN0KHNoaWZ0fnRyZWF0bWVudCwgZGF0YSA9IFJvZGlsbGFzKSAjIG1heW9yIGEgMC4wNSBzZSBwdWVkZSBwcm9jZWRlciBjb24gYW5vdmEgeSB0dWtleSAjIGxldmVuZS50ZXN0IG5vIHNpcnZlXG5cbnBsb3Qocm9kX2Fub3ZhLDEpICMgSW50ZXJwcmV0YWNpb246IGxvcyByZXNpZHVhbHMgdGllbmVuIHF1ZSBlc3RhciBkaXN0cmlidWlkb3MgZGUgbWFuZXJhIGFsZWF0b3JpYSB5IHRpZW5lbiB2YXJpYW56YSBjb25zdGFudGUuUGVybyBlc3RlIGNhc2kgbm8gbG8gdmFuIGEgb2N1cGFyXG5cbiMjIEFOT1ZBXG5yb2RfYW5vdmEgPC0gYW92KHNoaWZ0fnRyZWF0bWVudCwgZGF0YSA9IFJvZGlsbGFzKSAjIHNlIHB1ZWRlIHVzYXIgbG0gbyBhb3ZcbkFub3ZhKHJvZF9hbm92YSlcblxuIyMgQU5PVkEgdGlwbyBJSVxuQW5vdmEocm9kX2Fub3ZhLCB0eXBlID0gMikgIyBmaWplbnNlIHF1ZSBjb21pZW56YSBjb24gbWF5dXNjdWxhLCBzZSByZWNvbWllbmRhIHVzYXIgdGlwbyAyIHNpIGxvcyBkYXRvcyBlc3RhbiBkZXNiYWxhbmNlYWRvc1xuXG4jIyBBTk9WQSB0aXBvIElJSVxuQW5vdmEocm9kX2Fub3ZhLCB0eXBlID0gMykgIyBlc3RlIG5vIGVyYSBlbCBjb3JyZWN0b3BhcmEgZXN0ZSB0aXBvIGRlIGRhdG9zXG5gYGAifQ== -->
-<pre class="r"><code>## Revisar por homogeneidad de varianzas
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+La diferencia entre lm y aov es el tipo de modelo y mas que nada la presentacion de los datos. Si quieresn saber mas al respecto pueden leer aqui:
+
+(lm vs. aov)[ https://www.oreilly.com/library/view/the-r-book/9780470510247/ch011-sec015.html]
+
+Sin embargo para fines utiles yo siempre uso aov() ya que por definición significa análisis de varianza
+
+# ANOVA con el paquete car 
+
+Este paquete esta enfocado a varios tipos de analisis estadisticos y su funcion de ANOVA tiene un argumento para lidiar con datos desbalanceados (Tipo II y III). Ademas que este paquete tambien cuenta con la funcion levene para checar igualdad de varianzas.
+
+(Tipos de ANOVA) [https://www.r-bloggers.com/2011/03/anova-%E2%80%93-type-iiiiii-ss-explained/]
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMgUmV2aXNhciBwb3IgaG9tb2dlbmVpZGFkIGRlIHZhcmlhbnphc1xuXG5sZXZlbmVUZXN0KHNoaWZ0fnRyZWF0bWVudCwgZGF0YSA9IFJvZGlsbGFzKSAjIG1heW9yIGEgMC4wNSBzZSBwdWVkZSBwcm9jZWRlciBjb24gYW5vdmEgeSB0dWtleSAjIGxldmVuZS50ZXN0IG5vIHNpcnZlXG5cbnBsb3Qocm9kX2Fub3ZhLDEpICMgSW50ZXJwcmV0YWNpb246IGxvcyByZXNpZHVhbHMgdGllbmVuIHF1ZSBlc3RhciBkaXN0cmlidWlkb3MgZGUgbWFuZXJhIGFsZWF0b3JpYSB5IHRpZW5lbiB2YXJpYW56YSBjb25zdGFudGUuUGVybyBlc3RlIGNhc2kgbm8gbG8gdmFuIGEgb2N1cGFyXG5cbiMjIEFOT1ZBXG5yb2RfYW5vdmEgPC0gYW92KHNoaWZ0fnRyZWF0bWVudCwgZGF0YSA9IFJvZGlsbGFzKSAjIHNlIHB1ZWRlIHVzYXIgbG0gbyBhb3ZcbkFub3ZhKHJvZF9hbm92YSlcblxuIyMgQU5PVkEgdGlwbyBJSVxuQW5vdmEocm9kX2Fub3ZhLCB0eXBlID0gMikgIyBmaWplbnNlIHF1ZSBjb21pZW56YSBjb24gbWF5dXNjdWxhLCBzZSByZWNvbWllbmRhIHVzYXIgdGlwbyAyIHNpIGxvcyBkYXRvcyBlc3RhbiBkZXNiYWxhbmNlYWRvc1xuXG4jIyBBTk9WQSB0aXBvIElJSVxuQW5vdmEocm9kX2Fub3ZhLCB0eXBlID0gMykgIyBlc3RlIG5vIGVyYSBlbCBjb3JyZWN0b3BhcmEgZXN0ZSB0aXBvIGRlIGRhdG9zXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+## Revisar por homogeneidad de varianzas
 
 leveneTest(shift~treatment, data = Rodillas) # mayor a 0.05 se puede proceder con anova y tukey # levene.test no sirve
 
@@ -1842,70 +1863,102 @@ Anova(rod_anova, type = 2) # fijense que comienza con mayuscula, se recomienda u
 
 ## ANOVA tipo III
 Anova(rod_anova, type = 3) # este no era el correctopara este tipo de datos</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>La diferencia entre el tipo II Y III es la interaccion de las
-variables independientes. Yo les recomiendo que usen tipo II si no estan
-seguros si sus variables interactuan entre si.</p>
-<p><em>Conclusion:</em> si p&lt;0.05 entonces si hay difrencia
-significativa entre mis valores</p>
-</div>
-<div id="como-revisar-si-los-datos-estan-balanceados-se-utiliza-la-variable-independiente-y-si-no-estan-balanceados-se-utiliza-anova-tipo-ii-o-iii-y-para-datos-balanceados-se-utilizan-los-tres-tipos." class="section level1">
-<h1>Como revisar si los datos estan balanceados se utiliza la variable
-independiente y si no estan balanceados se utiliza anova TIPO II O III y
-para datos balanceados se utilizan los TRES TIPOS.</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuUm9kaWxsYXMgJT4lXG4gIGdyb3VwX2J5KHRyZWF0bWVudCklPiVcbiAgc3VtbWFyaXNlKG4oKSlcbmBgYCJ9 -->
-<pre class="r"><code>Rodillas %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+La diferencia entre el tipo II Y III es la interaccion de las variables independientes. Yo les recomiendo que usen tipo II si no estan seguros si sus variables interactuan entre si.
+
+_Conclusion:_ si p&lt;0.05 entonces si hay difrencia significativa entre mis valores
+
+# Como revisar si los datos estan balanceados se utiliza la variable independiente y si no estan balanceados se utiliza anova TIPO II O III  y para datos balanceados se utilizan los TRES TIPOS.
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuUm9kaWxsYXMgJT4lXG4gIGdyb3VwX2J5KHRyZWF0bWVudCklPiVcbiAgc3VtbWFyaXNlKG4oKSlcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+Rodillas %&gt;%
   group_by(treatment)%&gt;%
   summarise(n())</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="tukey-hsd" class="section level1">
-<h1>Tukey HSD</h1>
-<p>En el caso que una ANOVA nos muestre que existen diferencias
-significativas entre tratamientos, el paso siguiente es correr un test
-de Tukey HSD en el cual nos “desglose” la ANOVA y nos dice cuales de los
-tratamientos son diferentes. Para esto solo hay un codigo el cual
-<em>TukeyHSD()</em></p>
-<p>ANOVA = sirve paa indicar si hay diferencias o no Tukey = sirve para
-decir cuales si son diferentes</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVHVrZXlIU0Qocm9kX2Fub3ZhKSAjIHA8MC4wNVxuXG5UdWtleUhTRChhb3Yoc2hpZnR+dHJlYXRtZW50LCBkYXRhID0gUm9kaWxsYXMpKSAjIGxvcyBxdWUgc29uIHNpZ25pZmljYXRpdmFtZW50ZSBkaWZlcmVudGVzIHNvbiBvam9zIGNvbiBjb250cm9sIHkgcm9kaWxsYXMgY29uIG9qb3MuXG5wbG90KFR1a2V5SFNEKHJvZF9hbm92YSkpXG5cbmBgYCJ9 -->
-<pre class="r"><code>TukeyHSD(rod_anova) # p&lt;0.05
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+# Tukey HSD
+
+En el caso que una ANOVA nos muestre que existen diferencias significativas entre tratamientos, el paso siguiente es correr un test de Tukey HSD en el cual nos &quot;desglose&quot; la ANOVA y nos dice cuales de los tratamientos son diferentes.
+ Para esto solo hay un codigo el cual _TukeyHSD()_
+ 
+ ANOVA = sirve paa indicar si hay diferencias o no
+ Tukey = sirve para decir cuales si son diferentes
+ 
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuVHVrZXlIU0Qocm9kX2Fub3ZhKSAjIHA8MC4wNVxuXG5UdWtleUhTRChhb3Yoc2hpZnR+dHJlYXRtZW50LCBkYXRhID0gUm9kaWxsYXMpKSAjIGxvcyBxdWUgc29uIHNpZ25pZmljYXRpdmFtZW50ZSBkaWZlcmVudGVzIHNvbiBvam9zIGNvbiBjb250cm9sIHkgcm9kaWxsYXMgY29uIG9qb3MuXG5wbG90KFR1a2V5SFNEKHJvZF9hbm92YSkpXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+TukeyHSD(rod_anova) # p&lt;0.05
 
 TukeyHSD(aov(shift~treatment, data = Rodillas)) # los que son significativamente diferentes son ojos con control y rodillas con ojos.
 plot(TukeyHSD(rod_anova))
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="ejercicio" class="section level2">
-<h2>Ejercicio</h2>
-<p>Usando el dataframe de <em>Estanques</em> vamos a comparar la calidad
-del agua en los estanques entres tres regiones diferentes de Alaska.
-Para ello cada uno de ustedes seleccionara una de las variables y
-llevara a cabo un test de ANOVA. No olviden tomar en cuenta los
-pasos:</p>
-<ul>
-<li>Checar normalidad y de no estar normalizado transformar</li>
-<li>Checar si el set de datos esta balanceado (para elegir el tipo de
-anova)</li>
-<li>Checar homogeneidad de varianza</li>
-<li>Calcular ANOVA y si es significativa calcular Tukey HSD</li>
-<li>Hacer un grafico del resultado Tukey</li>
-</ul>
-<p><em>Shapiro y qqnorm salen con error o nan cuanso se transforman
-logaritmicamente porque la transformacion dio valores infinitos</em></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxLiBDaGVjYXIgbm9ybWFsaWRhZFxucGFyKG1mcm93PWMoMSwyKSlcbmhpc3QoRXN0YW5xdWVzJFBoeXRvQ0hMYSlcbnFxbm9ybShFc3RhbnF1ZXMkUGh5dG9DSExhKSAjIG5vIGVzdGFuIG5vcm1hbGl6YWRvcyBsb3MgZGF0b3Ncblxuc2hhcGlyby50ZXN0KEVzdGFucXVlcyRQaHl0b0NITGEpXG5cbiMgMi4gVHJhbnNmb3JtYXIgbG9zIGRhdG9zIFxucGFyKG1mcm93PWMoMSwyKSlcbmhpc3QobG9nKEVzdGFucXVlcyRQaHl0b0NITGEpKVxucXFub3JtKGxvZyhFc3RhbnF1ZXMkUGh5dG9DSExhKzEpKVxuXG5zaGFwaXJvLnRlc3QobG9nKEVzdGFucXVlcyRQaHl0b0NITGErMSkpICMgc2UgYWdyZWdhIHVuICsxIHBvcnF1ZSBoYXkgdmFsb3JlcyBpbmZpbml0b3MgeSBubyBzZSBwdWVkZW4gc2FjcmEgbG9nIGEgbnVtZXJvcyBjZXJvcyB5IGFsIGFncmVnYXIgdW4gKzEgc2UgZXN0YSBzdW1hbmRvIHVuIDEgYSB0b2RvcyBsb3MgZGF0b3MgYSBuYWxpemFyXG5cblxuIyAzLiBDaGVjYXIgc2kgZXN0YW4gYmFsYW5jZWFkb3NcbkVzdGFucXVlcyAlPiVcbiAgZ3JvdXBfYnkoUmVnaW9uKSU+JVxuICBzdW1tYXJpc2UobigpKSAjIE5vIGVzdGFuIGJhbGFuY2VhZG9zIHBvciBsbyBxdWUgc2UgZGViZSB1c2FyIHRpcG8gSUkgZGUgYW5vdmFcblxuIyA0LiBDaGVjYXIgaG9tb2dlbmVpZGFkXG5sZXZlbmVUZXN0KGxvZyhQaHl0b0NITGErMSl+UmVnaW9uLCBkYXRhID0gRXN0YW5xdWVzKSAjIHAgZXMgaWd1YWwgYSAwLjAzIHBvciBsbyBxdWUgc2kgc2UgcG9kcsOtYSB1c2FyIGFub3ZhIHkgdHVrZXkgYSBwZXNhciBkZSBzZXIgbWVub3IgYSAwLjA1XG5cbiMgNS4gQ2FsY3VsYXIgYW5vdmFcbnJvZF9hbm92YTIgPC0gYW92KGxvZyhQaHl0b0NITGErMSl+UmVnaW9uLCBkYXRhID0gRXN0YW5xdWVzKVxuQW5vdmEocm9kX2Fub3ZhMiwgdHlwZSA9IDIpICMgc2kgc29uIHNpZ25pZmljYXRpdmFtbnRlIGRpZmVyZW50ZXMgbG9zIGRhdG9zIGRlIHBIWVRPQ0hMYSBlbnRyZSBsYXMgcmVnaW9uZXNcblxuIyA2LiBHcsOhZmljbyBkZSBUdWtleVxuVHVrZXlIU0Qocm9kX2Fub3ZhMikgIyBsb3MgcXVlIHNvbiBzaWduaWZpY2F0aXZhbWVudGUgZGlmZXJlbnRlcyBzb24gSUJQIGNvbiBCRU8gIHkgSUJQIGNvbiBCUldcblxucGxvdChUdWtleUhTRChyb2RfYW5vdmEyKSlcblxuYGBgIn0= -->
-<pre class="r"><code># 1. Checar normalidad
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+ 
+## Ejercicio 
+
+Usando el dataframe de _Estanques_ vamos a comparar la calidad del agua en los estanques entres tres regiones diferentes de Alaska. Para ello cada uno de ustedes seleccionara una de las variables y llevara a cabo un test de ANOVA. No olviden tomar en cuenta los pasos:
+
+* Checar normalidad y de no estar normalizado transformar
+* Checar si el set de datos esta balanceado (para elegir el tipo de anova)
+* Checar homogeneidad de varianza 
+* Calcular ANOVA y si es significativa calcular Tukey HSD
+* Hacer un grafico del resultado Tukey
+
+_Shapiro y qqnorm salen con error o nan cuanso se transforman logaritmicamente porque la transformacion dio valores infinitos_
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxLiBDaGVjYXIgbm9ybWFsaWRhZFxucGFyKG1mcm93PWMoMSwyKSlcbmhpc3QoRXN0YW5xdWVzJFBoeXRvQ0hMYSlcbnFxbm9ybShFc3RhbnF1ZXMkUGh5dG9DSExhKSAjIG5vIGVzdGFuIG5vcm1hbGl6YWRvcyBsb3MgZGF0b3Ncblxuc2hhcGlyby50ZXN0KEVzdGFucXVlcyRQaHl0b0NITGEpXG5cbiMgMi4gVHJhbnNmb3JtYXIgbG9zIGRhdG9zIFxucGFyKG1mcm93PWMoMSwyKSlcbmhpc3QobG9nKEVzdGFucXVlcyRQaHl0b0NITGEpKVxucXFub3JtKGxvZyhFc3RhbnF1ZXMkUGh5dG9DSExhKzEpKVxuXG5zaGFwaXJvLnRlc3QobG9nKEVzdGFucXVlcyRQaHl0b0NITGErMSkpICMgc2UgYWdyZWdhIHVuICsxIHBvcnF1ZSBoYXkgdmFsb3JlcyBpbmZpbml0b3MgeSBubyBzZSBwdWVkZW4gc2FjcmEgbG9nIGEgbnVtZXJvcyBjZXJvcyB5IGFsIGFncmVnYXIgdW4gKzEgc2UgZXN0YSBzdW1hbmRvIHVuIDEgYSB0b2RvcyBsb3MgZGF0b3MgYSBuYWxpemFyXG5cblxuIyAzLiBDaGVjYXIgc2kgZXN0YW4gYmFsYW5jZWFkb3NcbkVzdGFucXVlcyAlPiVcbiAgZ3JvdXBfYnkoUmVnaW9uKSU+JVxuICBzdW1tYXJpc2UobigpKSAjIE5vIGVzdGFuIGJhbGFuY2VhZG9zIHBvciBsbyBxdWUgc2UgZGViZSB1c2FyIHRpcG8gSUkgZGUgYW5vdmFcblxuIyA0LiBDaGVjYXIgaG9tb2dlbmVpZGFkXG5sZXZlbmVUZXN0KGxvZyhQaHl0b0NITGErMSl+UmVnaW9uLCBkYXRhID0gRXN0YW5xdWVzKSAjIHAgZXMgaWd1YWwgYSAwLjAzIHBvciBsbyBxdWUgc2kgc2UgcG9kcsOtYSB1c2FyIGFub3ZhIHkgdHVrZXkgYSBwZXNhciBkZSBzZXIgbWVub3IgYSAwLjA1XG5cbiMgNS4gQ2FsY3VsYXIgYW5vdmFcbnJvZF9hbm92YTIgPC0gYW92KGxvZyhQaHl0b0NITGErMSl+UmVnaW9uLCBkYXRhID0gRXN0YW5xdWVzKVxuQW5vdmEocm9kX2Fub3ZhMiwgdHlwZSA9IDIpICMgc2kgc29uIHNpZ25pZmljYXRpdmFtbnRlIGRpZmVyZW50ZXMgbG9zIGRhdG9zIGRlIHBIWVRPQ0hMYSBlbnRyZSBsYXMgcmVnaW9uZXNcblxuIyA2LiBHcsOhZmljbyBkZSBUdWtleVxuVHVrZXlIU0Qocm9kX2Fub3ZhMikgIyBsb3MgcXVlIHNvbiBzaWduaWZpY2F0aXZhbWVudGUgZGlmZXJlbnRlcyBzb24gSUJQIGNvbiBCRU8gIHkgSUJQIGNvbiBCUldcblxucGxvdChUdWtleUhTRChyb2RfYW5vdmEyKSlcblxuYGBgIn0= --&gt;
+
+```r
+# 1. Checar normalidad
 par(mfrow=c(1,2))
 hist(Estanques$PhytoCHLa)
 qqnorm(Estanques$PhytoCHLa) # no estan normalizados los datos
@@ -1941,7 +1994,6 @@ plot(TukeyHSD(rod_anova2))
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-</div>
 <div id="anova-de-2-vias" class="section level1">
 <h1>ANOVA de 2 vias</h1>
 <p>Aunque este tipo de analisis es sumamente util, muchas veces nuestros
@@ -1950,19 +2002,22 @@ Para ello los datos se pueden comparar usando un ANOVA es de 2 o mas
 vias.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGV2ZW5lVGVzdChsb2dOSDMgfiBUZW1wZXJhdHVyZSpTb2lsLCBkYXRhID0gQ29tcF9zdWVsb3MpXG5cbmBgYCJ9 -->
-<pre class="r"><code>leveneTest(logNH3 ~ Temperature*Soil, data = Comp_suelos)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtbWFyeShlc3RfYW5vdmEpXG5cbmBgYCJ9 -->
+<pre class="r"><code>summary(est_anova)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTGV2ZW5lJ3MgVGVzdCBmb3IgSG9tb2dlbmVpdHkgb2YgVmFyaWFuY2UgKGNlbnRlciA9IG1lZGlhbilcbiAgICAgIERmIEYgdmFsdWUgUHIoPkYpXG5ncm91cCAgMyAgMC40OTgxIDAuNjg3OFxuICAgICAgMjAgICAgICAgICAgICAgICBcbiJ9 -->
-<pre><code>Levene&#39;s Test for Homogeneity of Variance (center = median)
-      Df F value Pr(&gt;F)
-group  3  0.4981 0.6878
-      20               </code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICAgICBEZiBTdW0gU3EgTWVhbiBTcSBGIHZhbHVlICAgUHIoPkYpICAgIFxuVGVtcGVyYXR1cmUgICAgICAgMSAwLjY1NTAgIDAuNjU1MCAgMTAuNzIwIDAuMDAzNzk0ICoqIFxuU29pbCAgICAgICAgICAgICAgMSAxLjM3NDQgIDEuMzc0NCAgMjIuNDk0IDAuMDAwMTI0ICoqKlxuVGVtcGVyYXR1cmU6U29pbCAgMSAwLjQ2NTkgIDAuNDY1OSAgIDcuNjI2IDAuMDEyMDM3ICogIFxuUmVzaWR1YWxzICAgICAgICAyMCAxLjIyMjAgIDAuMDYxMSAgICAgICAgICAgICAgICAgICAgIFxuLS0tXG5TaWduaWYuIGNvZGVzOiAgMCDigJgqKirigJkgMC4wMDEg4oCYKirigJkgMC4wMSDigJgq4oCZIDAuMDUg4oCYLuKAmSAwLjEg4oCYIOKAmSAxXG4ifQ== -->
+<pre><code>                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+Temperature       1 0.6550  0.6550  10.720 0.003794 ** 
+Soil              1 1.3744  1.3744  22.494 0.000124 ***
+Temperature:Soil  1 0.4659  0.4659   7.626 0.012037 *  
+Residuals        20 1.2220  0.0611                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="ejercicio-1" class="section level2">
+<div id="ejercicio" class="section level2">
 <h2>Ejercicio</h2>
 <p>Ahora les toca a ustedes cada quien va a elegir 1 variable y comparar
 los efectos de temperatura y tipo de suelo en ellas. Tienen que seguir
@@ -1970,15 +2025,18 @@ el mismo proceso y al final me van a explicar porque si o no hay
 diferencias significativas entre los grupos.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGV2ZW5lVGVzdChOTzMudWdMIH4gVGVtcGVyYXR1cmUqU29pbCwgZGF0YSA9IENvbXBfc3VlbG9zKSAjIHNpIGVzIG1heW9yIGEgMC4wNVxuXG5gYGAifQ== -->
-<pre class="r"><code>leveneTest(NO3.ugL ~ Temperature*Soil, data = Comp_suelos) # si es mayor a 0.05
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGV2ZW5lVGVzdChOTzMudWdMIH4gVGVtcGVyYXR1cmUqU29pbCwgZGF0YSA9IENvbXBfc3VlbG9zKSAjIHNpIGVzIG1heW9yIGEgMC4wNVxuXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+leveneTest(NO3.ugL ~ Temperature*Soil, data = Comp_suelos) # si es mayor a 0.05
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTGV2ZW5lJ3MgVGVzdCBmb3IgSG9tb2dlbmVpdHkgb2YgVmFyaWFuY2UgKGNlbnRlciA9IG1lZGlhbilcbiAgICAgIERmIEYgdmFsdWUgUHIoPkYpXG5ncm91cCAgMyAgMC43NTI5IDAuNTMzNlxuICAgICAgMjAgICAgICAgICAgICAgICBcbiJ9 -->
-<pre><code>Levene&#39;s Test for Homogeneity of Variance (center = median)
-      Df F value Pr(&gt;F)
-group  3  0.7529 0.5336
-      20               </code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiTGV2ZW5lJ3MgVGVzdCBmb3IgSG9tb2dlbmVpdHkgb2YgVmFyaWFuY2UgKGNlbnRlciA9IG1lZGlhbilcbiAgICAgIERmIEYgdmFsdWUgUHIoPkYpXG5ncm91cCAgMyAgMC43NTI5IDAuNTMzNlxuICAgICAgMjAgICAgICAgICAgICAgICBcbiJ9 --&gt;
+</code></pre>
+<p>Levene’s Test for Homogeneity of Variance (center = median) Df F
+value Pr(&gt;F) group 3 0.7529 0.5336 20<br />
+```</p>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2033,7 +2091,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("ANOVA_y_Tukey.Rmd");
+  window.initializeSourceEmbed("06_ANOVA_y_Tukey.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

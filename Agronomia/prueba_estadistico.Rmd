@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# Librerias
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+
+datos <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Prueba estadistico.csv")
+```
+
+```{r}
+par(mfrow=c(1,2))
+hist(datos$Longitud)
+qqnorm(datos$Longitud)
+
+shapiro.test(datos$Longitud)
+
+# Normalizar
+par(mfrow=c(1,2))
+hist(sqrt(datos$Longitud))
+qqnorm(sqrt(datos$Longitud))
+
+shapiro.test(sqrt(datos$Longitud)) # No se puede normalizar por lo que se debe analizar con un test no parametrico
+
+kruskal.test(Longitud ~ Tratamiento, data = datos) # pvalue es menor a 0.05 por lo que si existen diferencias significativas entre los tratamientos
+
+pairwise.wilcox.test(datos$Longitud,
+                     datos$Longitud,
+                     p.adjust.method = "bonferroni")
+
+leveneTest(Longitud~Tratamiento, data = datos)
+
+rod_anova2 <- aov(Longitud~Tratamiento, data = datos)
+Anova(rod_anova2, type = 2)
+
+TukeyHSD(rod_anova2) 
+
+plot(TukeyHSD(rod_anova2))
+
+summary(rod_anova2)
+rtout <- HSD.test(rod_anova2, trt = c ("Longitud", "Tratamiento"),
+                  alpha = 0.05)
+```

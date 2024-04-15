@@ -1759,7 +1759,7 @@ media de especies en un sitio a escala local. Este es el primer nivel de
 comparacion de diversidad que van a usar para comparar sus muestras</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBMaWJyZXJpYXNcbmxpYnJhcnkocGh5bG9zZXEpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KFJDb2xvckJyZXdlcilcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkoY2FyKVxubGlicmFyeShicmVha2F3YXkpICMgY2hhby1idW5nZVxubGlicmFyeShtaWNyb2Jpb21lKVxubGlicmFyeShhZ3JpY29sYWUpXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBMaWJyZXJpYXNcbmxpYnJhcnkocGh5bG9zZXEpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KFJDb2xvckJyZXdlcilcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkoY2FyKVxubGlicmFyeShicmVha2F3YXkpICMgY2hhby1idW5nZVxubGlicmFyeShtaWNyb2Jpb21lKVxubGlicmFyeShhZ3JpY29sYWUpXG5cbkJpb2NNYW5hZ2VyOjppbnN0YWxsKFwibWljcm9iaW9tZVwiKVxuXG4jIERhdGFcbmxvYWQoXCJ2aWRfZWplbXBsb3MuUkRhdGFcIilcbmBgYCJ9 -->
 <pre class="r"><code># Librerias
 library(phyloseq)
 library(ggplot2)
@@ -1770,11 +1770,12 @@ library(car)
 library(breakaway) # chao-bunge
 library(microbiome)
 library(agricolae)
-</code></pre>
+
+BiocManager::install(&quot;microbiome&quot;)
+
+# Data
+load(&quot;vid_ejemplos.RData&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogcGFja2FnZSDigJhhZ3JpY29sYWXigJkgd2FzIGJ1aWx0IHVuZGVyIFIgdmVyc2lvbiA0LjMuMlxuIn0= -->
-<pre><code>Warning: package ‘agricolae’ was built under R version 4.3.2</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1784,13 +1785,16 @@ library(agricolae)
 reto para ustedes sera interpretar esos datos:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxwaGFkaXZcblxuYGBgIn0= -->
-<pre class="r"><code>alphadiv
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmdW5jaW9uIGRlIHBoeWxvc2VxXG5hbHBoYWRpdiA8LSBlc3RpbWF0ZV9yaWNobmVzcyh2aWRfYmlvLCAjIG9iamV0b1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3BsaXQ9IFRSVUUsICMgZGVmYXVsdFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVhc3VyZXMgPSBOVUxMKSAjIGVsZWdpciBlbCB0aXBvIGRlIGluZGljZSwgZWwgZGVmYXVsdCBlcyBOVUxMIHkgdGUgZGEgY29tbyByZXN1bHRhZG8gNyBpbmRpY2VzIGRpZmVyZW50ZXNcblxuIyBTZXBhcmFyIG1ldGRhdG9zIHBhcmEgcG9uZXJsb3MgZW4gbGEgdGFibGEgZGUgZGl2IGFsZmFcbnNhbXBsZW1ldGEgPC0gYXMuZGF0YS5mcmFtZSh2aWRfYmlvQHNhbV9kYXRhKVxuYWxwaGFkaXYgPC0gY2JpbmQoc2FtcGxlbWV0YSxhbHBoYWRpdilcbmBgYCJ9 -->
+<pre class="r"><code># funcion de phyloseq
+alphadiv &lt;- estimate_richness(vid_bio, # objeto
+                              split= TRUE, # default
+                              measures = NULL) # elegir el tipo de indice, el default es NULL y te da como resultado 7 indices diferentes
+
+# Separar metdatos para ponerlos en la tabla de div alfa
+samplemeta &lt;- as.data.frame(vid_bio@sam_data)
+alphadiv &lt;- cbind(samplemeta,alphadiv)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IG9iamV0byAnYWxwaGFkaXYnIG5vIGVuY29udHJhZG9cbiJ9 -->
-<pre><code>Error: objeto &#39;alphadiv&#39; no encontrado</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>La funcion base de phyloseq calcula 7 metodos diferentes para
@@ -1827,55 +1831,30 @@ logarítmica.</p></li>
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6NCwibmNvbCI6NSwic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbNCDDlyA1XSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJndHlpVERtaXVCaVlHQmdabUJoWm1SZ1pnVXlHVmhEUTl4MExSZ1lXSmlBSEVZR0ZnWk9FRjBCVkNRTWtnVmlQaUJtY1ZqM0NhU2F3V0ZSRzRSZWNRbENiMmxrZ0FLSXV2V0dqWktGS1ZjY0ZsM2N6MTFXdE1CaHBZZFU5VFRCRlE1YjVyOVY4K2M1Q2xjblV5KzMvWGNBdDRPaVE1WGVmWlUzRHFvMURhblRWVlVkcEQ0SHZuTUo2SVNyazd0VVVmTnZYNVdEek9xdUZ2Tm5teDFrRjdmdDNhVm82aUIvald2SmV3WVRtRHI3OTcvQzN2WEZHZHUvLzJhaE85K1N5Zjc5OTZMOXAyWXZ0My8vdTJsZTMyRU9OQSt5NWlYbXBoWURHUUpnVDBJRU9meVRpbE9MeWxKVFlJcWNNeEx6RFdHU3hhbDZ5VWg4OXVDTXhMeTgvRHc0TnpPM29CaklSYldIc3lpL1hBL1pMaGFvQkhPd2hTR0NhWVJnR2lPWXB1aU9UczVKTElZWkJCUGtTa2tzU2RSTEt3TGFBZVQ5UTlQQ25sOVFrcG1mQjlURUJJdE9aTTJNUldnQy9LVjVJTmVtNkNabmxPWmw2NXFETEFCTFF6QXZsR1pCWXJOQ3JHVDZqeGFhYktsNTZabDVxVEMzNXlRbXBlWkFPWHpBVUFFSGlsNUJVV1plQ2N3blFORml2Wkw4a2tTWU9xN2svQnlZQ05odkRQOEFKTkI1aU1VQ0FBQT0ifQ== -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Observed"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Chao1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["se.chao1"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Shannon"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Simpson"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"3961","2":"3992.752","3":"7.124141","4":"7.705538","5":"0.9993090","_rn_":"S81"},{"1":"2371","2":"2408.873","3":"8.625932","4":"7.167521","5":"0.9988061","_rn_":"S82"},{"1":"3177","2":"3236.052","3":"10.743167","4":"7.409694","5":"0.9989561","_rn_":"S83"},{"1":"5249","2":"5279.926","3":"6.737617","4":"7.959025","5":"0.9994519","_rn_":"S85"}],"options":{"columns":{"min":{},"max":[10],"total":[5]},"rows":{"min":[10],"max":[10],"total":[4]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZXN0aW1hdGVfcmljaG5lc3ModmlkX2Jpbywgc3BsaXQgPSBUUlVFLFxuICAgICAgICAgICAgICAgICAgbWVhc3VyZXMgPSBjKFwiT2JzZXJ2ZWRcIixcIkNoYW8xXCIsXCJTaGFubm9uXCIsXCJTaW1wc29uXCIpKSAjIGVzdGFzIHNvbiBsYXMgbWFzIGNvbXVuZXMgYSB1c2Fyc2VcbmBgYCJ9 -->
+<pre class="r"><code>estimate_richness(vid_bio, split = TRUE,
+                  measures = c(&quot;Observed&quot;,&quot;Chao1&quot;,&quot;Shannon&quot;,&quot;Simpson&quot;)) # estas son las mas comunes a usarse</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <div id="otros-indices-de-diversidad-que-pueden-calcular" class="section level2">
 <h2>Otros indices de diversidad que pueden calcular</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkZWwgcGFxdWV0ZSBicmVha2F3YXlcbmNoYW9fYnVuZ2UodmlkX2JpbywgY3V0b2ZmID0gMTApICMgU2ltaWxhciBhIENoYW8xIHBlcm8gbWFzIHNlbnNpYmxlXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkZWwgcGFxdWV0ZSBicmVha2F3YXlcbmNoYW9fYnVuZ2UodmlkX2JpbywgY3V0b2ZmID0gMTApICMgU2ltaWxhciBhIENoYW8xIHBlcm8gbWFzIHNlbnNpYmxlXG4jIGN1YW5kbyB1c2FybG8/IGN1YW5kbyB0ZW5nYSBiYWphIGFidW5kYW5jaWEgeSBncmFuIHBvcmNlbnRhamUgZGUgbXVlc3RyYXMgcmFyYXNcblxuIyBkZWwgcGFxdWV0ZSBtaWNyb2Jpb21lXG5FdmVubmVzcyA8LSBldmVubmVzcyh2aWRfYmlvLCAjIG9iamV0b1xuICAgICAgICAgICAgICAgICAgICAgaW5kZXggPSAnYWxsJywgXG4gICAgICAgICAgICAgICAgICAgICB6ZXJvZXMgPSBUUlVFLCBkZXRlY3Rpb24gPSAwKSAjIGRlZmF1bHRcblxuIyBVbmlyIHkgZ3VhcmRhciBudWVzdHJhIHRhYmxhXG5hbHBoYWRpdiA8LSBjYmluZChhbHBoYWRpdiwgRXZlbm5lc3MpXG53cml0ZS5jc3YoYWxwaGFkaXYsIFwifi9DdXJzb1IvQ3Vyc29SZ2l0L01hdGVyaWFsZXMvRGl2ZXJzaWRhZF9hbGZhLmNzdlwiKVxuYGBgIn0= -->
 <pre class="r"><code># del paquete breakaway
 chao_bunge(vid_bio, cutoff = 10) # Similar a Chao1 pero mas sensible
-</code></pre>
+# cuando usarlo? cuando tenga baja abundancia y gran porcentaje de muestras raras
+
+# del paquete microbiome
+Evenness &lt;- evenness(vid_bio, # objeto
+                     index = &#39;all&#39;, 
+                     zeroes = TRUE, detection = 0) # default
+
+# Unir y guardar nuestra tabla
+alphadiv &lt;- cbind(alphadiv, Evenness)
+write.csv(alphadiv, &quot;~/CursoR/CursoRgit/Materiales/Diversidad_alfa.csv&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQSBjb2xsZWN0aW9uIG9mIDQgYWxwaGEgZGl2ZXJzaXR5IGVzdGltYXRlczpcblxuJCBTODFcbkVzdGltYXRlIG9mIHJpY2huZXNzIGZyb20gbWV0aG9kIENoYW8tQnVuZ2U6XG4gIEVzdGltYXRlIGlzIDQwNjFcbiB3aXRoIHN0YW5kYXJkIGVycm9yIDMxLjUxXG4gIENvbmZpZGVuY2UgaW50ZXJ2YWw6ICgzOTY2LCA2MDI5KVxuICBDdXRvZmY6ICAxMFxuXG4kIFM4MlxuRXN0aW1hdGUgb2YgcmljaG5lc3MgZnJvbSBtZXRob2QgQ2hhby1CdW5nZTpcbiAgRXN0aW1hdGUgaXMgMjQ1MlxuIHdpdGggc3RhbmRhcmQgZXJyb3IgMjUuOTlcbiAgQ29uZmlkZW5jZSBpbnRlcnZhbDogKDIzNzUsIDM4OTApXG4gIEN1dG9mZjogIDEwXG5cbiQgUzgzXG5Fc3RpbWF0ZSBvZiByaWNobmVzcyBmcm9tIG1ldGhvZCBDaGFvLUJ1bmdlOlxuICBFc3RpbWF0ZSBpcyAzMzExXG4gd2l0aCBzdGFuZGFyZCBlcnJvciAyOS45M1xuICBDb25maWRlbmNlIGludGVydmFsOiAoMzE4NSwgNTM3NylcbiAgQ3V0b2ZmOiAgMTBcblxuJCBTODVcbkVzdGltYXRlIG9mIHJpY2huZXNzIGZyb20gbWV0aG9kIENoYW8tQnVuZ2U6XG4gIEVzdGltYXRlIGlzIDUzNzRcbiB3aXRoIHN0YW5kYXJkIGVycm9yIDM1LjQzXG4gIENvbmZpZGVuY2UgaW50ZXJ2YWw6ICg1MjU1LCA3ODU1KVxuICBDdXRvZmY6ICAxMFxuIn0= -->
-<pre><code>A collection of 4 alpha diversity estimates:
-
-$ S81
-Estimate of richness from method Chao-Bunge:
-  Estimate is 4061
- with standard error 31.51
-  Confidence interval: (3966, 6029)
-  Cutoff:  10
-
-$ S82
-Estimate of richness from method Chao-Bunge:
-  Estimate is 2452
- with standard error 25.99
-  Confidence interval: (2375, 3890)
-  Cutoff:  10
-
-$ S83
-Estimate of richness from method Chao-Bunge:
-  Estimate is 3311
- with standard error 29.93
-  Confidence interval: (3185, 5377)
-  Cutoff:  10
-
-$ S85
-Estimate of richness from method Chao-Bunge:
-  Estimate is 5374
- with standard error 35.43
-  Confidence interval: (5255, 7855)
-  Cutoff:  10</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>De esta segunda seccion es importante notar que la funcion de
@@ -1899,9 +1878,32 @@ info en indices de diversidad</a></p>
 <h1>Graficando diversidad alfa</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-plot-begin eyJoZWlnaHQiOjM5MS44NDE4LCJ3aWR0aCI6NjM0LCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAnsAAAGICAMAAAAOBNaPAAACTFBMVEUAAAAAADoAAGYAOmYAOpAAZrYZGT8ZGWIZP2IZP4EZYp8aGhozMzM6AAA6ADo6AGY6OpA6kNs/GRk/GT8/GWI/P2I/P4E/gb1DzYBNTU1NTVlNTV5NTW5NTW9NTXlNTYNNTY5NWY5NXl5NXp1NZKtNaX9NaatNbqtNjshTTYNTf81ZTU1ZTVlZTWRZTY5ZY6teTU1eTVleTY5eU01iGRliGT9iGWJiPxliYhliYj9iYmJin9ljTY5jq+RkTU1kTW5kTY5kWU1kbqtkb01mAABmADpmAGZmOgBmOpBmtrZmtv9pTVlpTY5uTU1uTWRuTW5uTXluTY5ubo5ubqtueU1ujoNunZ1uq6tuq8huq+RvTU1vtf95TU15TW55TY55yP+BPxmBPz+BYhmBgT+BgWKBn4GBvdmLClCOTU2OTVmOTV6OTW6OTY6Obk2ObquOg02OyP+O5P+QOgCQOjqQZgCQkDqQtpCQ27aQ2/+W3LWd5P+fYhmfYj+f2dmg5r6ijk2i//+raU2raV6rbk2rbm6rbo6rjk2rq46rzaur5OSr5P+1jk21q261//+2ZgC2Zma2tma22/+2//+54su6eZ29gT+92b292dnEg6bH8NnIeU3Ig03Ijk3IyI7I5KvI/8jI/+TI///OqL3Zn2LZvYHZ2Z/Z2b3Z2dnbkDrb/7bb///ctsvkjlnkq27kyI7k5Kvk///r6+v/tW7/tW//tmb/trb/yHn/yI7/25D/27b/29v/5I7/5J3/5Kv//6L//7b//8j//9v//+T////Be2j/AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAcWklEQVR4nO2di2Mcx13H5RCnJI4TnJbY1zpgHsXhUSglpVCXAMXhIWpSxTwiKG0K1DaNA4qB4mKitli0RBABjk0kKpycH8lhIaqAQILksKT9x5jf7Ozt4/bxm93f7O7dfb+JNXu7e/ud3f3cvHZmdsqDoGY01XQEoIkV2IOaEtiDmhLYg5oS2IOaEtiDmlIl9h50oPZ6127YkvN2pmrsvSUuPnu1e8s7lmJPPBaloiEhsMf2BnvCAntsb7AnLLDH9gZ7wgJ7bG+wJyywx/YGe8ICe2xvsCcssMf2BnvCEmXv2oEDB06o8NIJ3km/+dzQjtXZu6kicf9rb91630upm7PWF3sPOd5+4sCB97yUd8QCibBXORZjwd41dctvP3G4Wfauqfvw1qX7X8u4FzfpPpW7B0nH20+c0OfcLHtBLEpGoWw0JCTI3u2fpHtAd+LSx3X6d1P/IOmHSb/L7/wYJUdvfv6M/5lWf/vHxNm7/dEzb2mob73vp3Qkbj2iA2N66b4viKV7mjnlF3e69ejvRYLg5M0ngZueHYuX3vz8Hxw4cFhd9cPqXvz+gfvOJG9BeizGgb2b+sdHaZmf7BCL1x5Q9/swBbceOaG4U+f/mv+ZVt8cvhJV2bsZpAC3HjlMH4hF/XM4bDbJ5blvPud7xZ3MJxMY3+CTwE3PjIVi7zm6zA/Q4u0n7n/t5nuityA7FmPB3gM6UBku5bmXTvhJkE6J1DWge35NUXfYfKbL4iDPNZHwGTOcGTc/PoLlPUpV7juTcDKfTGB8I7tUvek5saDfNv1ThpQTUxZjbkFuLMaHPeLpL89oBFUmpC4KlYVVqE/80X/SWW7wOaVgWJU9la6aheBCX6Jsh5botsiyR4d775lhp5A94+uUvUEsoux9NHoL8mMxDuxFynsngiSN8iK92pz/Fx4NPjtK9yLlPT/hUQlAmP68Jcme/1u7lHCqO92LxCLBnv9bC27BeKd7uorp13N1mYOKFpEiD530tQOHg8KHo/JerJ4bMPDeMy7Ke7qGGd5S4xRnL3LyjtiLxCKW5z5AvsO3YFzZ001run3v47qSdWlQyTLpvqbAfFZpk4t6bqx9T5cxD2gbU88Vb9+LlPd8pwR7pobpMM8NYxFL9346cQuyYzEe7AkIzzVEzttUMtxFQ0Jgj+0N9oQF9tjeo8Se82hICOyxvcGesMAe2xvsCQtjJNnetRu25LydqRp76avf5nw3Yyc+e7V7p29mGWbsVYo9GwPeTmAv95Bt8AZ7wgJ7bG+wJyywx/YGe8ICe2xvsCcssMf2BnvCAntsb7AnLLDH9gZ7wpJnb2X+yyuM744He8yTdc1eTddcWNLsrczPr7yq/hV+1wl7Tu/B8Gb2ybplr7ZrLixh9lZIr9Kfou86YM/xPRjazD9Zp+zVd82FJczefHAd5ou+K8+e63swtJl/sk7Zq++aC0uWvZXwOhQBIM+e63uQ3Gxxsi7Zq/GaC0uWvfkw7SkCQJw95/cgudniZF2yV+M1F9b4sEfeR5SceYM9YY1Pnls7e8hzK2p86hq157moa1TUGLWx1F3XQBtLRY1R23LtbSxoW66mcXqmVnfbsodnapU0Xn0Jan6mlnMs1l7oS1BerWMP/VhKxALs5R+yDd5gT1hgj+0N9oQF9tjeYE9YYI/tDfaEBfbY3mBPWGCP7Q32hAX22N5gT1hgj+0N9oQF9tjeYE9YYI/tDfaEBfbY3mBPWGCP7Q32hAX22N4O2ds51zm+oZf6pzrHusnA8/Yuz+VHEuz5Glf23pZWYEhkrT9OSzvn1NLxjXig1q93Jou99U6HfnXmNxkPfE0Ye+UNC9K9nfNdrz9DCVz/9Ia38/xiPFCrn3lhsthb1adrfpPxwAjsybA3YCyDvb2Fl3WeqyeFF099324fe3sLdDGC32Q8MLuAPRn2to4H7Olc9uhiPPDWZyesvKdy144qZWTkAq5/g4UZ/jixF15Vql08q370sUBtnjD2+k9TYr9ofpPxwOzi8DoUZvjjxF48N6FPsYB+h53ObG4kx4s9rdW5rHSP5O46FGf448Te3uXZoJ6rrq1aigfeZLaxrM41U95jZPju8vsMOW/fowu71dHFingwcexR9rr3113zm4wHRu6uQ3GGP07pno0mgj0q7qs6VoPte7kZPtizj8bosFcs5+xNSHnPRmDPl7vrUJzhgz37aIC93J0i7Xv5GT7Ys48G2MvdaSKfa9gI7PkCe2CvgsAe2xvsCQvssb3BnrDAHtsb7AkL7LG9wZ6wwB7bG+wJC+yxvcGesMAe2xvsCQvssb3BnrDAHtsb7AkL7LG9wZ6wwB7bG+wJC+yxvcGesMAe2xvsCQvssb3BnrDAHtsb7AkL7LG9wZ6wwB7bG+wJC+yxvcGesMAe2xvsCQvsDR3Sn3pHz0ExmHM22xHslRbYSz3klh6LqefiKRiVCfZKC+ylHTKYDI8m4TifP/MR2CstsJd2SDP7QZjuuZnpUoy9teWra4zvgr3cnVrB3mDCIcbMRy1I99aWl9duqH8lYwH28g9Zr/dW8LKLpxe9rWNtz3PXSDfoT7lYgL38Q9brvWrml+XM8Ns8e8sBe8vlYgH28g9Zq7eZcHdE0r21kL2ihA/s5e7UBvbMqy78GWiPLiY3lzB0yd5ymOcWJXxgL3enNrBn5Qj2SivOXm9qarp37x3ul8FeC9gbkzx36d5/PTm9e2E/98tgrwXsjUdd4+7JafW/t3nPFeaXwV4b2BuLNhawV8KxdvaGH4/cuHr1Bv2r8/GKhGJ5bo/y3LsnD3G/DPbakO554/FMbXNKiY0e2OMaoi9BmtDGwvYGe8KKsrd7Ydruy2AP7FVQoq5h92WwB/YqKFHXYDcra4E9sFdB8XRvSovfxlKl42TF+j7Ys49Gi9mzFtI9sFdBYI/tDfaEVS3PTV9dD3u15/dgT1jD6d7dpy5yv4x0D+xVUEqeu8mu7YI9sFdBaeyNRp5buzfYE1YKe0tI9yw2g73SSqlr7EN5z2Iz2CsttLGwvcGesMAe2xvsCSvGnu64zG/eA3vcTptgL03xsUL7vd49V3oYK8TczJ4IBeylKdGHigapoY2FuZk/SAfspWlorNAhsMd15A9OBHtpivdbPrS57yLlvExNNnsWg7LBXppi5b3tg1P7LZqWJ5w9i8kowF6a0MbC9gZ7wgJ7bG/kucJK5rmj03+vdu+hHoNXbxhdddNh0CaSo86eqmvsXpi2GK02YewlV6CNpZqSYySXDqH/HtsRbcuVlGSvh7ZlG0c8U6ug5DM1BR5/lC7YQ1+CCoqxpwp83hL671k5gr3SQhsL2xvsCQvssb3BnrAw1zfbG+wJC3N9s73BnrAw3zLbG+wJC+yxvcGesDDXN9sb7AkLc32zvcGesNDGwvYGe8ICe2xvh+yF7yfvn+rQS1OHgs5cfiTBni+wx9wrOOLe5Tlv/XFa2jmnlo5vJILnF/WrfPMiCfZ8gT3mXsERd8539et6VQp3Wr+pPB5sEZarc7mRHGn2di9MBUIbi8VmCfYMY14Ge7SLDh4kVZxcVaj7tITCdE/VcS1frwH2uIYF7G0dDxjTuezRxXjgUa48mx9JF+fdy5iUbPshdk+nXMWfqVniB/ak0z2qVjy7sJgIFJKzye+UiYbdefco/9tMIcIJe37Oy8cP7EmX94JP8aB/am7oO2WiYXXe5g1nKcO1HbGnPVHes9gsU8+dDeq5KvVTS/Egil6d7AUPGTRr9IdSJgVHsMjuc5Kh4XSP320Z7HENee17lPRtdXRLXyxY75Bqr+duBo+4AvZ0D6fevXfMokWHp3TFx0jagOeBPbbhiD7XoMrG/pA93cnk7snpYJHf6SRd0XquHXge2GMbjih7HqGm0znNXs9vgjtE7FEpsGq5D+17bO+JZI8AG7Bnqh3i7JUR2Btj9gxZEfY2TcYYLMrluSmi54zBc+54kBdpsMfdq9XseUvEF1UoqEfn7oV9qoKhUjtFnYu6xpDWVeXKPOeOB3mRZg7Vd8KeU+9JY09XNXRVl+aI+pWn/IYVBaSjNpaY+s+8MBe0e8aD7EizpyhxwJ5j74ljz7Vy2NtbeFmlcllPt9Ofa98YqPJz7YIMf/iC8aeFAnuVoyGhHPbWZ+n2m+fc8cDsMRxp/vTXhdehIMN36m2xGeyVVnycWrSFTyVxeznpHmko0hZTcRZdh6IM35135DHC3uXO0cXEZt6xWHuBvYiWpqYGj479WzBrVd6zmIK44DoUZ/jJ3JpmAT2rVH4e0MjpbPl5++pcsJR2tnnnwdoL7MVE75IMniHrTM48544HRg7ZK8zwM7zPCnh7gw6b57upmxnHYu0F9hIi+kyjoXX7nli+V5zhp3pTuieQ3wc/r/7pr5s8102PYbAXU0832zDfseGuvF+c4busawSAU+clAj7LMedYrL3AXqhBz1Hm0xKn7RwFGb5L76CMV1CzyjsWay+wN9Ddk5YP6Jy271q378l5r5oe6jt/BPYcKjnXt2fziHhMn6ntLQS4rSLPdSh59ka/L4EZrqhKliqhPdZNbi5hCPbSFLLXG/Tfw9yPFpvBXmmlpHt8gb1JYG+N9faaEkLfUbb3ZLJH5Dmib8CennQUfeatHcecvbWBOAZ2QrrH9p5I9pYD9BIN9tsHqXy2/XBmMqU25WzVAnts70lkby1kL57wbR+k3DGfvaLoxNjz811+AzPYG3f2lsM8N57wbT/8D/t9wEJiNv3iGvWwnzbp3vZ3/Kl+VJaKVfJdfr17rvTQxmKxeYzZOzukcJviakkDFr719u4vXqHXkN596mIAnvr/oL819dW4iTYWGns08W3LVo5jzJ6Xl+c+fOXuL9+hv4o4ws0zf7XUygF+XmynqIber3EI7Fk5jjd72XUNBVXvkKFr90/8obwH/aktlijvjbEX2SmixDvraczvEvJci81jzl5WG4tP05eSSZrKWOkJRZjnctM9Anc/t+9eTqTBHnOvEWAvq21ZV2N1ZXdQlKO/6p/G7aGLMfaKy3vWAnvjz17GMzW/CYWmJg2rsEt+Pbc3NfVtvzQdZ6+wnmtmmuQL7E0Ce86EvgRsb7AnrMS7/NhFPS2wB/YqKJ7uoS+BtSPYKy3UNdjeYE9YYI/tDfaEFWdPVY+nLQp9YA/sVVC8LwG9N9xiOkmwB/YqaOh57jSe51o51s6e+MwcLXiXH9gbDfZsDHg7tYE9r0d5LnVlYQrsgb0Kitc1NoPZnXkCe5PA3sr8/Arn6NZCGwvbezLZI/Ic0Qf22N4Tyd7KQBwDO8XrGvzsVgvsjT178wF684kNkSlCPdaIyGHF6xpTdi8OB3vjzt5KyF484dN9nsLHEPbgecN57tKUxeskwd64szcf5rnxhE/DpoekcUdEDiulvLeE9j2LzWPM3pEhhdv0u9U8z2JE5LBS0j2MDc/Y3IoHCi3Jc3V7nMkheSMihxV/nmuT4WZHelzZK284mukeKbOuQdIvN+WOiBwW+syzvSeSvaw2lk3d4WRpmj8iclho32N7TyR7WW3LOp1SgPFHRA4L8++xvSeTvaxnagQLFdDYIyKHhXSP7T2p7DkT2GN7gz1hRdnTvVhsHmyAPbBXQSF7uxd0Hn33pMV4DfEWL36TF9izj0Zr2Qsezu1eYPcoQLoH9ipowF44GQt/oBrYA3sVFG1jMUsjMl6j9vwe7AlrdNmr3RvsCQvssb3BnrDAHtsb7Akrwt7gPZJgz2Iz2CstPNdge4M9YYE9tjfYExbYY3uDPWGBPbY32BMW2GN7gz1hgT22N9gTVvK9QmhjsXQEe6WVeJ/a7oVpixFDYA/sVVBynBpzmIcvsAf2KijJXg/vz7VzBHullXxvuAIP/fdsNoO90oqxR12WlzAXkJUjx3Bl/sup09eBvfICexxDGt/6auoYV7BXXmCPYagnlHg1deZOsBcK7Xv2joWG8wF7w7PpgL2BLN4o5Gs02csqfblhbyVkb8h1cMSdc53jG3qpf6pzrJsMws1jy95EzEOVXfpyw958mOcOJXzBEfcuz3nrj9PSzjm1dHwjHoSbsyM56uxNwjvrc0pfwSHXO6Q5/wPd91xHCfZ2zne9/oxK4Lz+6Q1v5/nFeBBuzozFyLNn0arsq/58r7J3TukresitII9b71Rkj5PnGsa8DPYGmx8k1T421JkaGa9RPt+r6p1HQuSQPghK/WdeqMgep65BpPuWOpc9uhgPws2ZsRj9dM9W7vI9V94ahCNHjhRUO4PS1d7Cy36eWyHFeXWgzAQnTPeodvHswmI8iGwGe4Hc5nsuvP3S15H0CYTDamdwo9dnK5f3OG3LsQKd/hQLJqK8p1/uYjEJmtN8z523TvfyvIPSnkpwBNgrfqa2d3k2qOcq6tVSPAg3Z8Zi9NnrUUnP+TtM82p+7ahrrM76oV/jnc11FOlL4DfgUdq21dFNefFgctr3XPehapQ9Tllzb2FxsE4k3UM/llQ1wF6TeS6rjm2aO3QJC+y5U7x9j7pPuX9veIN1DVK9z9Ty9gJ7A1k38Y1eG0vuTmCvXjXSh6q5tuXcncBevWqo/15jz9TydgJ79QpzoLG9wZ6w0G+Z7Q32hJXG3t8j3eNvHh32qpdzhDXEHvM9bFpgb3TYk6jfCSvBXq+G57m5O4G9AjXZriWsofY9myEbYG9k2BNpzxdW5J1W+n2oS2DPznE02JN5jims5DsOwJ6l42iwJ9N/Q1hhurepi3pgz9IR7JVWfJxarLy31YkODo0HvsDeqLDX7jzX12ZYz6U+RLrT7NxwYAT2RoW9ltc1jFTiF7bvKf7MYIF4YDaDvZFhr+1tLIH+a8CeSuIyhoq6HitamOGDPbtotL9tOab+qaOLwdjReGB2cHf/izN8sGcbjfY/U4spe4i8ltv7n5/hgz37aIxAX4KIVueaK+8VZPju8vsMgT1hZbNnslczODQeGLm8DkUZPtI9+2iMDHs0OlXd/uba9/IzfLBnH43RYa9Yjq9DboYP9uyjAfZydzKHLM7wwZ59NMBe7k7BIQszfLBnHw2wl7sTnmsUCOz5Antgr4LAHtsb7AkL7LG9wZ6wwB7bG+wJC+yxveWf4oG98pow9sobIt1LE9hje4M9YYE9tjfYExbYY3uDPWGBPbY32BMW2GN7gz1hgT22d0vYE2/paf5dfmUE9pDuVRDYY3uDPWGBPbY32BMW2GN7gz1hgT22N9gTFthje4M9YYE9tjfYExbYY3uDPWGBPbY32BMW2GN7gz1hgT22N9gTFthje4M9YYE9tjfYExbYY3uDPWGBPbY32BMW2GN7gz1hgT22N9gTFthje4M9YYE9tjfYExbYY3uDPWGBPbY32BMW2GN7gz1hgT22N9gTFthje4M9YYE9tjfYExbYY3uDPWGBvaFDrndIc7TYP2UWsh3BXmmBvdRDbul3yNDL2/pP57+xFeyVVjX2GpyXxuk9MG8M3KIXaK3ODW22NgR7aUK6l3bI8DWtkRf2Yq5vYYG9lEOGb0bX7w/MdUS6V1qjy554KhQmQ1uDNwbunJsNHW3Og7UX2CuvcU33VgPg+qfmUjbbG4K9NIG94UPuLZgsN4Ye2JPWBLK3tnx1LfeQfnGvP9ONtPRlOoK90mqIvcL778x7bXl57Yb6Z+9dnr2ss62XverXXFiNsFf+/lf2XiPdoD/W3mXZyz7bOtmTuObCaoK9Cve/svdy4L1s7V2SvZyzrZE9kWsurCbYq3D/q3qvhd7WKJRkL+dsa2RP5JoLqwH2qtz/qt7a+uzZs2VQKMde3tnWx57MNRdWA+wth+l/haSgivfZUt7l2Ms72/BByrmOac7un+oc62YEeZGs5ZoLa8LY079/ne7Vledy2Nu7PGceIe+cU0vHN4Lg+cVIkBtJsOerxXlu/XUNTp67c75LzYlqqX96g5oXo8H5rglyI4k811eL6xoNtLEw6hoGNS/JXjLdq9Cb5uoNo6s5z7Fr1qS1sdTftsxoY6G+Cz57OrM9umiCoBwYFgfRxhJoBNuWvfLt++7alsN0j6oVzy4smoD6TG8d65ogN5JoW/bV6mdqOTs19kwtLO8Fn/zApIdhspgdSTxT89XyvgTtG6dGHVRNPZeKdo8HgWS6l7MT2Ms9ZBu8HfZj8Qt0lPRtdXTRLgxUqS8I8iIJ9nyBPeZe6ENVXmAP7FUQ2GN7gz1hgT22N9gTFthje4M9YYE9tjfYE1Y19hyovd61G7bkvJ2pEnsZYp2LoxOu3Zt3LOe3t8lrXlZgrw5DsJcmsFeHIdhLkwv2IIgjsAc1JbAHNSWwBzUlsAc1JT57NOc6TcoUdrBNbJ/ppm7SK7c6ncGQg8Fe8d2zjtuIdyXDqGO4F/9shaJR8Zq7lwV7FM9w1vX07Rnr16nX7WrydliwV7d3FcOYY0X2Grzm7mXJ3t7CIoU75/RAeROoH9ixLi1fn+nuLXyj05lVa2b1F/wf5s4XP6x+vXtf+7Gvq5/id32m89gn1cKx1+kbz7zgf7VbzF6d3hUMvXd+mJKqd3/i1zudJ5Wn8vntTudzO/yzbcc1dy/bdO/0BoWrs3pc36oeZkBjW2hwgT7lvctq6VTwyQT//YG/0EunZld/4/i/f/BT10/9wuzW9z6uV8155mjF6V6N3hUMd/7wBzZ8Q++fv2/jPx57pf/kD3n/9j0b/LNtxzV3L9vyno4vnbkZuqwWg9F9/nVYWNRzxtIA58F1oPdU0Pj6mdfPX595/Ysfuf7p313sf/qz1/1rZY5WXN6r0buCIb2VQxuqfT/RfedHXlT/e+986Kt99tm245q7l22ee3nOXEN1sird1oNY1BWiv9nXoX/6bymL6M9cV/+98VfqOnyGvvk3g99pkK+0xruCodf/ed+w23/6E913f/xFyoM773+xzz7bdlxz97Jkz1udi/wGzw9i7qffWdfh/578HbX0xtd+dPAb/GzXXCFmule3dwXDnXM/S5/e/fDngnTvQ1/1rM62HdfcvSzZM/ENyx4qoKW066AHmfoJwK/SINM//uCnuqu/OfMvquwx85XZ/q8d/5ZpIWCW9+r0rmI483fHrj+9+M3HXvG++YNdXd77Ge8/j77SZ59tO665e5Vr3wvrXDRudJUSd5U1+HWuwXWgFzL+li74+K9m/P5vzejq1RuXH/s5Vd96/4v+N4KqWy57dXtXNuyom0413u9+4Rjldh/4SJd/tu245u6F5xpQUwJ7UFMCe1BTAntQUwJ7UFMCe1BTmlT2di9M+dofX/8//5i+//ZDF4fWZe0L8TSp7JFSeEpDzOLrkI3AXtEqm69DNgJ72w//2dQ9V7YPqvz3EP095PnLavOXDpp103pfyqfvuWLWT/v70rr9hU5QmsDe9kHFzt2T057XUwiqVYPlg/fe8XpT9Edv2L2gduzde8df7+9L6/R6yF5gb/ugQu1/7/ifadVgmTb4f/SGTZXmEZiRVZ5ep/9A1gJ7pti2qfLZfRf9D5Hl4I/6v+dXjA9FVnmbKglEwa+kwJ7+e/fkvosBT9HlGHvEmRdbBfaqCOzpv5qhzX0hT5vD6Z5aFX4tYI/WIc8tJ7Dns0dJ3cF9F6meESwn2du9oKCMMEn7oq5RQWDP/7ukSnh/rmBamtofLCfZ0+0pfnbsr6d90cZSXpPMHtSswB7UlMAe1JTAHtSUwB7UlMAe1JTAHtSUwB7UlMAe1JTAHtSU/h85auZP+Ip2GgAAAABJRU5ErkJggg==" /></p>
-<!-- rnb-plot-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBHcmFmaWNvIHVzYW5kbyBsYSBmdW5jaW9uIGRlIHBoeWxvc2VxXG5cbmdyYWZfYWxmYSA8LSBwbG90X3JpY2huZXNzKHZpZF9iaW8sIHg9IFwiVHJhdGFtaWVudG9cIiwgIyB2YXIgaW5kZXBlbmRpZW50ZSAxXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVhc3VyZXMgPSBjKFwiT2JzZXJ2ZWRcIixcIlNoYW5ub25cIixcIlNpbXBzb25cIiwgXCJDaGFvMVwiKSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb2xvciA9IFwiU3VlbG9cIikgKyAjIHZhciBpbmRlcGVuZGllbnRlIDJcbiAgc2NhbGVfY29sb3JfbWFudWFsKHZhbHVlcyA9IGMoXCIjOEIwQTUwXCIsIFwiIzQzQ0Q4MFwiKSxcbiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSBcIlN1ZWxvXCIpK1xuICB0aGVtZV9idygpXG5cbmdyYWZfYWxmYSRsYXllcnMgPC0gZ3JhZl9hbGZhJGxheWVyc1stMV1cbmdyYWZfYWxmYSA8LSBncmFmX2FsZmEgKyBnZW9tX3BvaW50KHNpemU9NCwgYWxwaGE9MC4zKVxuZ3JhZl9hbGZhXG5cbiMgQSBtYW5vIHVzYW5kbyBsYSB0YWJsYSBxdWUgY3JlYW1vc1xuXG4jIyBQaWVsb3VcbmdncGxvdChhbHBoYWRpdiwgIyBvYmpldG9cbiAgICAgICBhZXMoeD1UcmF0YW1pZW50byxcbiAgICAgICAgICAgeT1waWVsb3UsICMgeSBzZXJpYSBlbCBpbmRpY2VcbiAgICAgICAgICAgY29sb3I9IFN1ZWxvKSkrXG4gIGdlb21fcG9pbnQoc2l6ZT00LCBhbHBoYT0wLjQpK1xuICBzY2FsZV9jb2xvcl9tYW51YWwodmFsdWVzID0gYyhcIiM4QjBBNTBcIiwgXCIjNDNDRDgwXCIpKStcbiAgdGhlbWVfYncoKVxuICAgICAgICAgXG5gYGAifQ== -->
+<pre class="r"><code># Grafico usando la funcion de phyloseq
+
+graf_alfa &lt;- plot_richness(vid_bio, x= &quot;Tratamiento&quot;, # var independiente 1
+                            measures = c(&quot;Observed&quot;,&quot;Shannon&quot;,&quot;Simpson&quot;, &quot;Chao1&quot;),
+                            color = &quot;Suelo&quot;) + # var independiente 2
+  scale_color_manual(values = c(&quot;#8B0A50&quot;, &quot;#43CD80&quot;),
+                     name = &quot;Suelo&quot;)+
+  theme_bw()
+
+graf_alfa$layers &lt;- graf_alfa$layers[-1]
+graf_alfa &lt;- graf_alfa + geom_point(size=4, alpha=0.3)
+graf_alfa
+
+# A mano usando la tabla que creamos
+
+## Pielou
+ggplot(alphadiv, # objeto
+       aes(x=Tratamiento,
+           y=pielou, # y seria el indice
+           color= Suelo))+
+  geom_point(size=4, alpha=0.4)+
+  scale_color_manual(values = c(&quot;#8B0A50&quot;, &quot;#43CD80&quot;))+
+  theme_bw()
+         </code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
