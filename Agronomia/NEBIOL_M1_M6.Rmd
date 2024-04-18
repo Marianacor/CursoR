@@ -56,10 +56,9 @@ levels(Promedios$Tratamiento)
 g1 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo Lote #1 (17Enero24)")+
+  ggtitle("Bioensayo NEBIOL y extractos Lote #1 (17Enero24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Longitud de raíz primaria")+
-  xlab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 15))+
@@ -72,10 +71,9 @@ g1 <- ggplot(Promedios)+
 g2 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
-  ggtitle("Bioensayo Lote #1 (17Enero24)")+
+  ggtitle("Bioensayo NEBIOL y extractos Lote #1 (17Enero24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   ylab("Raíces laterales")+
-  xlab("")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 15))+
@@ -89,9 +87,9 @@ g2 <- ggplot(Promedios)+
 g3 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo Lote #2 (9Feb24)")+
+  ggtitle("Bioensayo NEBIOL y extractos Lote #2 (9Feb24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("")+
+  ylab("Longitud de raíz primaria")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 15, vjust = -1))+
@@ -104,9 +102,9 @@ g3 <- ggplot(Promedios)+
 g4 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
-  ggtitle("Bioensayo Lote #2 (9Feb24)")+
+  ggtitle("Bioensayo NEBIOL y extractos Lote #2 (9Feb24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("")+
+  ylab("Raíces laterales")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 15, vjust = -1))+
@@ -120,10 +118,9 @@ g4 <- ggplot(Promedios)+
 g5 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote3, fill=Tratamiento))+
-  ggtitle("Bioensayo Lote #3 (12Marzo24)")+
+  ggtitle("Bioensayo NEBIOL y extractos Lote #3 (12Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("")+
-  xlab("")+
+  ylab("Longitud de raíz primaria")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 15))+
@@ -136,10 +133,9 @@ g5 <- ggplot(Promedios)+
 g6 <- ggplot(Promedios)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote3, fill=Tratamiento))+
-  ggtitle("Bioensayo Lote #3 (12Marzo24)")+
+  ggtitle("Bioensayo NEBIOL y extractos Lote #3 (12Marzo24)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
-  ylab("")+
-  xlab("")+
+  ylab("Raíces laterales")+
   theme(axis.text.x = element_text(angle=45,hjust=1, size = 9))+
   theme(axis.text.y = element_text(size = 9))+
   theme(axis.title.x = element_text(size = 15))+
