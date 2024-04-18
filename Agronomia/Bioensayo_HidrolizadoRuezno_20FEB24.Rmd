@@ -91,5 +91,5 @@ ggplot(Prom, aes(x = Tratamiento, y = Resultado, fill = Variable))+
   theme(axis.title.x = element_text(size = 15))+
   theme(axis.title.y = element_text(vjust = 3, size = 15))+
   scale_fill_manual(name = "Variable",values = c("#A3CC51","#00688B"))
-```
+``` 
 
