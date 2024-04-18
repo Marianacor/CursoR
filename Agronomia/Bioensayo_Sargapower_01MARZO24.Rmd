@@ -1,6 +1,8 @@
 ---
 title: "Producto Sargapower y Exuroot 01 Marzo 2024"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 ```{r}
@@ -20,7 +22,7 @@ library(ggbreak)
 library(plotrix)
 library(ggsignif)
 library(paletteer)
-
+ 
 # DATA:
 
 Muestras <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower.csv")
@@ -141,26 +143,6 @@ g6 <- ggplot(Promedios)+
 ```
 
 ```{r}
-# Ambas variables en un mismo gráfico:
-Prom <- Variables %>%
-  group_by(Tratamiento, Variable) %>%
-  summarize(Resultado= mean(ifelse(Resultado==0, NA, Resultado), na.rm = TRUE))
-
-ggplot(Prom, aes(x = Tratamiento, y = Resultado, fill = Variable))+
-  theme_bw()+
-  geom_col(position = "dodge")+
-  ggtitle("Bioensayo SargaPower y Exuroot L")+
-  theme(plot.title = element_text(hjust = 0.5, size = 19, color= "black", face = "bold"))+
-  scale_x_discrete(limits = c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))+
-  theme(axis.text.x = element_text(angle=45,hjust=1, size = 13))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y= element_text(vjust = 3, size = 15))+
-  theme(legend.title = element_text(size = 15), legend.text = element_text(size = 12))+
-  scale_fill_manual(name = "Variable",values = c("#A3CC51", "#0F6B99"))
-```
-
-```{r}
 # Todos los lotes en un mismo gráfico para la variable de longitud de raíz y raíces laterales:
 Prom_lotes <- Lotes %>%
   group_by(Tratamiento, Lote) %>%
@@ -180,7 +162,7 @@ ggplot(Prom_lotes, aes(x = Tratamiento, y = Longitud, fill = Lote))+
   scale_fill_manual(name = "Lote",
                     values = c("#260F99", "#7EC3E5", "#A3CC51"))
 
-ggplot(Prom_lat, aes(x = Tratamiento, y = Laterales, fill = Lote))+
+ggplot(Prom_lotes, aes(x = Tratamiento, y = Laterales, fill = Lote))+
   theme_classic()+
   geom_col(position = "dodge")+
   ggtitle("Bioenpsayo muestra externa SargaPower y Exuroot Líquido (Raíces Laterales)")+
