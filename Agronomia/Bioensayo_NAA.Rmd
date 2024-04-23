@@ -1,0 +1,94 @@
+---
+title: "Bioensayo NAA a distintas concentraciones"
+output: html_notebook
+---
+
+```{r}
+# Librerias:
+
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+
+# DATA:
+
+Ensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo NAA.csv")
+
+Variables <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo NAA_variables.csv")
+```
+
+### Graficos del promedio de la longitud de raiz y raices laterales
+```{r}
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz y de las raíces laterales:
+
+Promedios <- Ensayo %>%
+  group_by(Tratamiento) %>%
+  summarize(Long = mean(Longitud, na.rm = TRUE),
+            Lat = mean(ifelse(Laterales == 0, NA, Laterales), na.rm = TRUE))
+
+# Grafico de la longitud de raíz:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long, fill = Tratamiento))+
+  ggtitle("Bioensayo de NAA a distintas concentraciones (11Abril24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(angle = 0, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(vjust = -1.7, size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size =15))+
+  scale_fill_manual(values = c("#260F99", "#0F6B99","#7EC3E5", "#A3CC51", "#0F6B99"))+
+  theme(legend.position = "none")
+
+# Grafico raices laterales lote 1:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat, fill = Tratamiento))+
+  ggtitle("Bioensayo de NAA a distintas concentraciones")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+   theme(plot.caption = element_text(color = "red", hjust = 1, vjust = -1.8, size = 10))+
+  labs(caption = "* No se realizó conteo de raíces laterales de [1 µM], ya que estaban muy pequeñas y tupidas.")+ 
+  theme(axis.text.x = element_text(angle = 0, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(vjust = -1.7, size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values = c("#260F99", "#0F6B99", "#7EC3E5", "#A3CC51", "#A3CC51"))+
+  theme(legend.position = "none")
+
+```
+
+### Ambas variables en un mismo gráfico 
+
+```{r}
+Datos <- Variables %>%
+  group_by(Tratamiento, Variable) %>%
+  summarize(Resultado = mean(ifelse( Resultado == 0, NA, Resultado), na.rm = TRUE))
+
+ggplot(Datos, aes(x = Tratamiento, y = Resultado, fill = Variable))+
+  theme_classic()+
+  geom_col(position = "dodge")+
+  ggtitle("Bioensayo de NAA a distintas concentraciones")+
+  theme(plot.caption = element_text(color = "red", hjust = 0, vjust = -1.8, size = 10))+
+  labs(caption = "* No se realizó conteo de raíces laterales de [1 µM], ya que estaban muy pequeñas y tupidas.")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  theme(axis.text.x = element_text(angle = 0, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(vjust = -1.7, size = 15))+
+  theme(axis.title.y = element_text(vjust = 3, size = 15))+
+  scale_fill_manual(values = c("#260F99", "#7EC3E5"),
+                    labels = c("Raíces laterales", "Raíz primaria"),
+                    name = "Variables")
+```
+
