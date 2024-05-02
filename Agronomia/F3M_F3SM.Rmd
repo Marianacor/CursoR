@@ -40,10 +40,23 @@ Promedios <- Muestras %>%
 # Se acomodan los datos:
 
 levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))
+Promedios$Tratamiento=factor(Promedios$Tratamiento, levels=c("Control", "NAA", "GA3", "F3M directo", "F3M 1:20", "F3M 1:50", "F3S directo", "F3S 1:20", "F3S 1:50"))
 levels(Promedios$Tratamiento)
 
-levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento, leveles=c("Control", "NAA", "GA3", "F3M Directo", "F3M 1:20", "F3M 1:50", "F3S", "F3S"))
+# Grafico de la longitud de raíz lote 1:
+ggplot(Promedios)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long_lote1, fill = Tratamiento))+
+  ggtitle("Bioensayo de F3 Maduro y Sin Madurar")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Longitud de raíz primaria")+
+  theme(axis.text.x = element_text(size = 13, angle = 45, hjust = 1))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15, vjust = 3))+
+  scale_fill_manual(values = c("#BFB2FF", "#8F7EE5", "#422CB2", "#51A3CC", "#51A3CC","#51A3CC", "#A3CC51", "#A3CC51", "#A3CC51"))+
+  theme(legend.position = "none")
+
+
 ```
 

@@ -1,0 +1,73 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# Librerias:
+
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+
+se <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Germinacion sin esterilizar rabano.csv")
+
+est <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Germinación semillas esterilizadas rabano.csv")
+```
+
+```{r}
+# Grafico de semillas sin esterilizar
+levels(se$Tratamiento)
+se$Tratamiento=factor(se$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot+ECCA M","Exuroot+ECCA SM"))
+levels(se$Tratamiento)
+
+g1 <- ggplot(se, aes(x = Tiempo, y = Semillas, group = Tratamiento, colour = Tratamiento))+
+  theme_bw()+
+  geom_line(size = 1)+
+  ylab("")+
+  xlab("Tiempo transcurrido")+
+  labs(tag = "Fig. B")+
+  theme(plot.tag = element_text(size = 12, color = "red", face = "bold"))+
+  ggtitle("Semillas sin esterilizar")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15))+
+  theme(axis.text.x = element_text(size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(legend.title = element_text(size = 15))+
+  theme(legend.text = element_text(size = 13))+
+  ylim(2,9)
+
+# Grafico de semillas esterilizadas
+levels(est$Tratamiento)
+est$Tratamiento=factor(est$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot+ECCA M","Exuroot+ECCA SM"))
+levels(est$Tratamiento)
+
+g2 <- ggplot(est, aes(x = Tiempo, y = Semillas, group = Tratamiento, colour = Tratamiento))+
+  theme_bw()+
+  geom_line(size = 1)+
+  ylab("Semillas germinadas")+
+  xlab("Tiempo transcurrido")+
+  ggtitle("Semillas esterilizadas")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  labs(tag = "Fig. A")+
+  theme(plot.tag = element_text(size = 12, color = "red", face = "bold"))+
+  theme(axis.title = element_text(size = 15))+
+  theme(axis.text = element_text(size = 13))+
+  theme(legend.title = element_text(size = 15))+
+  theme(legend.text = element_text(size = 13))+
+  theme(legend.position = "none")+
+  ylim(2,9)
+```
+

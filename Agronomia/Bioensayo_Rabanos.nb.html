@@ -11,7 +11,7 @@
 
 
 
-<title>F3 Maduro y Sin Madurar</title>
+<title>R Notebook</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1746,7 +1746,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">F3 Maduro y Sin Madurar</h1>
+<h1 class="title toc-ignore">R Notebook</h1>
 
 </div>
 
@@ -1754,123 +1754,36 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KGRwbHlyKVxuXG5gYGAifQ== -->
-<pre class="r"><code>
-library(dplyr)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYZHBseXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnN0YXRz4oCZOlxuXG4gICAgZmlsdGVyLCBsYWdcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHNldGVxdWFsLCB1bmlvblxuIn0= -->
-<pre><code>
-Attaching package: ‘dplyr’
-
-The following objects are masked from ‘package:stats’:
-
-    filter, lag
-
-The following objects are masked from ‘package:base’:
-
-    intersect, setdiff, setequal, union</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5cikgXG5saWJyYXJ5KHJlYWRyKSBcbmxpYnJhcnkodWR1bml0czIpXG5gYGAifQ== -->
-<pre class="r"><code>library(tidyr) 
-library(readr) 
-library(udunits2)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidWR1bml0cyBzeXN0ZW0gZGF0YWJhc2UgcmVhZCBmcm9tIEM6L1VzZXJzL21jb3J0ZS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1IvUi00LjMuMy9saWJyYXJ5L3VkdW5pdHMyL3NoYXJlL3VkdW5pdHMvdWR1bml0czIueG1sXG4ifQ== -->
-<pre><code>udunits system database read from C:/Users/mcorte/AppData/Local/Programs/R/R-4.3.3/library/udunits2/share/udunits/udunits2.xml</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5gYGAifQ== -->
-<pre class="r"><code>library(tidyverse)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoi4pSA4pSAIEF0dGFjaGluZyBjb3JlIHRpZHl2ZXJzZSBwYWNrYWdlcyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAgdGlkeXZlcnNlIDIuMC4wIOKUgOKUgFxu4pyUIGZvcmNhdHMgICAxLjAuMCAgICAg4pyUIHB1cnJyICAgICAxLjAuMlxu4pyUIGdncGxvdDIgICAzLjUuMCAgICAg4pyUIHN0cmluZ3IgICAxLjUuMVxu4pyUIGx1YnJpZGF0ZSAxLjkuMyAgICAg4pyUIHRpYmJsZSAgICAzLjIuMeKUgOKUgCBDb25mbGljdHMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAIHRpZHl2ZXJzZV9jb25mbGljdHMoKSDilIDilIBcbuKcliBkcGx5cjo6ZmlsdGVyKCkgbWFza3Mgc3RhdHM6OmZpbHRlcigpXG7inJYgZHBseXI6OmxhZygpICAgIG1hc2tzIHN0YXRzOjpsYWcoKVxu4oS5IFVzZSB0aGUgXHUwMDFiXTg7O2h0dHA6Ly9jb25mbGljdGVkLnItbGliLm9yZy9cdTAwMDdjb25mbGljdGVkIHBhY2thZ2VcdTAwMWJdODs7XHUwMDA3IHRvIGZvcmNlIGFsbCBjb25mbGljdHMgdG8gYmVjb21lIGVycm9yc1xuIn0= -->
-<pre><code>── Attaching core tidyverse packages ─────────────────────── tidyverse 2.0.0 ──
-✔ forcats   1.0.0     ✔ purrr     1.0.2
-✔ ggplot2   3.5.0     ✔ stringr   1.5.1
-✔ lubridate 1.9.3     ✔ tibble    3.2.1── Conflicts ───────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVmlldyhQcm9tZWRpb3MpXG5saWJyYXJ5KGNhcilcbmBgYCJ9 -->
-<pre class="r"><code>View(Promedios)
-library(car)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBjYXJEYXRhXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDigJhjYXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTpwdXJycuKAmTpcblxuICAgIHNvbWVcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTpkcGx5cuKAmTpcblxuICAgIHJlY29kZVxuIn0= -->
-<pre><code>Loading required package: carData
-
-Attaching package: ‘car’
-
-The following object is masked from ‘package:purrr’:
-
-    some
-
-The following object is masked from ‘package:dplyr’:
-
-    recode</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShhZ3JpY29sYWUpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KHBhdGNod29yaylcbmxpYnJhcnkoUkNvbG9yQnJld2VyKVxubGlicmFyeShnZ2JyZWFrKVxuYGBgIn0= -->
-<pre class="r"><code>library(agricolae)
-library(ggplot2)
-library(patchwork)
-library(RColorBrewer)
-library(ggbreak)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiZ2dicmVhayB2MC4xLjJcblxuSWYgeW91IHVzZSBnZ2JyZWFrIGluIHB1Ymxpc2hlZCByZXNlYXJjaCwgcGxlYXNlIGNpdGUgdGhlIGZvbGxvd2luZ1xucGFwZXI6XG5cblMgWHUsIE0gQ2hlbiwgVCBGZW5nLCBMIFpoYW4sIEwgWmhvdSwgRyBZdS4gVXNlIGdnYnJlYWsgdG8gZWZmZWN0aXZlbHlcbnV0aWxpemUgcGxvdHRpbmcgc3BhY2UgdG8gZGVhbCB3aXRoIGxhcmdlIGRhdGFzZXRzIGFuZCBvdXRsaWVycy5cbkZyb250aWVycyBpbiBHZW5ldGljcy4gMjAyMSwgMTI6Nzc0ODQ2LiBkb2k6IDEwLjMzODkvZmdlbmUuMjAyMS43NzQ4NDZcbiJ9 -->
-<pre><code>ggbreak v0.1.2
-
-If you use ggbreak in published research, please cite the following
-paper:
-
-S Xu, M Chen, T Feng, L Zhan, L Zhou, G Yu. Use ggbreak to effectively
-utilize plotting space to deal with large datasets and outliers.
-Frontiers in Genetics. 2021, 12:774846. doi: 10.3389/fgene.2021.774846</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwbG90cml4KVxubGlicmFyeShnZ3NpZ25pZilcbmxpYnJhcnkocGFsZXR0ZWVyKVxuYGBgIn0= -->
-<pre class="r"><code>library(plotrix)
-library(ggsignif)
-library(paletteer)</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIEdyYWZpY29zIGRlbCBwcm9tZWRpbyBkZSBsYSBsb25naXR1ZCBkZSByYWl6IHkgcmFpY2VzIGxhdGVyYWxlc1xuXG4jIEZpbHRyYXIgZGF0b3MgcGFyYSBzb2xvIG9idGVuZXIgdW5hIHRhYmxhIGRlIGxvcyBwcm9tZWRpb3MgZGUgbGEgbG9uZ2l0dWQgZGUgcmFpeiB5IGRlIGxhcyByYcOtY2VzIGxhdGVyYWxlczpcblxuUHJvbWVkaW9zIDwtIE11ZXN0cmFzICU+JVxuICBncm91cF9ieShUcmF0YW1pZW50bykgJT4lXG4gIHN1bW1hcml6ZShMb25nX2xvdGUxID0gbWVhbihMb25naXR1ZCwgbmEucm0gPSBUUlVFKSxcbiAgICAgICAgICAgIExhdF9Mb3RlMSA9IG1lYW4oaWZlbHNlKExhdGVyYWxlcyA9PSAwLCBOQSwgTGF0ZXJhbGVzKSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbmEucm0gPSBUUlVFKSlcblxuIyBTZSBhY29tb2RhbiBsb3MgZGF0b3M6XG5cbmxldmVscyhQcm9tZWRpb3MkVHJhdGFtaWVudG8pXG5Qcm9tZWRpb3MkVHJhdGFtaWVudG89ZmFjdG9yKFByb21lZGlvcyRUcmF0YW1pZW50bywgbGV2ZWxzPWMoXCJDb250cm9sXCIsIFwiTkFBXCIsIFwiR0EzXCIsIFwiRjNNIGRpcmVjdG9cIiwgXCJGM00gMToyMFwiLCBcIkYzTSAxOjUwXCIsIFwiRjNTIGRpcmVjdG9cIiwgXCJGM1MgMToyMFwiLCBcIkYzUyAxOjUwXCIpKVxubGV2ZWxzKFByb21lZGlvcyRUcmF0YW1pZW50bylcblxuIyBHcmFmaWNvIGRlIGxhIGxvbmdpdHVkIGRlIHJhw616IGxvdGUgMTpcbmdncGxvdChQcm9tZWRpb3MpK1xuICB0aGVtZV9jbGFzc2ljKCkrXG4gIGdlb21fY29sKGFlcyh4ID0gVHJhdGFtaWVudG8sIHkgPSBMb25nX2xvdGUxLCBmaWxsID0gVHJhdGFtaWVudG8pKStcbiAgZ2d0aXRsZShcIkJpb2Vuc2F5byBkZSBGMyBNYWR1cm8geSBTaW4gTWFkdXJhclwiKStcbiAgdGhlbWUocGxvdC50aXRsZSA9IGVsZW1lbnRfdGV4dChoanVzdCA9IDAuNSwgc2l6ZSA9IDE1LCBjb2xvciA9IFwiYmxhY2tcIiwgZmFjZSA9IFwiYm9sZFwiKSkrXG4gIHlsYWIoXCJMb25naXR1ZCBkZSByYcOteiBwcmltYXJpYVwiKStcbiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzLCBhbmdsZSA9IDQ1LCBoanVzdCA9IDEpKStcbiAgdGhlbWUoYXhpcy50ZXh0LnkgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrXG4gIHRoZW1lKGF4aXMudGl0bGUueCA9IGVsZW1lbnRfdGV4dChzaXplID0gMTUpKStcbiAgdGhlbWUoYXhpcy50aXRsZS55ID0gZWxlbWVudF90ZXh0KHNpemUgPSAxNSwgdmp1c3QgPSAzKSkrXG4gIHNjYWxlX2ZpbGxfbWFudWFsKHZhbHVlcyA9IGMoXCIjQkZCMkZGXCIsIFwiIzhGN0VFNVwiLCBcIiM0MjJDQjJcIiwgXCIjNTFBM0NDXCIsIFwiIzUxQTNDQ1wiLFwiIzUxQTNDQ1wiLCBcIiNBM0NDNTFcIiwgXCIjQTNDQzUxXCIsIFwiI0EzQ0M1MVwiKSkrXG4gIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9IFwibm9uZVwiKVxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>### Graficos del promedio de la longitud de raiz y raices laterales
-
-# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz y de las raíces laterales:
-
-Promedios &lt;- Muestras %&gt;%
-  group_by(Tratamiento) %&gt;%
-  summarize(Long_lote1 = mean(Longitud, na.rm = TRUE),
-            Lat_Lote1 = mean(ifelse(Laterales == 0, NA, Laterales),
-                             na.rm = TRUE))
-
-# Se acomodan los datos:
-
-levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento, levels=c(&quot;Control&quot;, &quot;NAA&quot;, &quot;GA3&quot;, &quot;F3M directo&quot;, &quot;F3M 1:20&quot;, &quot;F3M 1:50&quot;, &quot;F3S directo&quot;, &quot;F3S 1:20&quot;, &quot;F3S 1:50&quot;))
-levels(Promedios$Tratamiento)
-
-# Grafico de la longitud de raíz lote 1:
-ggplot(Promedios)+
-  theme_classic()+
-  geom_col(aes(x = Tratamiento, y = Long_lote1, fill = Tratamiento))+
-  ggtitle(&quot;Bioensayo de F3 Maduro y Sin Madurar&quot;)+
-  theme(plot.title = element_text(hjust = 0.5, size = 15, color = &quot;black&quot;, face = &quot;bold&quot;))+
-  ylab(&quot;Longitud de raíz primaria&quot;)+
-  theme(axis.text.x = element_text(size = 13, angle = 45, hjust = 1))+
-  theme(axis.text.y = element_text(size = 13))+
-  theme(axis.title.x = element_text(size = 15))+
-  theme(axis.title.y = element_text(size = 15, vjust = 3))+
-  scale_fill_manual(values = c(&quot;#BFB2FF&quot;, &quot;#8F7EE5&quot;, &quot;#422CB2&quot;, &quot;#51A3CC&quot;, &quot;#51A3CC&quot;,&quot;#51A3CC&quot;, &quot;#A3CC51&quot;, &quot;#A3CC51&quot;, &quot;#A3CC51&quot;))+
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZzIgPC0gZ2dwbG90KGVzdCwgYWVzKHggPSBUaWVtcG8sIHkgPSBTZW1pbGxhcywgZ3JvdXAgPSBUcmF0YW1pZW50bywgY29sb3VyID0gVHJhdGFtaWVudG8pKStcbiAgdGhlbWVfYncoKStcbiAgZ2VvbV9saW5lKHNpemUgPSAxKStcbiAgeWxhYihcIlNlbWlsbGFzIGdlcm1pbmFkYXNcIikrXG4gIHhsYWIoXCJUaWVtcG8gdHJhbnNjdXJyaWRvXCIpK1xuICBnZ3RpdGxlKFwiU2VtaWxsYXMgZXN0ZXJpbGl6YWRhc1wiKStcbiAgdGhlbWUocGxvdC50aXRsZSA9IGVsZW1lbnRfdGV4dChoanVzdCA9IDAuNSwgc2l6ZSA9IDE4LCBjb2xvciA9IFwiYmxhY2tcIiwgZmFjZSA9IFwiYm9sZFwiKSkrXG4gIGxhYnModGFnID0gXCJGaWcuIEFcIikrXG4gIHRoZW1lKHBsb3QudGFnID0gZWxlbWVudF9yZW5kZXIoc2l6ZSA9IDEyLCBjb2xvciA9IFwicmVkXCIsIGZhY2UgPSBcImJvbGRcIikpK1xuICB0aGVtZShheGlzLnRpdGxlID0gZWxlbWVudF90ZXh0KHNpemUgPSAxNSkpK1xuICB0aGVtZShheGlzLnRleHQgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrXG4gIHRoZW1lKGxlZ2VuZC50aXRsZSA9IGVsZW1lbnRfdGV4dChzaXplID0gMTUpKStcbiAgdGhlbWUobGVnZW5kLnRleHQgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrXG4gIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9IFwibm9uZVwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>g2 &lt;- ggplot(est, aes(x = Tiempo, y = Semillas, group = Tratamiento, colour = Tratamiento))+
+  theme_bw()+
+  geom_line(size = 1)+
+  ylab(&quot;Semillas germinadas&quot;)+
+  xlab(&quot;Tiempo transcurrido&quot;)+
+  ggtitle(&quot;Semillas esterilizadas&quot;)+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = &quot;black&quot;, face = &quot;bold&quot;))+
+  labs(tag = &quot;Fig. A&quot;)+
+  theme(plot.tag = element_render(size = 12, color = &quot;red&quot;, face = &quot;bold&quot;))+
+  theme(axis.title = element_text(size = 15))+
+  theme(axis.text = element_text(size = 13))+
+  theme(legend.title = element_text(size = 15))+
+  theme(legend.text = element_text(size = 13))+
   theme(legend.position = &quot;none&quot;)
 </code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZWxlbWVudF9yZW5kZXIoc2l6ZSA9IDEyLCBjb2xvciA9IFwicmVkXCIsIGZhY2UgPSBcImJvbGRcIikgOiBcbiAgZWwgYXJndW1lbnRvIFwidGhlbWVcIiBlc3TDoSBhdXNlbnRlLCBzaW4gdmFsb3IgcG9yIG9taXNpw7NuXG4ifQ== -->
+<pre><code>Error in element_render(size = 12, color = &quot;red&quot;, face = &quot;bold&quot;) : 
+  el argumento &quot;theme&quot; está ausente, sin valor por omisión</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkYzIE1hZHVybyB5IFNpbiBNYWR1cmFyIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCg0KYGBge3J9DQojIExpYnJlcmlhczoNCg0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkodGlkeXIpIA0KbGlicmFyeShyZWFkcikgDQpsaWJyYXJ5KHVkdW5pdHMyKQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KGNhcikNCmxpYnJhcnkoYWdyaWNvbGFlKQ0KbGlicmFyeShnZ3Bsb3QyKQ0KbGlicmFyeShwYXRjaHdvcmspDQpsaWJyYXJ5KFJDb2xvckJyZXdlcikNCmxpYnJhcnkoZ2dicmVhaykNCmxpYnJhcnkocGxvdHJpeCkNCmxpYnJhcnkoZ2dzaWduaWYpDQpsaWJyYXJ5KHBhbGV0dGVlcikNCg0KIyBEQVRBOg0KDQpNdWVzdHJhcyA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L0Fncm9ub21pYS9NYXRlcmlhbGVzL0YzLmNzdiIpDQpgYGANCg0KYGBge3J9DQojIyMgR3JhZmljb3MgZGVsIHByb21lZGlvIGRlIGxhIGxvbmdpdHVkIGRlIHJhaXogeSByYWljZXMgbGF0ZXJhbGVzDQoNCiMgRmlsdHJhciBkYXRvcyBwYXJhIHNvbG8gb2J0ZW5lciB1bmEgdGFibGEgZGUgbG9zIHByb21lZGlvcyBkZSBsYSBsb25naXR1ZCBkZSByYWl6IHkgZGUgbGFzIHJhw61jZXMgbGF0ZXJhbGVzOg0KDQpQcm9tZWRpb3MgPC0gTXVlc3RyYXMgJT4lDQogIGdyb3VwX2J5KFRyYXRhbWllbnRvKSAlPiUNCiAgc3VtbWFyaXplKExvbmdfbG90ZTEgPSBtZWFuKExvbmdpdHVkLCBuYS5ybSA9IFRSVUUpLA0KICAgICAgICAgICAgTGF0X0xvdGUxID0gbWVhbihpZmVsc2UoTGF0ZXJhbGVzID09IDAsIE5BLCBMYXRlcmFsZXMpLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICBuYS5ybSA9IFRSVUUpKQ0KDQojIFNlIGFjb21vZGFuIGxvcyBkYXRvczoNCg0KbGV2ZWxzKFByb21lZGlvcyRUcmF0YW1pZW50bykNClByb21lZGlvcyRUcmF0YW1pZW50bz1mYWN0b3IoUHJvbWVkaW9zJFRyYXRhbWllbnRvLCBsZXZlbHM9YygiQ29udHJvbCIsICJOQUEiLCAiR0EzIiwgIkYzTSBkaXJlY3RvIiwgIkYzTSAxOjIwIiwgIkYzTSAxOjUwIiwgIkYzUyBkaXJlY3RvIiwgIkYzUyAxOjIwIiwgIkYzUyAxOjUwIikpDQpsZXZlbHMoUHJvbWVkaW9zJFRyYXRhbWllbnRvKQ0KDQojIEdyYWZpY28gZGUgbGEgbG9uZ2l0dWQgZGUgcmHDrXogbG90ZSAxOg0KZ2dwbG90KFByb21lZGlvcykrDQogIHRoZW1lX2NsYXNzaWMoKSsNCiAgZ2VvbV9jb2woYWVzKHggPSBUcmF0YW1pZW50bywgeSA9IExvbmdfbG90ZTEsIGZpbGwgPSBUcmF0YW1pZW50bykpKw0KICBnZ3RpdGxlKCJCaW9lbnNheW8gZGUgRjMgTWFkdXJvIHkgU2luIE1hZHVyYXIiKSsNCiAgdGhlbWUocGxvdC50aXRsZSA9IGVsZW1lbnRfdGV4dChoanVzdCA9IDAuNSwgc2l6ZSA9IDE1LCBjb2xvciA9ICJibGFjayIsIGZhY2UgPSAiYm9sZCIpKSsNCiAgeWxhYigiTG9uZ2l0dWQgZGUgcmHDrXogcHJpbWFyaWEiKSsNCiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzLCBhbmdsZSA9IDQ1LCBoanVzdCA9IDEpKSsNCiAgdGhlbWUoYXhpcy50ZXh0LnkgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrDQogIHRoZW1lKGF4aXMudGl0bGUueCA9IGVsZW1lbnRfdGV4dChzaXplID0gMTUpKSsNCiAgdGhlbWUoYXhpcy50aXRsZS55ID0gZWxlbWVudF90ZXh0KHNpemUgPSAxNSwgdmp1c3QgPSAzKSkrDQogIHNjYWxlX2ZpbGxfbWFudWFsKHZhbHVlcyA9IGMoIiNCRkIyRkYiLCAiIzhGN0VFNSIsICIjNDIyQ0IyIiwgIiM1MUEzQ0MiLCAiIzUxQTNDQyIsIiM1MUEzQ0MiLCAiI0EzQ0M1MSIsICIjQTNDQzUxIiwgIiNBM0NDNTEiKSkrDQogIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9ICJub25lIikNCg0KDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCiMgTGlicmVyaWFzOg0KDQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeSh0aWR5cikgDQpsaWJyYXJ5KHJlYWRyKSANCmxpYnJhcnkodWR1bml0czIpDQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCmxpYnJhcnkoY2FyKQ0KbGlicmFyeShhZ3JpY29sYWUpDQpsaWJyYXJ5KGdncGxvdDIpDQpsaWJyYXJ5KHBhdGNod29yaykNCmxpYnJhcnkoUkNvbG9yQnJld2VyKQ0KbGlicmFyeShnZ2JyZWFrKQ0KbGlicmFyeShwbG90cml4KQ0KbGlicmFyeShnZ3NpZ25pZikNCmxpYnJhcnkocGFsZXR0ZWVyKQ0KDQpzZSA8LSByZWFkLmNzdigifi9DdXJzb1IvQ3Vyc29SZ2l0L0Fncm9ub21pYS9NYXRlcmlhbGVzL0dlcm1pbmFjaW9uIHNpbiBlc3RlcmlsaXphciByYWJhbm8uY3N2IikNCg0KZXN0IDwtIHJlYWQuY3N2KCJ+L0N1cnNvUi9DdXJzb1JnaXQvQWdyb25vbWlhL01hdGVyaWFsZXMvR2VybWluYWNpw7NuIHNlbWlsbGFzIGVzdGVyaWxpemFkYXMgcmFiYW5vLmNzdiIpDQpgYGANCg0KYGBge3J9DQojIEdyYWZpY28gZGUgc2VtaWxsYXMgc2luIGVzdGVyaWxpemFyDQpsZXZlbHMoc2UkVHJhdGFtaWVudG8pDQpzZSRUcmF0YW1pZW50bz1mYWN0b3Ioc2UkVHJhdGFtaWVudG8sbGV2ZWxzPWMoIkNvbnRyb2wiLCJOQUEiLCJHQTMiLCAiRXh1cm9vdCtFQ0NBIE0iLCJFeHVyb290K0VDQ0EgU00iKSkNCmxldmVscyhzZSRUcmF0YW1pZW50bykNCg0KZzEgPC0gZ2dwbG90KHNlLCBhZXMoeCA9IFRpZW1wbywgeSA9IFNlbWlsbGFzLCBncm91cCA9IFRyYXRhbWllbnRvLCBjb2xvdXIgPSBUcmF0YW1pZW50bykpKw0KICB0aGVtZV9idygpKw0KICBnZW9tX2xpbmUoc2l6ZSA9IDEpKw0KICB5bGFiKCIiKSsNCiAgeGxhYigiVGllbXBvIHRyYW5zY3VycmlkbyIpKw0KICBsYWJzKHRhZyA9ICJGaWcuIEIiKSsNCiAgdGhlbWUocGxvdC50YWcgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEyLCBjb2xvciA9ICJyZWQiLCBmYWNlID0gImJvbGQiKSkrDQogIGdndGl0bGUoIlNlbWlsbGFzIHNpbiBlc3RlcmlsaXphciIpKw0KICB0aGVtZShwbG90LnRpdGxlID0gZWxlbWVudF90ZXh0KGhqdXN0ID0gMC41LCBzaXplID0gMTgsIGNvbG9yID0gImJsYWNrIiwgZmFjZSA9ICJib2xkIikpKw0KICB0aGVtZShheGlzLnRpdGxlLnggPSBlbGVtZW50X3RleHQoc2l6ZSA9IDE1KSkrDQogIHRoZW1lKGF4aXMudGl0bGUueSA9IGVsZW1lbnRfdGV4dChzaXplID0gMTUpKSsNCiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrDQogIHRoZW1lKGF4aXMudGV4dC55ID0gZWxlbWVudF90ZXh0KHNpemUgPSAxMykpKw0KICB0aGVtZShsZWdlbmQudGl0bGUgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDE1KSkrDQogIHRoZW1lKGxlZ2VuZC50ZXh0ID0gZWxlbWVudF90ZXh0KHNpemUgPSAxMykpKw0KICB5bGltKDIsOSkNCg0KIyBHcmFmaWNvIGRlIHNlbWlsbGFzIGVzdGVyaWxpemFkYXMNCmxldmVscyhlc3QkVHJhdGFtaWVudG8pDQplc3QkVHJhdGFtaWVudG89ZmFjdG9yKGVzdCRUcmF0YW1pZW50byxsZXZlbHM9YygiQ29udHJvbCIsIk5BQSIsIkdBMyIsICJFeHVyb290K0VDQ0EgTSIsIkV4dXJvb3QrRUNDQSBTTSIpKQ0KbGV2ZWxzKGVzdCRUcmF0YW1pZW50bykNCg0KZzIgPC0gZ2dwbG90KGVzdCwgYWVzKHggPSBUaWVtcG8sIHkgPSBTZW1pbGxhcywgZ3JvdXAgPSBUcmF0YW1pZW50bywgY29sb3VyID0gVHJhdGFtaWVudG8pKSsNCiAgdGhlbWVfYncoKSsNCiAgZ2VvbV9saW5lKHNpemUgPSAxKSsNCiAgeWxhYigiU2VtaWxsYXMgZ2VybWluYWRhcyIpKw0KICB4bGFiKCJUaWVtcG8gdHJhbnNjdXJyaWRvIikrDQogIGdndGl0bGUoIlNlbWlsbGFzIGVzdGVyaWxpemFkYXMiKSsNCiAgdGhlbWUocGxvdC50aXRsZSA9IGVsZW1lbnRfdGV4dChoanVzdCA9IDAuNSwgc2l6ZSA9IDE4LCBjb2xvciA9ICJibGFjayIsIGZhY2UgPSAiYm9sZCIpKSsNCiAgbGFicyh0YWcgPSAiRmlnLiBBIikrDQogIHRoZW1lKHBsb3QudGFnID0gZWxlbWVudF90ZXh0KHNpemUgPSAxMiwgY29sb3IgPSAicmVkIiwgZmFjZSA9ICJib2xkIikpKw0KICB0aGVtZShheGlzLnRpdGxlID0gZWxlbWVudF90ZXh0KHNpemUgPSAxNSkpKw0KICB0aGVtZShheGlzLnRleHQgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrDQogIHRoZW1lKGxlZ2VuZC50aXRsZSA9IGVsZW1lbnRfdGV4dChzaXplID0gMTUpKSsNCiAgdGhlbWUobGVnZW5kLnRleHQgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEzKSkrDQogIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9ICJub25lIikrDQogIHlsaW0oMiw5KQ0KYGBgDQoNCg==</div>
 
 
 
@@ -1917,7 +1830,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("F3M_F3SM.Rmd");
+  window.initializeSourceEmbed("Bioensayo_Rabanos.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
