@@ -20,6 +20,7 @@ library(ggbreak)
 library(plotrix)
 library(ggsignif)
 library(paletteer)
+library(reshape2) 
 
 # DATA:
 
@@ -32,20 +33,27 @@ Lotes <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo sargapower_
 ```{r}
 # Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz y de las raíces laterales:
 
-Promedios <- Muestras %>%
+Prom_long <- Muestras %>%
   group_by(Tratamiento) %>%
   summarize(Long_lote1 = mean(Longitud_Lote1, na.rm = TRUE),
-            Lat_lote1 = mean(ifelse(Laterales_Lote1 == 0, NA, Laterales_Lote1), na.rm = TRUE),
             Long_lote2 = mean(Longitud_Lote2, na.rm = TRUE),
+            Long_lote3 = mean(Longitud_Lote3, na.rm = TRUE))
+
+Prom_lat <- Muestras %>%
+  group_by(Tratamiento) %>%
+  summarize(Lat_lote1 = mean(ifelse(Laterales_Lote1 == 0, NA, Laterales_Lote1), na.rm = TRUE),
             Lat_lote2 = mean(ifelse(Laterales_Lote2 == 0, NA, Laterales_Lote2), na.rm = TRUE),
-            Long_lote3 = mean(Longitud_Lote3, na.rm = TRUE),
             Lat_lote3 = mean(ifelse(Laterales_Lote3 == 0, NA, Laterales_Lote3), na.rm = TRUE))
 
 # Se acomodan los datos:
 
-levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))
-levels(Promedios$Tratamiento)
+levels(Prom_long$Tratamiento)
+Prom_long$Tratamiento=factor(Prom_long$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))
+levels(Prom_long$Tratamiento)
+
+levels(Prom_lat$Tratamiento)
+Prom_lat$Tratamiento=factor(Prom_lat$Tratamiento,levels=c("Control","NAA","GA3", "Exuroot Directo","Exuroot 1:20","Exuroot 1:50", "SargaPower Directo","SargaPower 1:20","SargaPower 1:50"))
+levels(Prom_lat$Tratamiento)
 
 # Grafico de la longitud de raíz lote 1:
 
@@ -162,6 +170,7 @@ ggplot(Prom, aes(x = Tratamiento, y = Resultado, fill = Variable))+
 
 ```{r}
 # Todos los lotes en un mismo gráfico para la variable de longitud de raíz y raíces laterales:
+
 Prom_lotes <- Lotes %>%
   group_by(Tratamiento, Lote) %>%
   summarize(Longitud = mean(ifelse(Longitud == 0, NA, Longitud), na.rm = TRUE),
@@ -180,10 +189,26 @@ ggplot(Prom_lotes, aes(x = Tratamiento, y = Longitud, fill = Lote))+
   scale_fill_manual(name = "Lote",
                     values = c("#260F99", "#7EC3E5", "#A3CC51"))
 
-ggplot(Prom_lat, aes(x = Tratamiento, y = Laterales, fill = Lote))+
+ggplot(Prom_lotes, aes(x = Tratamiento, y = Laterales, fill = Lote))+
   theme_classic()+
   geom_col(position = "dodge")+
-  ggtitle("Bioenpsayo muestra externa SargaPower y Exuroot Líquido (Raíces Laterales)")+
+  ggtitle("Bioensayo muestra externa SargaPower y Exuroot Líquido (Raíces laterales)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  scale_x_discrete(limits = c("Control","NAA", "GA3", "Exuroot Directo", "Exuroot 1:20", "Exuroot 1:50", "SargaPower Directo", "SargaPower 1:20","SargaPower 1:50"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15, vjust = 3))+
+  scale_fill_manual(name = "Lote",
+                    values = c("#260F99", "#7EC3E5", "#A3CC51"))
+
+melt_long <- melt(Prom_long, id = c("Tratamiento")) 
+melt_lat <- melt(Prom_lat, id = c("Tratamiento")) 
+
+ggplot(melt_long, aes(x = Tratamiento, y = value, fill = variable))+
+  theme_classic()+
+  geom_col(position = "dodge")+
+  ggtitle("Bioensayo muestra externa SargaPower y Exuroot Líquido (Longitud raíz primaria)")+
   theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
   scale_x_discrete(limits = c("Control","NAA","GA3","Exuroot Directo", "Exuroot 1:20", "Exuroot 1:50", "SargaPower Directo", "SargaPower 1:20", "SargaPower 1:50"))+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 13))+
@@ -191,7 +216,21 @@ ggplot(Prom_lat, aes(x = Tratamiento, y = Laterales, fill = Lote))+
   theme(axis.title.x = element_text(size = 15))+
   theme(axis.title.y = element_text(size = 15, vjust = 3))+
   scale_fill_manual(name = "Lote",
-                    values = c("#260F99","#7EC3E5","#A3CC51"))
-  
+                    values = c("#260F99","#7EC3E5","#A3CC51"),
+                    labels= c("Lote 1", "Lote 2", "Lote 3"))
+
+ggplot(melt_lat, aes(x = Tratamiento, y = value, fill = variable))+
+  theme_classic()+
+  geom_col(position = "dodge")+
+  ggtitle("Bioensayo muestra externa SargaPower y Exuroot Líquido (Raíces Laterales)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 18, color = "black", face = "bold"))+
+  scale_x_discrete(limits = c("Control","NAA","GA3","Exuroot Directo", "Exuroot 1:20", "Exuroot 1:50", "SargaPower Directo", "SargaPower 1:20", "SargaPower 1:50"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15, vjust = 3))+
+  scale_fill_manual(name = "Lote",
+                    values = c("#260F99","#7EC3E5","#A3CC51"),
+                    labels= c("Lote 1", "Lote 2", "Lote 3"))
 ```
 
