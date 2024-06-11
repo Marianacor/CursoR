@@ -19,17 +19,13 @@ library(ggbreak)
 library(plotrix)
 library(ggsignif)
 library(paletteer)
+library(reshape2)
 
 # DATA
 
-# Archivos para ambos lotes:
-longitud <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas Humik_longitud.csv")
-
-
-laterales <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas Humik_laterales.csv")
-
-# Archivo para graficos separados
 Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestras externas_humik.csv")
+
+Laterales <- read.csv("~/CursoR/CursoRgit/")
 ```
 
 ### Graficos del promedio de la longitud de raiz y raices laterales 
@@ -37,7 +33,20 @@ Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo muestra
 ```{r}
 # Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para los tres lotes:
 
-Promedios <- Bioensayo %>%
+Prom_long <- Bioensayo %>%
+  group_by(Tratamiento) %>%
+  summarize(Long_L1 = mean(Longitud_Lote1, na.rm = TRUE),
+            Long_L2 = mean(Longitud_Lote2, na.rm = TRUE),
+            Long_L3 = mean(Longitud_Lote3, na.rm = TRUE))
+
+
+Prom_lat <- Bioensayo %>%
+  group_by(Tratamiento) %>%
+  summarize(Lat_L1 = mean(ifelse(Laterales_Lote1 == 0, NA, Laterales_Lote1), na.rm = TRUE),
+            Lat_L2 = mean(ifelse(Laterales_Lote2 == 0, NA, Laterales_Lote2), na.rm = TRUE),
+            Lat_L3 = mean(ifelse(Laterales_Lote3 == 0, NA, Laterales_Lote3), na.rm = TRUE))
+
+Prom <- Bioensayo %>%
   group_by(Tratamiento) %>%
   summarize(Long_L1 = mean(Longitud_Lote1, na.rm = TRUE),
             Lat_L1 = mean(ifelse(Laterales_Lote1==0, NA, Laterales_Lote1), na.rm = TRUE),
@@ -47,10 +56,13 @@ Promedios <- Bioensayo %>%
             Lat_L3 = mean(ifelse(Laterales_Lote3==0, NA, Laterales_Lote3), na.rm = TRUE))
 
 # Se acomodan los datos:
+levels(Prom_long$Tratamiento)
+Prom_long$Tratamiento = factor(Prom_long$Tratamiento, levels = c("Control", "NAA", "GA3", "Humik-WSG directo", "Humik-WSG 1:20", "Humik-WSG 1:50", "Humik-WSP directo", "Humik-WSP 1:20", "Humik-WSP 1:50", "Humik-ONE directo", "Humik-ONE 1:20", "Humik-ONE 1:50", "Ful-Grow Gold 2x directo", "Ful-Grow Gold 2x 1:20", "Ful-Grow Gold 2x 1:50", "Exuroot+ECCA M directo", "Exuroot+ECCA M 1:20", "Exuroot+ECCA M 1:50", "Exuroot+ECCA S/M directo", "Exuroot+ECCA S/M 1:20", "Exuroot+ECCA S/M 1:50"))
+levels(Prom_long$Tratamiento)
 
-levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3","Humik-WSG directo", "Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo", "Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50", "Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50", "Exuroot+ECCA M directo", "Exuroot+ECCA M 1:20", "Exuroot+ECCA M 1:50", "Exuroot+ECCA S/M directo", "Exuroot+ECCA S/M 1:20", "Exuroot+ECCA S/M 1:50"))
-levels(Promedios$Tratamiento)
+levels(Prom_lat$Tratamiento)
+Prom_lat$Tratamiento = factor(Prom_lat$Tratamiento, levels = c("Control","NAA","GA3","Humik-WSG directo","Humik-WSG 1:20","Humik-WSG 1:50","Humik-WSP directo","Humik-WSP 1:20","Humik-WSP 1:50","Humik-ONE directo","Humik-ONE 1:20","Humik-ONE 1:50","Ful-Grow Gold 2x directo","Ful-Grow Gold 2x 1:20","Ful-Grow Gold 2x 1:50","Exuroot+ECCA M directo","Exuroot+ECCA M 1:20","Exuroot+ECCA M 1:50","Exuroot+ECCA S/M directo","Exuroot+ECCA S/M 1:20","Exuroot+ECCA S/M 1:50"))
+levels(Prom_lat$Tratamiento)
 
 # Grafico de la longitud de raíz L1:
 
@@ -152,7 +164,9 @@ Prom_long <- longitud %>%
   group_by(Tratamiento, Lote) %>%
   summarize(Longitud= mean(ifelse(Longitud==0, NA, Longitud), na.rm = TRUE))
 
-ggplot(Prom_long, aes(x = Tratamiento, y = Longitud, fill = Lote))+
+melt_long <- melt(Prom_long, id = c("Tratamiento"))
+
+ggplot(melt_long, aes(x = Tratamiento, y = value, fill = variable))+
   theme_bw()+
   geom_col(position = "dodge")+
   ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA'S (Longitud raíz primaria)")+
@@ -162,15 +176,18 @@ ggplot(Prom_long, aes(x = Tratamiento, y = Longitud, fill = Lote))+
   theme(axis.text.y = element_text(size = 13))+
   theme(axis.title.x = element_text(size = 15))+
   theme(axis.title.y = element_text(vjust = 3, size = 15))+
-  scale_fill_manual(name = "Lote",values = c("#260F99", "#7EC3E5", "#A3CC51"))
+  scale_fill_manual(name = "Lote",
+                    values = c("#260F99", "#7EC3E5", "#A3CC51"),
+                    labels = c("Lote 1", "Lote 2", "Lote 3"))
 
 # Lotes 1 y 2 en un mismo gráfico para la variable de laterales
 Prom_lat <- laterales %>%
   group_by(Tratamiento, Lote) %>%
   summarize(Laterales= mean(ifelse(Laterales==0, NA, Laterales), na.rm = TRUE))
 
+melt_lat <- melt(Prom_lat, id = c("Tratamiento"))
 
-ggplot(Prom_lat, aes(x = Tratamiento, y = Laterales, fill = Lote))+
+ggplot(melt_lat, aes(x = Tratamiento, y = value, fill = variable))+
   theme_bw()+
   geom_col(position = "dodge")+
   ggtitle("Bioensayo de muestras externas Humik y Exuroot+ECCA'S (Raíces laterales)")+
@@ -180,5 +197,7 @@ ggplot(Prom_lat, aes(x = Tratamiento, y = Laterales, fill = Lote))+
   theme(axis.text.y = element_text(size = 13))+
   theme(axis.title.x = element_text(size = 15))+
   theme(axis.title.y = element_text(vjust = 3, size = 15))+
-  scale_fill_manual(name = "Lote",values = c("#260F99", "#7EC3E5", "#A3CC51"))
+  scale_fill_manual(name = "Lote",
+                    values = c("#260F99", "#7EC3E5", "#A3CC51"),
+                    labels = c("Lote 1", "Lote 2", "Lote 3"))
 ```
