@@ -19,6 +19,7 @@ library(ggbreak)
 library(plotrix)
 library(ggsignif)
 library(paletteer)
+library(reshape2)
 
 # DATA
 
@@ -28,7 +29,7 @@ Longitud <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Longitud nebiol M1
 Laterales <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Laterales nebiol M1-M6.csv")
 
 # Archivo para los graficos separados:
-Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo M1-M6_long_lateral.csv")
+Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo M1-M6.csv")
 ```
 
 ### Graficos del promedio de la longitud de raiz y raices laterales para Nebiol y extractos M1-M6
@@ -36,24 +37,28 @@ Bioensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo M1-M6_l
 ```{r}
 # Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz para el lote 1,2 y 3:
 
-Promedios <- Bioensayo %>%
+Prom_long <- Bioensayo %>%
   group_by(Tratamiento) %>%
   summarize(Long_lote1 = mean(Longitud.Lote.1, na.rm = TRUE),
             Long_lote2 = mean(Longitud.Lote.2, na.rm = TRUE),
-            Lat_lote1 = mean(ifelse(Laterales.Lote.1==0, NA, Laterales.Lote.1), na.rm = TRUE),
-            Lat_lote2 = mean(ifelse(Laterales.Lote.2==0, NA, Laterales.Lote.2), na.rm = TRUE),
-            Long_lote3 = mean(Longitud.Lote.3, na.rm = TRUE),
-            Lat_lote3 = mean(ifelse(Laterales.Lote.3== 0, NA, Laterales.Lote.3), na.rm = TRUE)) 
+            Long_lote3 = mean(Longitud.Lote.3, na.rm = TRUE), 
+            Lat_lote1 = mean(ifelse(Laterales.Lote.1 == 0, NA, Laterales.Lote.1), na.rm = TRUE),
+            Lat_lote2 = mean(ifelse(Laterales.Lote.2 == 0, NA, Laterales.Lote.2), na.rm = TRUE),
+            Lat_lote3 = mean(ifelse(Laterales.Lote.3 == 0, NA, Laterales.Lote.3), na.rm = TRUE))
 
 # Se acomodan los datos:
 
-levels(Promedios$Tratamiento)
-Promedios$Tratamiento=factor(Promedios$Tratamiento,levels=c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))
-levels(Promedios$Tratamiento)
+levels(Prom_long$Tratamiento)
+Prom_long$Tratamiento=factor(Prom_long$Tratamiento,levels=c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))
+levels(Prom_long$Tratamiento)
+
+levels(Prom_lat$Tratamiento)
+Prom_lat$Tratamiento=factor(Prom_lat$Tratamiento,levels=c("Control","NAA","GA3","M1 Directo", "M1 1:20", "M1 1:50", "M2 Directo", "M2 1:20", "M2 1:50", "M3 Directo", "M3 1:20", "M3 1:50", "M4 Directo", "M4 1:20", "M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))
+levels(Prom_lat$Tratamiento)
 
 # Grafico de la longitud de raíz lote 1:
 
-g1 <- ggplot(Promedios)+
+g1 <- ggplot(Prom_long)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote1, fill=Tratamiento))+
   ggtitle("Bioensayo NEBIOL y extractos Lote #1 (17Enero24)")+
@@ -68,7 +73,7 @@ g1 <- ggplot(Promedios)+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 1:
-g2 <- ggplot(Promedios)+
+g2 <- ggplot(Prom_lat)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote1, fill=Tratamiento))+
   ggtitle("Bioensayo NEBIOL y extractos Lote #1 (17Enero24)")+
@@ -84,7 +89,7 @@ g2 <- ggplot(Promedios)+
 
 # Grafico de la longitud de raíz lote 2:
 
-g3 <- ggplot(Promedios)+
+g3 <- ggplot(Prom_long)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote2, fill=Tratamiento))+
   ggtitle("Bioensayo NEBIOL y extractos Lote #2 (9Feb24)")+
@@ -99,7 +104,7 @@ g3 <- ggplot(Promedios)+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 2:
-g4 <- ggplot(Promedios)+
+g4 <- ggplot(Prom_lat)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote2, fill=Tratamiento))+
   ggtitle("Bioensayo NEBIOL y extractos Lote #2 (9Feb24)")+
@@ -115,7 +120,7 @@ g4 <- ggplot(Promedios)+
 
 
 # Grafico de la longitud de raíz lote 3:
-g5 <- ggplot(Promedios)+
+g5 <- ggplot(Prom_long)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Long_lote3, fill=Tratamiento))+
   ggtitle("Bioensayo NEBIOL y extractos Lote #3 (12Marzo24)")+
@@ -130,7 +135,7 @@ g5 <- ggplot(Promedios)+
   theme(legend.position = "none")
 
 # Grafico raices laterales para el lote 3:
-g6 <- ggplot(Promedios)+
+g6 <- ggplot(Prom_lat)+
   theme_classic()+
   geom_col(aes(x = Tratamiento, y = Lat_lote3, fill=Tratamiento))+
   ggtitle("Bioensayo NEBIOL y extractos Lote #3 (12Marzo24)")+
@@ -152,19 +157,9 @@ g6 <- ggplot(Promedios)+
 ```{r}
 # Todos los lotes en un mismo gráfico para la variable de la longitud de raiz:
 
-ggplot(Longitud,aes(x=Tratamiento, y = Longitud ,fill= Lote))+   
-  theme_bw()+
-  geom_bar(stat= "summary", fun="mean", position="dodge")+
-  theme(axis.text.x = element_text(angle=45,hjust=1))+
-  scale_x_discrete(limits = c("Control","NAA","GA3","M1 Directo", "M1 1:20","M1 1:50","M2 Directo", "M2 1:20","M2 1:50","M3 Directo","M3 1:20","M3 1:50", "M4 Directo","M4 1:20","M4 1:50", "M5 Directo", "M5 1:20", "M5 1:50", "M6 Directo", "M6 1:20", "M6 1:50"))+
-  scale_fill_manual(name = "# Lote", values = c("#260F99", "#7EC3E5","#6B990F"))
+melt_long <- melt(Prom_long, id = c("Tratamiento"))
 
-
-Prom <- Longitud %>%
-  group_by(Tratamiento, Lote) %>%
-  summarize(Longitud = mean(Longitud, na.rm = TRUE))
-
-ggplot(Prom, aes(x = Tratamiento, y = Longitud, fill = Lote))+
+ggplot(melt_long, aes(x = Tratamiento, y = value, fill = variable))+
   theme_bw()+
   geom_col(position = "dodge")+
   ggtitle("Bioensayo de muestras de NEBIOL y extractos")+
@@ -185,7 +180,9 @@ Promlat <- Laterales %>%
   group_by(Tratamiento, Lote) %>%
   summarize(Media_laterales= mean(ifelse(Raices.laterales==0, NA, Raices.laterales), na.rm = TRUE))
 
-ggplot(Promlat, aes(x = Tratamiento, y = Media_laterales, fill = Lote))+
+melt_lat <- melt(Prom_lat, id = c("Tratamiento"))
+
+ggplot(melt_lat, aes(x = Tratamiento, y = value, fill = variable))+
   geom_col( position = "dodge")+
   theme_bw()+
   ggtitle("Bioensayo de muestras de NEBIOL y extractos")+
@@ -196,6 +193,8 @@ ggplot(Promlat, aes(x = Tratamiento, y = Media_laterales, fill = Lote))+
   theme(axis.text.y = element_text(size = 13))+
   theme(axis.title.x = element_text(size = 15))+
   theme(axis.title.y = element_text(vjust =3, size = 15))+
-  scale_fill_manual(name = "# Lote", values = c("#260F99", "#7EC3E5","#6B990F"))
+  scale_fill_manual(name = "# Lote", 
+                    values = c("#260F99", "#7EC3E5","#6B990F"),
+                    labels = c("Lote 1", "Lote 2", "Lote 3"))
 ```
 
