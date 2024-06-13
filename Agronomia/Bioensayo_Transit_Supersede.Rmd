@@ -1,0 +1,78 @@
+---
+title: "Bioensayo muestras Transit Soil y Supersede Small Grains"
+output: html_notebook
+---
+
+```{r}
+# Librerías:
+library(dplyr)
+library(tidyr) 
+library(readr) 
+library(udunits2)
+library(tidyverse)
+library(car)
+library(agricolae)
+library(ggplot2)
+library(patchwork)
+library(RColorBrewer)
+library(ggbreak)
+library(plotrix)
+library(ggsignif)
+library(paletteer)
+library(reshape2) 
+
+# Data:
+Ensayo <- read.csv("~/CursoR/CursoRgit/Agronomia/Materiales/Bioensayo Transit y Supersede.csv")
+```
+
+### Gráfico del promedio de la longitud de raíz primaria
+```{r}
+# Filtrar datos para solo obtener una tabla de los promedios de la longitud de raiz y de las raíces laterales:
+
+Prom_long <- Ensayo %>%
+  group_by(Tratamiento) %>%
+  summarize(Long_lote1 = mean(Longitud_L1, na.rm = TRUE))
+
+Prom_lat <- Ensayo %>%
+  group_by(Tratamiento) %>%
+  summarize(Lat_lote1 = mean(ifelse(Laterales_L1 == 0, NA, Laterales_L1), na.rm = TRUE))
+  
+
+# Se acomodan los datos:
+levels(Prom_long$Tratamiento)
+Prom_long$Tratamiento = factor(Prom_long$Tratamiento, levels = c("Control", "NAA", "GA3", "Exuroot Directo", "Exuroot 1:20", "Exuroot 1:50", "Transit Directo", "Transit 1:20", "Transit 1:50", "Supersede Directo", "Supersede 1:20", "Supersede 1:50"))
+levels(Prom_long$Tratamiento)
+
+levels(Prom_lat$Tratamiento)
+Prom_lat$Tratamiento = factor(Prom_lat$Tratamiento, levels = c("Control","NAA","GA3", "Exuroot Directo", "Exuroot 1:20", "Exuroot 1:50", "Transit Directo", "Transit 1:20", "Transit 1:50", "Supersede Directo", "Supersede 1:20","Supersede 1:50"))
+levels(Prom_lat$Tratamiento)
+
+# Gráfico de la longitud de raíz lote 1:
+ggplot(Prom_long)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Long_lote1, fill = Tratamiento))+
+  ggtitle("Bioensayo muestras Transit Soil y Supersede Small Grains (28Mayo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Longitud raíz primaria")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(size = 15))+
+  theme(axis.title.y = element_text(size = 15, vjust = 3))+
+  scale_fill_manual(values = c("#BFB2FF", "#8F7EE5", "#6559CC", "#260F99", "#260F99", "#260F99", "#0F6B99", "#0F6B99", "#0F6B99", "#A3CC51", "#A3CC51", "#A3CC51"))+
+  theme(legend.position = "none")
+
+#Gráfico de las raíces laterales lote 1:
+ggplot(Prom_lat)+
+  theme_classic()+
+  geom_col(aes(x = Tratamiento, y = Lat_lote1, fill = Tratamiento))+
+  ggtitle("Bioensayo muestras Transit Soil y Supersede Small Grains (28Mayo24)")+
+  theme(plot.title = element_text(hjust = 0.5, size = 15, color = "black", face = "bold"))+
+  ylab("Raíces laterales")+
+  theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 13))+
+  theme(axis.text.y = element_text(size = 13))+
+  theme(axis.title.x = element_text(vjust = 3, size = 15))+
+  theme(axis.title.y = element_text(size = 15))+
+  scale_fill_manual(values = c("#BFB2FF", "#8F7EE5", "#6559CC", "#260F99", "#260F99", "#260F99", "#0F6B99", "#0F6B99", "#0F6B99", "#A3CC51", "#A3CC51", "#A3CC51"))+
+  theme(legend.position = "none")
+```
+
